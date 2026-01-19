@@ -1,0 +1,42 @@
+#
+#  This is an SD/FAST System Description File describing the four-body 
+#  spacecraft from Tutorial 3 of the SD/FAST User's Manual (version B).
+#  This is derived from Appendix B of the original (version A) SD/FAST 
+#  User's Manual, with an additional body (a scanner) attached to the camera.
+#
+body = bus
+  mass = 410
+  inertia = 115   -14    14
+             ?    316   -34.6
+             ?     ?    440
+
+body = clock  inb = bus  joint = pin 
+  mass = 6.8
+  inertia = 0.35  0.35  0
+  bodyToJoint =  0  0  -0.75
+  inbToJoint  =  0  0  -1.5
+  pin = 0 0 1
+
+body = camera inb = clock joint = pin
+  mass = 57.5
+  inertia = 4.85   0.41  -0.07
+              ?    2.2    0.54
+              ?     ?     5.5
+  bodyToJoint = 0  -0.22  0.2
+  inbToJoint  = 0  -0.1  -0.75
+  pin = -1 0 0
+
+body = boom inb = bus joint = ujoint
+  mass = 10.7
+  inertia = 27.2  0.2  27.2
+  bodyToJoint = 0   3.3  0
+  inbToJoint  = 0  -1.2  0
+  pin =  0 0 1
+  pin =  1 0 0
+
+body = scanner inb = camera joint = pin   prescribed
+  mass = 1.0
+  inertia = 0.1 0.1 0.5
+  bodyToJoint = 0 0.01 0
+  inbToJoint  = 0 0? 0
+  pin =  0 0 1

@@ -1,0 +1,11 @@
+body = A   inb = $ground   joint = pin   prescribed
+  mass = 1             inertia = 1 1 1
+  inbtojoint = 0 0 0   bodytojoint = 0 0 0
+  pin = 0 0 1
+
+body = B   inb = A   joint = planar
+  mass = 1             inertia = 400  500 100
+  inbtojoint = 0 0 0   bodytojoint = 0 0 0
+  pin = 1 0 0
+  pin = 0 1 0
+  pin = 0 0 1

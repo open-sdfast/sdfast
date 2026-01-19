@@ -1,0 +1,57 @@
+Four-Bar Mechanism Example
+
+Introduction
+------------
+
+This is the example from Tutorial 1 of the new SD/FAST manual.  It shows a
+very simple mechanism begin assembled, initialized and simulated with a very
+simple Fortran driver program.  Reading the discussion in Tutorial 1 will be
+very helpful in understanding this example.
+
+The example is also provided in C.
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   fbar.doc -- this documentation file
+   fbar.sd  -- the SD/FAST Input File
+   fbar.f   -- user-written FORTRAN code driving the analyses
+   fbarc.c  -- similar user-written driving program written in C
+
+To generate, compile and link the Fortran example into an executable 
+`fbar', execute the following commands (on Unix workstations):
+
+   1. sdfast -ge fbar.sd  
+
+      The -ge flag says `generate everything', so you get:
+           fbar_info fbar_dyn.f fbar_sar.f sdlib.f
+
+   2. f77 -o fbar fbar.f fbar_dyn.f fbar_sar.f sdlib.f 
+
+      Compile, link and put the executable in `fbar'.  
+      The -u and -C flags can also be very helpful
+      for debugging.  If you will be changing fbar.f (a good idea for
+      familiarizing yourself with the SD/FAST capabilities) you will want 
+      to avoid recompilation of the other files.  That can be done using 
+      the -c flag:
+           f77 -c fbar_dyn.f fbar_sar.f sdlib.f
+      and then linking with the appropriate object files:
+           f77 -o fbar fbar.f fbar_dyn.o fbar_sar.o sdlib.o
+
+To generate, compile and link the C example into an executable
+`fbarc', execute the following commands:
+
+   1. sdfast -lc -ge fbar.sd
+
+      This generates everything, but in C instead of Fortran, so you
+      get: fbar_info fbar_dyn.c fbar_sar.c sdlib.c
+
+   2. cc -o fbarc fbarc.c fbar_dyn.c fbar_sar.c sdlib.c -lm
+
+      Compile, link and put the executable in `fbarc'.  Again, you
+      can avoid recompilation of the equations with the -c flag:
+           cc -c fbar_dyn.c fbar_sar.c sdlib.c
+      Then compile the driving program and link with
+           cc -o fbarc fbarc.c fbar_dyn.o fbar_sar.o sdlib.o -lm

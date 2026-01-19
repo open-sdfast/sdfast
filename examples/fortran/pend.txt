@@ -1,0 +1,38 @@
+Pendulum Example
+
+Introduction
+------------
+
+This is the example from Tutorial 2 of the SD/FAST manual.
+It represents the simplest `multibody' system, a one-body pendulum.
+Reading the discussion in the Tutorial will be very helpful in understanding 
+this example.  
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   pend.doc -- this documentation file
+   pend.sd  -- the SD/FAST Input File
+   pend.f   -- user-written FORTRAN code driving the analyses
+
+To generate, compile and link this example into an executable `pend',
+execute the following commands (on Unix workstations):
+
+   1. sdfast -ge pend.sd  
+
+      The -ge flag says `generate everything', so you get:
+           pend_info pend_dyn.f pend_sar.f sdlib.f
+
+   2. f77 -o pend pend.f pend_dyn.f pend_sar.f sdlib.f 
+
+      Compile, link and put the executable in `pend'.  
+      The -u and -C flags can also be very helpful
+      for debugging.  If you will be changing pend.f (a good idea for
+      familiarizing yourself with the SD/FAST capabilities) you will want 
+      to avoid recompilation of the other files.  That can be done using 
+      the -c flag:
+           f77 -c pend_dyn.f pend_sar.f sdlib.f
+      and then linking with the appropriate object files:
+           f77 -o pend pend.f pend_dyn.o pend_sar.o sdlib.o

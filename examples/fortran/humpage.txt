@@ -1,0 +1,38 @@
+Humpage Reduction Gear Example
+
+Introduction
+------------
+
+This is the example from SD/FAST Application Note #005 "Modeling Gear Trains
+Using SD/FAST".  It models an epicyclic gear train called a Humpage reduction
+gear.  Ask your SD/FAST representative for a copy of the Application Note,
+which explains the operation of the example program.
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   humpage.doc -- this documentation file
+   humpage.sd  -- the SD/FAST Input File
+   humpage.f   -- user-written FORTRAN code driving the analyses
+
+To generate, compile and link this example into an executable `humpage',
+execute the following commands (on Unix workstations):
+
+   1. sdfast -ge humpage.sd  
+
+      The -ge flag says `generate everything', so you get:
+           humpage_info humpage_dyn.f humpage_sar.f sdlib.f
+
+   2. f77 -o humpage humpage.f humpage_dyn.f humpage_sar.f sdlib.f 
+
+      Compile, link and put the executable in `humpage'.
+      The -u and -C flags can also be very helpful
+      for debugging.  If you will be changing humpage.f (a good idea for
+      familiarizing yourself with the SD/FAST capabilities) you will want 
+      to avoid recompilation of the other files.  That can be done using 
+      the -c flag:
+           f77 -c humpage_dyn.f humpage_sar.f sdlib.f
+      and then linking with the appropriate object files:
+           f77 -o humpage humpage.f humpage_dyn.o humpage_sar.o sdlib.o

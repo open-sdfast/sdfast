@@ -1,0 +1,204 @@
+A Nested Spheres Problem
+
+Highlights
+----------
+
+  * All code is written in C.
+  * Sliding friction and stiction are modeled.
+  * Roll-without-slip and non-penetration constraints are maintained.
+  * Constraints are turned on and off dynamically.
+  * Impacts (with coefficient of restitution) are modeled.
+  * Time localization of events is performed.
+
+
+Introduction
+------------
+
+This is a problem in which a smaller inner sphere moves in the interior
+or on the inside surface of a larger outer sphere.  In this example, the 
+hollow outer sphere is fixed to ground.  The inner sphere may be
+        1) free in the interior,
+        2) rolling along the inside surface, or
+        3) slipping along the inside surface.
+
+Most of the code in the accompanying sphere.c program deals with recognizing 
+and implementing the transitions among these three conditions.  Collisions 
+between the spheres are modeled as impacts, with a coefficient of restitution.
+A static and dynamic coefficient of friction are used to model
+the behavior of the spheres when slipping, whether along the 
+surface or at a point during an impact.  No attempt is made to
+model rolling resistance, although that could easily be added.  It would
+also be straightforward to allow the outer sphere to move relative to
+ground, but that has not been done here.
+
+The simplest way to model this system with SD/FAST would be to "attach" the 
+inner sphere to ground with a six degree-of-freedom joint.  However, this
+would require us to write some equations to convert the resulting
+coordinates into more appropriate spherical coordinates.  Instead, we
+compose several joints (using two intermediate massless frames) to 
+produce spherical coordinates directly, and let SD/FAST write the equations.
+
+                 .---.              y
+               / INNER \            |               |
+               |   O   |            |____x          | gravity -9.8y
+               \       /           /                V
+         OUTER   `---'            z
+                                 
+The first massless frame, called LATLONG, is attached to the 
+point at the center of the outer sphere by a U-joint (two perpendicular
+rotational degrees of freedom).  The first coordinate is a rotation 
+about y (corresponding to longitude), the second is a rotation about x
+(corresponding to latitude).  
+
+The other massless frame, called RADIUS, is attached to LATLONG by
+a sliding joint in the RADIUS local y direction.  This coordinate
+represents the radial distance from the outer sphere center to the
+inner sphere center.  The inner sphere is attached to the RADIUS
+frame by a ball joint at its center.
+
+In the chosen reference configuration, where all the coordinates
+are zero, the inner sphere is in the center of the outer sphere.
+If the RADIUS coordinate is set to (R_OUTER-R_INNER) while all
+other coordinates are left zero, the inner sphere touches the
+outer sphere at the top.  Note that this means the latitude is
+considered zero at the top, 90 degrees at the equator, contrary to
+common practice on maps where the equator is at zero latitude.
+
+Three constraints are used in the model to (1) prevent the inner
+sphere from penetrating the outer sphere, and (2) while the inner
+sphere should be rolling, to prevent relative slipping between
+the surfaces (in two directions).  These constraints are turned on
+and off as appropriate.  The first is enabled only when the the
+sphere is rolling or sliding along the inner surface, and the
+other two constraints are enabled only while rolling.
+
+The "non-penetration" constraint is implemented using SD/FAST's built-in
+prescribed motion facility on the RADIUS sliding joint.  Whenever
+the spheres are supposed to maintain contact, the inner
+sphere is simply presribed to be at the radius which just causes it
+to contact the outer sphere.  The sign of the resulting constraint
+multiplier is monitored, and the prescribed motion constraint is turned
+off if it would prevent the inner sphere from moving into the interior.
+
+The "no-slip" constraints are implemented using SD/FAST's "user constraint"
+facility.  These constraints are enabled only when the spheres are 
+supposed to be in rolling contact.  When on, the resulting force (found
+in the multipliers) is monitored and if its magnitude exceeds the
+static coefficient of friction times the normal force, the constraints
+are turned off and the sphere begins to slip.
+
+The variable-step integrator provided with SD/FAST is used to advance
+time.  This integrator is capable of precisely locating events in
+time, and we use this feature to isolate in time the transitions
+among the free, rolling and slipping conditions.  This way errors are
+avoided which would occur if a single integration step contained transitions.
+
+The SD/FAST root finder is used to solve the impact problem.  It is also
+used in the transition from slipping to rolling to eliminate any
+residual slipping velocity when the decision is made to roll.
+
+Fixed-point iteration is used to solve for the friction forces during
+sliding.  
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   sphere.doc -- this documentation file
+   sphere.sd  -- the SD/FAST Input File
+   sphere.c   -- user-written C code driving the analyses
+
+To generate, compile and link this example into an executable `sphere',
+execute the following commands:
+
+   1. sdfast -lc -ge sphere.sd  
+
+      The -ge flag says `generate everything', and -lc says `language C',
+      so you get:
+          sphere_info sphere_dyn.c sphere_sar.c sdlib.c
+
+   2. cc -o sphere sphere.c sphere_dyn.c sphere_sar.c sdlib.c
+
+      Compile, link and put the executable in `sphere'.  If you will be 
+      changing sphere.c (a good idea for familiarizing yourself with the 
+      SD/FAST capabilities) you will want to avoid recompilation of the 
+      other files.  That can be done using the -c flag:
+          cc -c sphere_dyn.c sphere_sar.c sdlib.c
+      and then linking with the appropriate object files:
+          cc -o sphere sphere.c sphere_dyn.o sphere_sar.o sdlib.o
+
+Now type `sphere' to run the example.  The program will prompt for 
+
+   (1) the static and dynamic coefficients of friction, 
+   (2) the coefficient of restitution for impacts, 
+   (3) the initial radial position and radial velocity of the inner sphere, 
+   (4) the initial  "latitude" and latitudinal velocity, 
+   (5) the initial "longitude" and longitudinal velocity, and
+   (6) the initial angular velocity of the inner sphere.
+
+The sphere example program does not check any of these inputs for 
+legitimacy.  Make sure your inputs meet the following conditions:
+
+     0 <= static friction coef  <= 1
+     0 <= dynamic friction coef <= static coef
+     0 <= coef of restitiution  <= 1
+    -1 <= radial position       <= 1     meters
+     0 <= latitude              <= 180   degrees
+  -180 <= longitude             <= 180   degrees
+
+Also, if the initial radial position is 1, the radial velocity must be <= 0.
+If the initial radial position is -1, the radial velocity must be >= 0.
+
+Here are some examples you might want to try:
+
+* Start inner sphere at top of outer sphere with no velocity, drop
+  straight down.  Inner sphere bounces up and down through the 
+  center of the outer sphere, losing energy with each bounce.
+  It comes to rest at the bottom in a little less than six seconds.
+
+  static  = 1  (doesn't matter)
+  dynamic = 1 (doesn't matter)
+  restitution = .8
+  radial pos and vel: 1 0
+  latitude and lat vel: 0 0
+  longitude and long vel: 0 0
+  angular vel: 0 0 0
+
+* Start the inner sphere at 45 degrees latitude (that is, 45 degrees
+  down from the north pole to the equator), touching the outer sphere
+  and with no initial velocity.  The sphere falls through the interior
+  until it contacts again at 135 degrees latitude.  It then bounces
+  down the inner surface (losing energy on each bounce) until it
+  begins to roll.  From then it just rolls back and forth near the
+  bottom of the outer sphere.  No further energy loss occurs since
+  we did not model rolling friction.
+
+  static  = .9
+  dynamic = .8
+  restitution = .8
+  radial pos and vel: 1 0
+  latitude and lat vel: 45 0
+  longitude and long vel: 0 0
+  angular vel: 0 0 0
+
+* Start the sphere at the equator, with a downward (latitudinal)
+  velocity of 2 m/s and no inertial angular velocity.  Note that
+  the inner sphere frame has an angular velocity which must be 
+  cancelled to produce zero angular velocity in the outer sphere
+  (inertial) frame.  The sphere slips for a while, building up
+  angular velocity, and then begins to roll.  After it rolls high
+  enough, it begins to slip again, and then it falls back into
+  the interior.  It continues to bounce, roll, and slip for the
+  whole 10 second simulation.  If run longer, it will eventually
+  settle into just rolling.  Some messages announcing numerical
+  difficulties will be reported; these are inconsequential in
+  this problem.
+
+  static  = .9
+  dynamic = .8
+  restitution = .8
+  radial pos and vel: 1 0
+  latitude and lat vel: 90 2
+  longitude and long vel: 0 0
+  angular vel: -2 0 0

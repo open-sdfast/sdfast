@@ -1,0 +1,92 @@
+                        Spacecraft Slew Example
+                (Tutorial 3 in the SD/FAST User's Manual)
+
+Introduction
+------------
+
+This example demonstrates the use of SD/FAST to analyze a spacecraft
+performing a camera slewing maneuver.  A scanner is attached to the 
+camera for positioning, and follows a sinusoidal prescribed motion.  
+This example is discussed in Tutorial 3 of the SD/FAST User's Manual.
+
+This spacecraft example demonstrates the use of SD/FAST with position and 
+rate feedback control with a deadband, and actuators (thrusters) which 
+exhibit `memory' in the sense that they must be on for a minimum amount
+of time.  In addition, a flexible boom is represented with a simple
+lumped-mass model of flexibility in two dimensions.  A simple application
+of SD/FAST's design capability is demonstrated by performing the same
+analysis with the attachment point for the scanner in two different
+places.
+
+Three analyses are performed.  The first is very similar to the one
+in the old SD/FAST manual.  The scanner is locked, and the camera
+follows a slew command.  In the second analysis, the camera is 
+held still while the scanner follows a sinusoidal prescribed motion.
+The camera pointing error is monitored to observe the effect of the
+scanner.  The third analysis duplicates the second, except that the
+scanner is attached to a different point on the camera.
+
+Because there are states being integrated beyond those representing
+the spacecraft hinge positions and velocities, the SD/FAST Simplified
+Analysis Routines cannot be used in this example.  Use of the underlying
+General Analysis Routines (namely SDFINTEG instead of SDFMOTION) is 
+demonstrated here instead.
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   slew.doc -- this documentation file
+   slew.sd  -- the SD/FAST Input File
+   slew.f   -- user-written FORTRAN code driving the analyses
+
+To generate, compile and link this example into an executable `slew',
+execute the following commands (on Unix workstations):
+
+   1. sdfast -ge slew.sd  
+
+      The -ge flag says `generate everything', so you get:
+           slew_info slew_dyn.f slew_sar.f sdlib.f
+      For this example, we won't need the Simplified Analysis Routines
+      in the slew_sar file, however.
+
+   2. f77 -o slew slew.f slew_dyn.f sdlib.f 
+
+      Compile, link and put the executable in `slew'.
+      The -u and -C flags can also be very helpful
+      for debugging.  If you will be changing slew.f (a good idea for
+      familiarizing yourself with the SD/FAST capabilities) you will want 
+      to avoid recompilation of the other files.  That can be done using 
+      the -c flag:
+           f77 -c slew_dyn.f sdlib.f
+      and then linking with the appropriate object files:
+           f77 -o slew slew.f slew_dyn.o sdlib.o
+
+The Example Code
+----------------
+
+In conjunction with the SD/FAST User's Manual Appendix B, the comments
+in the slew.f example code should make it possible to understand the
+code by reading through it.  This example demonstrates use of the
+following SD/FAST-generated subroutines:
+
+        SDINIT     -- initialize to start and after changing system parameters
+        SDANG2ST   -- convert state from Euler angles to quaternions
+        SDINDX     -- index into state using joint,axis pairs
+        SDORIENT   -- obtain the current orientation of a body
+        SDDC2ANG   -- convert a direction cosine to Euler angles
+        SDFINTEG   -- a fixed-step Runge Kutta integrator with error estimation
+        SDTRANS    -- transform a vector from one body frame to another
+        SDITJ      -- change the inboard-to-joint vector for a joint
+        SDPRINTERR -- report any misuse of the SD/FAST-generated routines
+        SDSTATE    -- specify the current time and system state
+        SDDERIV    -- compute state derivatives
+        SDVERR     -- evaluate velocity constraint errors
+        SDPERR     -- evaluate position constraint errors
+        SDPRESPOS  -- prescribe the value of a joint coordinate
+        SDPRESVEL  -- prescribe the value of a joint velocity
+        SDPRESACC  -- prescribe the value of a joint acceleration
+        SDANGVEL   -- compute the angular velocity of a body
+        SDHINGET   -- apply a joint torque
+        SDBODYT    -- apply a torque to a body

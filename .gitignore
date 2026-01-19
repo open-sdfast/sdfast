@@ -1,0 +1,9 @@
+# Editor backup files.
+# vim
+.*.swp
+.*.swo
+# gedit
+*~
+# CLion
+/cmake-build-*
+.idea/

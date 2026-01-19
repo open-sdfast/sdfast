@@ -1,0 +1,18 @@
+#  File:  pend.sd
+#
+#  This is an SD/FAST input file describing the pendulum example in
+#  Tutorial 2 of the SD/FAST User's Manual.
+#
+#  The system is a one degree of freedom pendulum with gravity acting 
+#  in the -n2 direction; the pin joint along n3.
+#
+language = c
+gravity = 0 -9.8 0
+
+body = pendulum  inb = $ground  joint = pin
+  mass = 10?
+  inertia = 5  1  5
+  bodytojoint = 0  1.5 0
+  pin = 0 0 1
+
+# @(#)pend.sd 1.3 91/08/11 - Copyright 1990 Symbolic Dynamics, Inc.

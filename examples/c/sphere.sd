@@ -1,0 +1,28 @@
+# two nested spheres
+#
+gravity = 0 -9.8 0
+
+body=lat_and_long inb=$ground joint=ujoint
+  mass = 0
+  inertia = 0 0 0
+  itj = 0 0 0
+  btj = 0 0 0
+  pin = 0 1 0
+  pin = 1 0 0
+
+body=radius inb=lat_and_long joint=slider
+  mass = 0
+  inertia = 0 0 0
+  itj = 0 0 0
+  btj = 0 0 0
+  pin = 0 1 0
+  prescribed=0?
+
+body=inner inb=radius joint=ball
+  mass = 1
+  inertia = .4 .4 .4
+  itj = 0 0 0
+  btj = 0 0 0
+
+constraint = slipx
+constraint = slipz

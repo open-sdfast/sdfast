@@ -1,0 +1,40 @@
+# A 4-bar linkage (crank and rocker)
+#                                                  y|
+#                  connect                          |
+#               *------------o                      |______ x
+#                            |                     /
+#               *            | rocker            z/
+#         crank |            |                    
+#               o------------o                * = loop joint
+#                   __|__
+#                  ////// 
+#
+# Reference configuration is as shown.  Note that system is not assembled.
+# All joints, including the loop joint, are pins.
+#
+# The crank has length 1, the rocker has length 2, and the connecting 
+# bar and ground baseline each have length 3.  The crank is attached to
+# ground at the origin.
+#
+gravity = 0 -9.8 0
+
+body = crank inb = $ground joint = pin
+    mass = 1                        inertia = 1 0 1
+    bodytojoint = 0 -.5 0           inbtojoint = 0 0 0
+    pin = 0 0 1
+
+body = rocker inb = $ground joint = pin
+    mass = 2                        inertia = 2 0 2
+    bodytojoint = 0 -1 0            inbtojoint = 3 0 0
+    pin = 0 0 1
+
+body = connect inb = rocker joint = pin
+    mass = 3                        inertia = 0 3 3
+    bodytojoint = 1.5 0 0           inbtojoint = 0 1 0
+    pin = 0 0 1
+
+# This is the loop joint.
+
+body = connect inb = crank joint = pin
+    bodytojoint = -1.5 0 0          inbtojoint = 0 .5 0
+    pin = 0 0 1

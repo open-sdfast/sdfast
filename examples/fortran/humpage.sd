@@ -1,0 +1,32 @@
+#  File:  humpage.sd
+#
+#  This is an SD/FAST input file describing the Humpage reduction gear
+#  discussed in the Application Note "Modeling Gear Trains Using SD/FAST"
+#  available from your SD/FAST distributor.
+#
+#  The system is modeled with four moving bodies and three gear
+#  constraints.  The gear constraints are written as user constraints
+#  in the accompanying driver program humpage.f.
+#
+
+body = b inb = $ground joint = pin
+    mass = 1   inertia = 1 1 1
+    bodytojoint = 0 0 0   inbtojoint = 22.402258 0 0
+    pin = 1 0 0
+ 
+body = e inb = $ground joint = pin
+    mass = 1   inertia = 1 1 1
+    bodytojoint = 0 0 0   inbtojoint =  115.256236 0 0
+    pin = 1 0 0
+
+body = f inb = $ground joint = pin
+    mass = 1   inertia = 1 1 1
+    bodytojoint = 0 0 0   inbtojoint =  43.746005 0 0
+    pin = 1 0 0
+
+body = d inb = f joint = pin
+    mass = 1   inertia = 1 1 1
+    bodytojoint = 0 0 0   inbtojoint = 13.882112 40.0 0
+    pin =  0.32786885245902   0.94472324814583 0
+
+constraints = 3 

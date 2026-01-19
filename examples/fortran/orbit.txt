@@ -1,0 +1,54 @@
+Humpage Reduction Gear Example
+
+Introduction
+------------
+
+This is the example from SD/FAST Application Note #006 "Modeling Orbit
+and Attitude Dynamics Using SD/FAST".  It performs several different
+orbital studies for a single body and a chain of bodies in orbit.
+Ask your SD/FAST representative for a copy of the Application Note,
+which explains the operation of the example programs.
+
+Running the Example
+-------------------
+
+This example is composed of seven files:
+
+   orbit.doc  -- this documentation file
+   orbit.sd   -- the SD/FAST Input File for the single body in orbit
+   orbitc.sd  -- the SD/FAST Input File for the chain in orbit
+   orbit.f    -- user-written FORTRAN code: single body in perturbed orbit
+   orbitrzv.f -- user-written FORTRAN code: a rendezvous maneuver (single body)
+   orbitatt.f -- user-written FORTRAN code: attitude study (single body)
+   orbitc.f   -- user-written FORTRAN code: motion of chain in orbit
+
+To generate, compile and link this example into four executable programs
+`orbit', `orbitrzv', `orbitatt', and `orbitc' execute the following 
+commands (on Unix workstations):
+
+   1. sdfast -ge orbit.sd  
+
+      The -ge flag says `generate everything', so you get:
+           orbit_info orbit_dyn.f orbit_sar.f sdlib.f
+
+   2. sdfast orbitc.sd
+    
+      This generates: orbitc_info, orbitc_dyn.f, and orbitc_sar.f
+
+   3. f77 -c orbit_dyn.f orbit_sar.f orbitc_dyn.f orbitc_sar.f sdlib.f 
+
+      Compile all the SD/FAST-generated files.  This creates
+           orbit_dyn.o orbit_sar.o orbitc_dyn.o orbitc_sar.o sdlib.o 
+
+      You may see some messages like:
+        WARNING: TEST MAY FAIL DUE TO FLOAING POINT IMPRECISION (781)
+      These may safely be ignored.
+
+   4. f77 -o orbit orbit.f orbit_dyn.o orbit_sar.o sdlib.o
+      f77 -o orbitrzv orbitrzv.f orbit_dyn.o orbit_sar.o sdlib.o
+      f77 -o orbitatt orbitatt.f orbit_dyn.o orbit_sar.o sdlib.o
+      f77 -o orbitc orbitc.f orbitc_dyn.o orbitc_sar.o sdlib.o
+
+      Compile the main programs, and link in the models to produce the
+      four executables.  The -u and -C flags can also be very helpful
+      for debugging.  

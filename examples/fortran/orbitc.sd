@@ -1,0 +1,34 @@
+#
+# Orbiting chain.
+#
+body = A   inb = $ground   joint = pin   prescribed
+  mass = 0            inertia = 1 1 1
+  inbtojoint = 0 0 0  bodytojoint = 0 0 0
+  pin = 0 0 1
+
+body = B   inb = A   joint = planar
+  mass = 1            inertia = 10 50 50
+  inbtojoint = 0 0 0  bodytojoint = 0 -1 0
+  pin = 1 0 0
+  pin = 0 1 0
+  pin = 0 0 1
+
+body = C   inb = B   joint = pin
+  mass = 1            inertia = 10  50 50
+  inbtojoint = 0 1 0  bodytojoint = 0 -1 0
+  pin = 0 0 1
+
+body = D   inb = C   joint = pin
+  mass = 1            inertia = 10  50 50
+  inbtojoint = 0 1 0  bodytojoint = 0 -1 0
+  pin = 0 0 1
+
+body = E   inb = D   joint = pin
+  mass = 1            inertia = 10  50 50
+  inbtojoint = 0 1 0  bodytojoint = 0 -1 0
+  pin = 0 0 1
+
+body = F   inb = E   joint = pin
+  mass = 1            inertia = 10  50 50
+  inbtojoint = 0 1 0  bodytojoint = 0 -1 0
+  pin = 0 0 1

@@ -1,0 +1,253 @@
+                       Quick Return Mechanism Example
+                  (Tutorial 4 in the SD/FAST User's Manual)
+
+Introduction
+------------
+
+This example demonstrates the use of SD/FAST to analyze mechanisms with
+multi-loop topology.  Tutorial 4 contains a complete discussion of this
+example.  Below is information on how to run the example, and a relatively
+brief explanation.
+
+The mechanism described in quickret.sd (with a crude drawing as well as the
+numerical parameters) is called a quick-return mechanism.  This particular
+quick return is used to cut a workpiece by applying a shaping tool rigidly
+mounted to the body named `tool'.  The tool slides along a horizontal surface
+as the workpiece is engaged.  At the end of the working stroke, the tool
+quickly retracts back to the starting position, ready to repeat the cycle.
+
+The mechanism consists of five moving links plus the ground.  The links are
+connected by five revolute joints and two sliding joints. The dimensions and
+mass properties are given in the SD/FAST System Description File.  During some 
+of the following analyses a motor is used to exert a hinge torque on the joint
+connecting the crank to ground. The motor torque is specified as a
+function of the joint angle rate, using a torque-rpm curve (in this case, a
+line) as coded in the sduforce() routine.  Also, a force representing a
+workpiece is modeled as a horizontal force applied to the cutter point of the
+`tool'.  The force is assumed to act only when the tool is moving
+towards the workpiece, and to be zero otherwise.
+
+Mechanism analyses typically include Assembly and Initial Velocity Analysis,
+Inverse Dynamics, Mechanical Advantage, Forward Dynamics, and Design Studies.
+The use of SD/FAST to perform these analyses will be illustrated in this
+example, organized as a series of exercises.
+
+Running the Example
+-------------------
+
+This example is composed of three files:
+
+   quickret.doc -- this documentation file
+   quickret.sd  -- the SD/FAST Input File
+   quickret.f   -- user-written FORTRAN code driving the analyses
+
+To generate, compile and link this example into an executable `quickret',
+execute the following commands (on Unix workstations):
+
+   1. sdfast -ge quickret.sd  
+
+      The -ge flag says `generate everything', so you get:
+           quickret_info quickret_dyn.f quickret_sar.f sdlib.f
+
+   2. sdfast -gl -psd2
+
+      The -gl flag says `generate library only'.  -psd2 says make all the
+      generated routines begin with prefix `sd2' instead of the default 
+      prefix `sd'.  This gives us a duplicate library (sd2lib.f) with 
+      unique routine names, needed because we will be using the root 
+      finder on a residual-calculating routine which itself calls the root 
+      finder.
+
+   3. f77 -o quickret quickret.f quickret_dyn.f quickret_sar.f sdlib.f sd2lib.f
+
+      Compile, link and put the executable in `quickret'.
+      The -u and -C flags can also be very helpful
+      for debugging.  If you will be changing quickret.f (a good idea for
+      familiarizing yourself with the SD/FAST capabilities) you will want 
+      to avoid recompilation of the other files.  That can be done using 
+      the -c flag:
+           f77 -c quickret_dyn.f quickret_sar.f sdlib.f sd2lib.f
+      and then linking with the appropriate object files:
+           f77 -o quickret quickret.f quickret_dyn.o quickret_sar.o \
+                  sdlib.o sd2lib.o
+
+Implementation of the Analyses
+------------------------------
+
+The analysis program quickret.f is divided into six separate analyses
+of the Quick Return mechanism.  The following discussions of these
+analyses may be helpful in following the code, although the discussion
+in Tutorial 4 of the SD/FAST User's Manual is much more extensive.  The 
+numbering below corresponds to the `exercise' numbers in the code.  You 
+may wish to refer to the code while reading these discussions.
+
+In the code, we follow the convention that any routine which was generated
+by SD/FAST is written in uppercase.  User-written routines are in lower
+case.  Note that all the SD/FAST-generated routines begin with the prefix
+`SD', although we also call a duplicate of `SDROOT' generated with the
+prefix `SD2' as described above.  Symbols (constants) defined in FORTRAN 
+parameter statements are also written in all uppercase.  Other symbols are in
+lower case.
+
+
+1. Assembly and velocity analysis
+
+This exercise also illustrates an important new feature of SD/FAST. This
+is the ability to assemble the mechanism from its reference configuration.
+In the configuration shown in the figure, it is not trivial to compute
+the link angles and sliding displacements which are necessary to assemble
+the mechanism. The SD/FAST input file does not require the mechanism to
+be defined in an assembled state. The user can choose a reference
+configuration with the loops broken. The user must simply specify body
+connection geometry for a spanning tree, plus additional joint types
+and loop connection points. Again though, the loop connection points
+need not be coincident in the input file. SD/FAST provides a routine
+to assemble a mechanism. After assembling the quick-return, the motion
+must satisfy velocity constraints. That is, the joint velocities must
+preserve the loop closure conditions or the joints will become
+disassembled. In this problem, the crank angular velocity is given.
+The other joint rates can be computed as a function of the crank angular
+velocity. SD/FAST provides a routine which initializes all joint
+rates with compatible initial velocities.
+
+  In this exercise the following SD/FAST subroutines are used:
+
+        SDINIT     -- initialize the SD/FAST routines
+        SDASSEMBLE -- assemble the mechanism
+        SDINITVEL  -- compute compatible initial velocities
+        SDPRES     -- turns prescribed motion on or off
+        SDPOS      -- compute the location of a point
+        SDVEL      -- compute the velocity of a point
+        SDPERR     -- report constraint position errors
+        SDVERR     -- report constraint velocity errors
+        SDINDX     -- find a particular joint axis in the state vector
+
+
+2. Inverse Dynamics
+
+For this exercise, the crank is driven with a constant rotation rate. We are 
+interested in computing the position, velocity and acceleration of
+the tool, and the angular orientation, angular velocity, and angular 
+acceleration of the coupler and rocker. We will also compute the extension
+of the sliding joint between the coupler and the sleeve, as well as the
+sliding velocity and acceleration. This information is purely kinematic. It
+depends only upon the mechanism geometry and given motion of the crank.
+To illustrate the Inverse Dynamics capability of SD/FAST, bearing
+reactions are also calculated. These depend upon both the motion and
+the forces acting on the system. This exercise will also show how the
+SD/FAST subroutines can be used to calculate any quantity of interest.
+
+  In this exercise the following additional SD/FAST subroutines are used:
+
+        SDANGVEL   -- compute the angular velocity of a body
+        SDANGACC   -- compute a body angular acceleration
+        SDTRANS    -- transform a vector from one frame to another
+        SDGETPRES  -- find out whether a joint is currently prescribed
+        SDPRESPOS  -- prescribe the value of a joint coordinate
+        SDPRESVEL  -- prescribe the value of a joint velocity
+        SDPRESACC  -- prescribe the value of a joint acceleration
+        SDPOINTF   -- apply a force to a point of a body
+        SDHINGET   -- apply a joint torque
+        SDDERIV    -- calculate accelerations
+        SDMULT     -- obtain number of independent (active) constraints
+        SDGETHT    -- obtain the driving torque at a prescribed joint
+        SDREAC     -- compute joint reactions
+
+
+3. Mechanical Advantage
+
+In this exercise SD/FAST is used to compute a traditional figure
+of merit for a mechanism. This is the mechanism's mechanical
+advantage. For the quick-return, this is defined to be the ratio
+between the force applied by the cutter and the torque applied
+to the crank, when the system is in static equilibrium. This is
+done in SD/FAST by prescribing the crank angle to a desired value
+and prescribing the velocity and acceleration to be zero. SD/FAST then 
+computes the torque needed to enforce the prescribed motion.
+
+The mechanical advantage varies during the mechanism cycle.  In the
+example code, we output the mechanical advantage as calculated at
+each one degree increment of crank position in a complete cycle.
+As can be seen in the graph of this data, there are two positions
+in the cycle in which the mechanical advantage increases rapidly.
+(It would be infinite at these points if we sampled at exactly the 
+right crank angles.)  During the remainder of the cycle, the mechanical
+advantage remains relatively flat, which may indicate that the
+mechanism has been designed well.
+
+In this exercise no additional SD/FAST routines are used. The
+exercise illustrates a different application of the basic
+routines.
+
+
+4. Dynamic Analysis
+
+In this exercise, a motor model is used to apply a torque to the
+crank and the system response is obtained.  The motor torque
+is a function of the motor rpm, so the system response is transient.
+In the code, we output from this analysis the crank angle, velocity, and 
+acceleration as a function of time.  It is interesting to note that
+after a complete rotation of the crank, the ending crank velocity is
+substantially different than the initial crank velocity of 20 rad/s.
+That means that the mechanism is not operating in a steady cycle.
+
+In this exercise the following additional SD/FAST routines are used:
+
+        SDMOTION   -- variable time-step integrator
+
+
+5. Design Study -- Parameter Sweep
+
+Mechanisms such as the quick-return are designed to operate in a cycle.
+Because of the motor characteristics, the load characteristics, and the
+position dependent mechanical advantage of the mechanism, a periodic motion
+of the system can be difficult to initiate.  In this exercise, the crank is
+started from vertical with an initial rotation rate.  A dynamic analysis is
+performed, terminating after one crank revolution.  The crank terminal
+angular velocity is computed.  The crank initial angular velocity is
+incremented and the analysis is repeated. In this way the terminal velocity
+is numerically determined as a function of initial velocity.  To those
+familiar with this sort of analysis, the graph of this relationship not only
+reveals the existence of a periodic limit cycle,  but also indicates the
+stability of the motion (that is, after some number of cycles the mechanism
+will settle into the limit cycle).  This is seen from the slope of the
+graph.
+
+This exercise does not use any SD/FAST routines not already illustrated, 
+but shows additional application of them.
+
+
+6. Design Study -- Parameter Selection
+
+The previous exercise showed that a stable limit cycle exists for the
+quick-return.  One way to find the limit cycle is to start the simulation and
+let the system 'fall' into the limit cycle.  This could be impractical for
+some problems, especially if the stability of the limit cycle is unknown.  In
+this exercise, the limit cycle is instead computed by using the nonlinear
+root-finder supplied with SD/FAST.  A function is constructed which computes
+the crank terminal velocity for a given initial crank velocity, and then
+returns the difference (residual).  This can be thought of as a single-valued
+nonlinear function of the initial velocity.  The root-finder automatically
+searches for a root of this function, which would represent an initial 
+velocity which produces an identical terminal velocity.  (Note that this 
+represents the simplest possible use of the root-finder which can,
+in general, simultaneously solve sets of constrained nonlinear functions
+of multiple variables.)
+
+The constructed residual function actually performs the dynamic analysis 
+described earlier.  This involves calls to the Simplified Analysis Routines
+SDASSEMBLE and SDINITVEL for computing compatible initial conditions.  These
+routines are themselves built on the SD/FAST root finder SDROOT.  Since
+FORTRAN does not normally allow recursive calls, we cannot use SDROOT
+directly to perform this Design Study.  If we did, SDROOT would call
+resid, which would call SDASSEMBLE, which would call SDROOT, which would
+wreak havoc.  Instead, we had SD/FAST generate another set of library routines
+using the prefix `SD2' instead of `SD'.  That gives us another copy
+of the root finder called SD2ROOT, which is the routine we use to perform
+this study.  Of course if you were using a residual function that did
+not itself depend on SDROOT, you would simply use SDROOT directly for
+this kind of analysis.
+
+In this exercise the following additional SD/FAST routines are used:
+
+        SDROOT     --  nonlinear root-finder
