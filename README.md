@@ -27,4 +27,4 @@ Other than removing the security code and a few minor formatting fixups, this is
 B.2.9 from 1998 which is what PTC has been selling for the last 20+ years.
 
 Please let me know what problems you run into. I think there may be some modernizing
-needed of the generated code, at least to avoid warning from modern C compilers.
+needed of the generated code, at least to avoid warnings from modern C compilers.
