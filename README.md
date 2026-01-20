@@ -18,7 +18,7 @@ updates.
 
 ### Note from Sherm 20260119
 
-Version 1.0 of open SD/FAST is posted now and still has a lot of ancient cruft. I added
+Version 2.0 of open SD/FAST is posted now and still has a lot of ancient cruft. I added
 a CMakeLists.txt to get the code to build, and successfully built it on Linux. It should build
 on Windows also but I haven't tried it. The old examples and a pdf of the manual are there,
 unchanged from circa 1998.
