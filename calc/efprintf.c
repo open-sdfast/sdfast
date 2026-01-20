@@ -287,7 +287,7 @@ do_eprintf(
                         sprintf(deststr, ofmt, va_arg(argptr, void *));
                         break;
                     case 6:
-                        sprintf(deststr, ofmt);
+                        sprintf(deststr, ofmt, ""); // dummy arg to kill warning
                         break;
                     }
                 } else if (nindir == 1) {

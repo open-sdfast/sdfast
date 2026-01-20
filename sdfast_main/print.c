@@ -25,31 +25,18 @@
 void PRINT_SUBR_STAMP(FILE *F)
 {
     string32 DateTime;
-    string20 machineID;
     extern char VersionNumber[]; 
     extern int gProgramSerialNo;
 
     TIME_STAMP(DateTime);
-    GETMACHINEID(machineID);
     efprintf(F, "Generated %s by SD/FAST, %s formulation\n", DateTime,
        sdfast_opt.formulation == OPT_KANE 
-       || sdfast_opt.formulation == OPT_DEFAULT  ?         "Kane's" :
-       sdfast_opt.formulation == OPT_ORDERN ?                 "Order(N)" :
-       sdfast_opt.formulation == OPT_EXP ?                 "experimental" :
-       sdfast_opt.formulation == OPT_EXP2 ?                 "experimental2" :
-                                                "???");
-    efprintf(F, "(sdfast %s #%05d) on machine ID %s\n", VersionNumber,
-      gProgramSerialNo, machineID);
-    efprintf(F,
-      "Copyright (c) 1990-1997 Symbolic Dynamics, Inc.\n");
-    efprintf(F, "Copyright (c) 1990-1997 Parametric Technology Corp.\n");
-    efprintf(F, "\
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.\n\
-Government is subject to restrictions as set forth in subparagraph\n\
-(c)(1)(ii) of the Rights in Technical Data and Computer Software\n\
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA\n\
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041\n");
-
+       || sdfast_opt.formulation == OPT_DEFAULT  ? "Kane's" :
+       sdfast_opt.formulation == OPT_ORDERN ?      "Order(N)" :
+       sdfast_opt.formulation == OPT_EXP ?         "experimental" :
+       sdfast_opt.formulation == OPT_EXP2 ?        "experimental2" :
+                                                   "???");
+    efprintf(F, "(sdfast %s #%05d)\n", VersionNumber, gProgramSerialNo);
 }
 
 /* PRINT_STUB

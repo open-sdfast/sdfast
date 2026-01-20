@@ -715,14 +715,7 @@ void sdstate(double timein,
 Compute kinematic information and store it in sdgstate.
 
 Generated 07-Aug-2007 13:10:45 by SD/FAST, Order(N) formulation
-(sdfast B.2.8 #30123) on machine ID unknown
-Copyright (c) 1990-1997 Symbolic Dynamics, Inc.
-Copyright (c) 1990-1997 Parametric Technology Corp.
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.
-Government is subject to restrictions as set forth in subparagraph
-(c)(1)(ii) of the Rights in Technical Data and Computer Software
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041
+(sdfast B.2.8 #30123)
 */
     int i,j,qchg,uchg;
     double ee,stab;
@@ -2027,14 +2020,7 @@ void sdrhs(void)
 {
 /*
 Generated 07-Aug-2007 13:10:45 by SD/FAST, Order(N) formulation
-(sdfast B.2.8 #30123) on machine ID unknown
-Copyright (c) 1990-1997 Symbolic Dynamics, Inc.
-Copyright (c) 1990-1997 Parametric Technology Corp.
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.
-Government is subject to restrictions as set forth in subparagraph
-(c)(1)(ii) of the Rights in Technical Data and Computer Software
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041
+(sdfast B.2.8 #30123)
 */
 
 /*
@@ -3223,14 +3209,7 @@ void sdreac(double force[3][3],
 {
 /*
 Generated 07-Aug-2007 13:10:45 by SD/FAST, Order(N) formulation
-(sdfast B.2.8 #30123) on machine ID unknown
-Copyright (c) 1990-1997 Symbolic Dynamics, Inc.
-Copyright (c) 1990-1997 Parametric Technology Corp.
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.
-Government is subject to restrictions as set forth in subparagraph
-(c)(1)(ii) of the Rights in Technical Data and Computer Software
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041
+(sdfast B.2.8 #30123)
 */
 
     if (roustate != 3) {
@@ -3384,14 +3363,7 @@ void sdmom(double lm[3],
 Compute system linear and angular momentum, and kinetic energy.
 
 Generated 07-Aug-2007 13:10:45 by SD/FAST, Order(N) formulation
-(sdfast B.2.8 #30123) on machine ID unknown
-Copyright (c) 1990-1997 Symbolic Dynamics, Inc.
-Copyright (c) 1990-1997 Parametric Technology Corp.
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.
-Government is subject to restrictions as set forth in subparagraph
-(c)(1)(ii) of the Rights in Technical Data and Computer Software
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041
+(sdfast B.2.8 #30123)
 */
     double lk[3][3],hnk[3][3];
 
@@ -3433,14 +3405,7 @@ Compute system total mass, and instantaneous center of mass and
 inertia matrix.
 
 Generated 07-Aug-2007 13:10:45 by SD/FAST, Order(N) formulation
-(sdfast B.2.8 #30123) on machine ID unknown
-Copyright (c) 1990-1997 Symbolic Dynamics, Inc.
-Copyright (c) 1990-1997 Parametric Technology Corp.
-RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S.
-Government is subject to restrictions as set forth in subparagraph
-(c)(1)(ii) of the Rights in Technical Data and Computer Software
-clause at DFARS 52.227-7013 and similar clauses in the FAR and NASA
-FAR Supplement.  Symbolic Dynamics, Inc., Mountain View, CA 94041
+(sdfast B.2.8 #30123)
 */
     double ikcnkt[6][3][3];
 
