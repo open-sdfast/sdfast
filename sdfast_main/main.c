@@ -71,7 +71,6 @@ static void adj_stats(opstats_t opstats[],  int which);
 int main(int argc, char *argv[])
 {
     string32 DateTime;
-    string20 machineID;
     opstats_t opstats[NUM_OP_COUNTS];
     FILE *dynF, *infoF, *libF, *sarF, *F;
     extern char VersionNumber[];
@@ -103,11 +102,10 @@ int main(int argc, char *argv[])
     parse_cmdline(argc, argv);
 
     TIME_STAMP(DateTime);
-    GETMACHINEID(machineID);
 
     if (sdfast_opt.verbose) {
         printf("SD/FAST (sdfast %s #%05d)\n", VersionNumber, gProgramSerialNo);
-        printf("\nThis run: %s on machine %s.\n\n", DateTime, machineID);
+        printf("\nThis run: %s.\n\n", DateTime);
     }
 
     INIT_CALC(cMaxNumTerms, cMaxNumDOF);
@@ -181,13 +179,12 @@ int main(int argc, char *argv[])
         efprintf(infoF, "Generated %s by SD/FAST, %s formulation\n", DateTime,
            sdfast_opt.formulation == OPT_KANE 
            || sdfast_opt.formulation == OPT_DEFAULT 
-                                                ?         "Kane's" :
-           sdfast_opt.formulation == OPT_ORDERN ?         "Order(N)" :
-           sdfast_opt.formulation == OPT_EXP ?                 "experimental" :
-           sdfast_opt.formulation == OPT_EXP2 ?                "experimental2" :
-                                                            "???");
-        efprintf(infoF, "(sdfast %s #%05d) on machine ID %s\n", 
-                 VersionNumber, gProgramSerialNo, machineID);
+                                                ? "Kane's" :
+           sdfast_opt.formulation == OPT_ORDERN ? "Order(N)" :
+           sdfast_opt.formulation == OPT_EXP ?    "experimental" :
+           sdfast_opt.formulation == OPT_EXP2 ?   "experimental2" :
+                                                  "???");
+        efprintf(infoF, "(sdfast %s #%05d)\n", VersionNumber, gProgramSerialNo);
 
         PRINT_ROADMAP(infoF);
         PRINT_JTAXIS_DOC(infoF);
