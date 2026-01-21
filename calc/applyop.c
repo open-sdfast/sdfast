@@ -39,8 +39,7 @@ static pExpr DO_BIN_OP(tBinaryOperator Op,
 /* UN_OP */
 /*=======*/
 
-pExpr UN_OP(
-            tUnaryOperator Op,
+pExpr UN_OP(tUnaryOperator Op,
             pExpr E)
 {
     /* Applies the supplied unary op to the supplied expression. */
@@ -53,7 +52,7 @@ pExpr UN_OP(
             abort();
             /*NOTREACHED*/
     }
-}        /*UN_OP*/
+} /*UN_OP*/
 
 /*========*/
 /* BIN_OP */
@@ -181,7 +180,7 @@ pExpr COPY_EXPR(pExpr E)
         default:
             fatal("COPY_EXPR: bad node kind.");
             /*NOTREACHED*/
-    }        /*case*/
+    } /*case*/
 
     return X;
 }

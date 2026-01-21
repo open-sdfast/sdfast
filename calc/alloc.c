@@ -14,9 +14,6 @@
 
 #include "calc.h"
 #include "calcprot.h"
-#ifdef THINK_C
-#include <Storage.h>
-#endif
 
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
@@ -24,17 +21,16 @@
 static void count_temp_nodes();
 static void dispose_temp_nodes();
 
-long gNewCount;                /* counts # expression nodes allocated */
-long gNewSize;                /* # bytes allocated for expr nodes */
-long gDispCount;        /*counts # expresson nodes disposed. */
-long gDispSize;                /* # bytes disposed for expr nodes */
+long gNewCount;  /* counts # expression nodes allocated */
+long gNewSize;   /* # bytes allocated for expr nodes */
+long gDispCount; /*counts # expresson nodes disposed. */
+long gDispSize;  /* # bytes disposed for expr nodes */
 
 /*=============*/
 /* NEW_1dARRAY */
 /*=============*/
 
-pExpr NEW_1dARRAY(
-                  NodeValueType_t baseType,
+pExpr NEW_1dARRAY(NodeValueType_t baseType,
                   tIndex Len)
 {
     /* Make a new array1d expression node with the indicated */
@@ -43,7 +39,7 @@ pExpr NEW_1dARRAY(
     register tIndex i;
 
     if (baseType != cScalarVal && baseType != cVectorVal &&
-      baseType != cMatrixVal)
+        baseType != cMatrixVal)
         fatal("NEW_1dARRAY: illegal base type.");
     E = NEWX(cArray1dNode, Len, 0);
     ARRAY1d_TYPE(baseType, Len, &E->NodeValueType);
@@ -56,8 +52,7 @@ pExpr NEW_1dARRAY(
 /* NEW_2dARRAY */
 /*=============*/
 
-pExpr NEW_2dARRAY(
-                  NodeValueType_t baseType,
+pExpr NEW_2dARRAY(NodeValueType_t baseType,
                   tIndex dim1,
                   tIndex dim2)
 {
@@ -83,8 +78,7 @@ pExpr NEW_2dARRAY(
 /* NEW_VECX */
 /*==========*/
 
-pExpr NEW_VECX(
-               NodeValueType_t baseType)
+pExpr NEW_VECX(NodeValueType_t baseType)
 {
     /* Create a vector expression node of the indicated */
     /* base type.                                       */
@@ -99,8 +93,7 @@ pExpr NEW_VECX(
 /* NEW_MATX */
 /*==========*/
 
-pExpr NEW_MATX(
-               NodeValueType_t baseType)
+pExpr NEW_MATX(NodeValueType_t baseType)
 {
     /* Create a matrix expression node with indicated base type. */
     pExpr E;
@@ -114,7 +107,7 @@ pExpr NEW_MATX(
 /* MAT */
 /*=====*/
 
-pExpr MAT( matrix M)
+pExpr MAT(matrix M)
 {
     /* Produces a matrix constant expression from a matrix const. */
     register pExpr E;
@@ -132,8 +125,8 @@ pExpr MAT( matrix M)
 /* DISPOSE_EXPR 
  *
  * Throws E away.  You MUST NOT use E again, but note that
- * we can't nil the pointer here.                          
- * This routine does nothing if E is nil or if its protection
+ * we can't null the pointer here.                          
+ * This routine does nothing if E is null or if its protection
  * level is not cTemporary (0).
  *
  * This is a two-step procedure:
@@ -311,7 +304,7 @@ pExpr MAKE_EXPR_LIKE(pExpr E)
             return NEW_2dARRAY(E->NodeValueType.BaseType, LEN1d(E), LEN2d(E));
     }
     /*NOTREACHED*/
-}        /* MAKE_EXPR_LIKE */
+} /* MAKE_EXPR_LIKE */
 
 /*===========*/
 /* MAKE_ZERO */
@@ -340,7 +333,7 @@ pExpr MAKE_ZERO(NodeValueType_t T)
             fatal("MAKE_ZERO: only works for scalar,vec,mat");
             /*NOTREACHED*/
     }
-}        /* MAKE_ZERO */
+} /* MAKE_ZERO */
 
 /*================*/
 /* MAKE_ZERO_LIKE */
@@ -372,7 +365,7 @@ pExpr MAKE_ZERO_LIKE(pExpr E)
             fatal("MAKE_ZERO_LIKE: bad node type.");
     }        /* case */
     return X;
-}        /* MAKE_ZERO_LIKE */
+} /* MAKE_ZERO_LIKE */
 
 /*==================================================*/
 /* STORAGE ALLOCATION/DEALLOCATION FOR EXPRESSIONS  */
@@ -382,8 +375,7 @@ pExpr MAKE_ZERO_LIKE(pExpr E)
 /* NEWX */
 /*======*/
 
-pExpr NEWX(
-           enum tNodeKind Kind,
+pExpr NEWX(enum tNodeKind Kind,
            tIndex dim1,
            tIndex dim2)
 {
@@ -447,9 +439,9 @@ pExpr NEWX(
 void DISPX(pExpr *X)
 {
     /* Disposes the given expression node.  Does not trudge */
-    /* down the tree, and hates disposing nil nodes or      */
+    /* down the tree, and hates disposing null nodes or     */
     /* nodes with protection other than cTemporary.         */
-    /* X is returned nil.                                   */
+    /* X is returned null.                                  */
 
     C_ASSERT(*X != NULL, 1, "DISPX");
     C_ASSERT((*X)->Protection == cTemporary, 2, "DISPX");

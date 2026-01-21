@@ -187,4 +187,3 @@ extern CC_C pExpr COPY_EXPR(pExpr E);
 extern CC_C long EXPR_COST(pExpr E);
 extern CC_C pExpr APPLYBIN_OP(tBinaryOperator Op, register pExpr E1, register pExpr E2);
 extern CC_C void c_assert(int cond,int num, char *pname);
-
