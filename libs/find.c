@@ -79,7 +79,6 @@ int
 FINDJOINT(SystemInfo_t *SystemInfo,
           char *Jname)
 {
-
     string32 UpName;
     string32 UpTable;
     Index_t bodyno, loopno;

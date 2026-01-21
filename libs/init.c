@@ -99,7 +99,7 @@ void INIT_CONSTRAINT(SystemInfo_t *SystemInfo,
                 ConstraintKind_t ConstraintKind)
 {
     register ConstraintDesc_t *ConstP =
-      &SystemInfo->Const[ConstraintNum];
+        &SystemInfo->Const[ConstraintNum];
     int i;
 
     ConstP->nbod = ConstP->njnt = ConstP->npt = 

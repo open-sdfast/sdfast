@@ -15,11 +15,7 @@
 #include "libs.h"
 #include "libsprot.h"
 #include "words.h"
-#ifdef THINK_C
-#include "::calc:../calc/language.h"
-#else
 #include "../calc/language.h"
-#endif
 
 #define ANYBODIESYET                (SystemInfo->n > 0)
 #define ONFIRSTBODY                (SystemInfo->n == 1)
@@ -36,30 +32,30 @@
  * `loopjoint' parameter to remember what kind of `body' we're working on.
  */
 char
-PROCESS_VAR(FILE         *System,
+PROCESS_VAR(FILE                  *System,
             register SystemInfo_t *SystemInfo,
-            char          *ReservedWords[],
-            int          IdNum,
-            int         *loopjoint)
+            char                  *ReservedWords[],
+            int                   IdNum,
+            int                   *loopjoint)
 {
-    register Index_t         i;
-    string32                 Str32;
-    expr                Rexpr;        /* real expression */
-    int                        IsNumeric;
-    flags_t                QuesFlg;
-    ItemType_t                NextThing;
+    register Index_t i;
+    string32         Str32;
+    expr             Rexpr;        /* real expression */
+    int              IsNumeric;
+    flags_t          QuesFlg;
+    ItemType_t       NextThing;
 
-    char                 *what = ONLOOPJOINT ? "loop joint" : "body";
+    char *what = ONLOOPJOINT ? "loop joint" : "body";
 
     register JointDesc_t *jntp =
       ONLOOPJOINT ? &SystemInfo->LoopConst[SystemInfo->nl - 1].jnt
-                         : &SystemInfo->Bodies[SystemInfo->n - 1].jnt;
+                  : &SystemInfo->Bodies[SystemInfo->n - 1].jnt;
 
-    char                 *bname =
+    char *bname =
       ONLOOPJOINT ? SystemInfo->LoopConst[SystemInfo->nl - 1].OutbBodyName
-                         : SystemInfo->Bodies[SystemInfo->n - 1].BodyName;
+                  : SystemInfo->Bodies[SystemInfo->n - 1].BodyName;
 
-    register BodyDesc_t              *BodyP = 
+    register BodyDesc_t *BodyP = 
                   &SystemInfo->Bodies[SystemInfo->n - 1];
     register ConstraintDesc_t *ConstP =
                   &SystemInfo->Const[SystemInfo->nxc+SystemInfo->nu - 1];
@@ -399,7 +395,7 @@ PROCESS_VAR(FILE         *System,
             {
                 int EqualNext;
                 int NumericNext;
-                int  cnt;
+                int cnt;
                 if (!EQUAL_NEXT(System,&EqualNext)) 
                     return 0;
                 if (! EqualNext) {
@@ -610,7 +606,7 @@ PROCESS_VAR(FILE         *System,
                   bname);
                 return 0;
             }
-            break;        /* cMass */
+            break; /* cMass */
 
         case cInertia:
             if (!ANYBODIESYET || ANYCONSTRAINTS) {
@@ -1354,7 +1350,7 @@ DO_INERTIA(FILE *System,
         return 1;
     }
 
-inertia_read:        /* successfully read in an inertia matrix */
+inertia_read: /* successfully read in an inertia matrix */
 
     /* If off-diagonal question mark on only one side of the
      * diagonal, replace it with the symmetric element.  Note that

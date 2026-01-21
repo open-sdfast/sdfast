@@ -15,11 +15,7 @@
 #include <stdio.h>
 #include "libs.h"
 #include "libsprot.h"
-#ifdef THINK_C
-#include "::calc:../calc/language.h"
-#else
 #include "../calc/language.h"
-#endif
 
 options_t sdfast_opt;
 

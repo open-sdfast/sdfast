@@ -16,11 +16,6 @@
 /*                     MACHINE DEPENDENT ROUTINES                           */
 /*==========================================================================*/
 
-#ifdef THINK_C
-#include <unix.h>
-#include <EventMgr.h>
-typedef unsigned long time_t;
-#else
 #ifdef vms
 #include <errno.h>
 #include <common/src/include/types.h>
@@ -48,7 +43,6 @@ typedef unsigned long time_t;
 // #include <sys/time.h>
 #include <time.h>
 #include <sys/resource.h>
-#endif
 #endif
 #endif
 #endif
@@ -216,9 +210,6 @@ int CLOSE_FILE(FILE *f)
 
 double CPU_SECONDS(void)
 {
-#ifdef THINK_C
-    return Ticks / 60.;
-#else
 #ifdef RWIN32
     return clock() / (double)CLOCKS_PER_SEC;
 #else 
@@ -243,7 +234,6 @@ double CPU_SECONDS(void)
 #endif
     }
     return rusage.ru_utime.tv_sec + rusage.ru_utime.tv_usec / 1000000.;
-#endif
 #endif
 #endif
 #endif
@@ -439,10 +429,10 @@ void GETMACHINEID(string20 machID)
     sprintf(machID, "%08x", id);
 #else
 #ifdef vms
-#define ss$_normal        1
-#define syi$_sid        4097
-#define syi$_nodename        4313
-#define lnm$_string        2
+#define ss$_normal    1
+#define syi$_sid      4097
+#define syi$_nodename 4313
+#define lnm$_string   2
 
     typedef struct {
         short buflen;
@@ -542,9 +532,9 @@ void GETMACHINEID(string20 machID)
     union {
             char idbuf[128];
             short intbuf[32];
-    }        id;
-    int        boot_cpu;
-    int        off;
+    }   id;
+    int boot_cpu;
+    int off;
 
     /*
      * first get the cpuid of the boot cpu 

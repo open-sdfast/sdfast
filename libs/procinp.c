@@ -419,9 +419,9 @@ static void
 MAKE_PSEUDO_BODIES(register SystemInfo_t *SystemInfo)
 {
     /* Setup pseudo bodies. */
-    register Index_t        ndof, dof, inb, i, j;
-    BodyDesc_t                *weldedbody, *w;
-    int                        realinb;
+    register Index_t ndof, dof, inb, i, j;
+    BodyDesc_t       *weldedbody, *w;
+    int              realinb;
 
     /* Do ground first. */
     INIT_PSEUDO_BODY(NULL, -1, &SystemInfo->GndPseudoBody);
@@ -431,7 +431,7 @@ MAKE_PSEUDO_BODIES(register SystemInfo_t *SystemInfo)
         ndof = SystemInfo->Bodies[i].jnt.JointDOF;
         realinb = SystemInfo->Bodies[i].jnt.InbBody;
         inb = realinb == cGroundBody ? cGroundBody 
-                                             : SystemInfo->LastDOF[realinb];
+                                     : SystemInfo->LastDOF[realinb];
 
         if (ndof == 0) {
             /* Tree weld joint.  Link onto the end of the weldlist for the
@@ -450,7 +450,7 @@ MAKE_PSEUDO_BODIES(register SystemInfo_t *SystemInfo)
         } else
             for (j = 0; j < ndof; j++) {
                 INIT_PSEUDO_BODY(&SystemInfo->Bodies[i], (int)j,
-                  &SystemInfo->PseudoBodies[dof+j]);
+                    &SystemInfo->PseudoBodies[dof+j]);
                 SystemInfo->PseudoBodies[dof+j].jnt.InbBody = 
                     j > 0 ? dof+j - 1 : inb;
                 SystemInfo->PseudoBodies[dof+j].jnt.OutbBody = dof+j;
@@ -499,8 +499,8 @@ MAKE_PSEUDO_BODIES(register SystemInfo_t *SystemInfo)
  * sure "whichaxis" is -1 in this case.)
  */
 static void INIT_PSEUDO_BODY(register BodyDesc_t *UserBody,
-                      int whichaxis,
-                      register BodyDesc_t *PseudoBody)
+                             int whichaxis,
+                             register BodyDesc_t *PseudoBody)
 {
     register int i,j;
 

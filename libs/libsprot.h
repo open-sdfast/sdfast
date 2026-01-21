@@ -12,11 +12,7 @@
  * limitations under the License.
  */
 
-#ifdef THINK_C
-#  include "::calc:calcprot.h"
-#else
-#  include "../calc/calcprot.h"
-#endif
+#include "../calc/calcprot.h"
 
 // Sherm 20260117
 // #include "common/src/include/cpp_optional.h"
