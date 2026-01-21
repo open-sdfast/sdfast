@@ -42,17 +42,17 @@
 #define ENDFOR(lab) efprintf(F, Lang->stmt_for_e, lab);
 #define ENDFORBRK(lab,brklab) efprintf(F, Lang->stmt_for_e_brk, lab, brklab)
 #define WHILE(lab, exp1, op, exp2) {\
-            efprintf(F, Lang->stmt_while_b, lab);\
-            efprintf(F, exp1);\
-            efprintf(F, Lang->stmt_while_do, op, exp2);}
+              efprintf(F, Lang->stmt_while_b, lab);\
+              efprintf(F, exp1);\
+              efprintf(F, Lang->stmt_while_do, op, exp2);}
 #define ENDWHILE(lab) efprintf(F, Lang->stmt_while_e, lab);
 
 /* Conditional execution constructs. */
 
 #define IF(exp1, op, exp2) {\
-            efprintf(F, Lang->stmt_if_b);\
-            efprintf(F, exp1);\
-            efprintf(F, "%s%s", op, exp2);}
+           efprintf(F, Lang->stmt_if_b);\
+           efprintf(F, exp1);\
+           efprintf(F, "%s%s", op, exp2);}
 #define IFCOND efprintf(F, Lang->stmt_if_b);
 #define THEN efprintf(F, Lang->stmt_if_then);
 #define ELSE efprintf(F, Lang->stmt_if_else);
@@ -61,7 +61,7 @@
 /* Variable assignments. */
 
 #define SET(var,val) {efprintf(F, var); efprintf(F,"%="); efprintf(F,val);\
-                     efprintf(F, "%;\n");}
+                      efprintf(F, "%;\n");}
 #define ISET(var,val) {efprintf(F, var); efprintf(F,"%=%d%;\n", val);}
 #define RSET(var,val) {efprintf(F, var); efprintf(F,"%=%r%;\n", val);}
 
@@ -82,26 +82,26 @@
  * can guess what CALL3 does.
  */
 #define CALL(fcall) {\
-            efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
-            efprintf(F, fcall);\
-            efprintf(F, "%;\n");}
+             efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
+             efprintf(F, fcall);\
+             efprintf(F, "%;\n");}
 #define CALL0(fcall) {\
-            efprintf(F, "%s", Lang->proc_call);\
-            efprintf(F, fcall);\
-            efprintf(F, "%s", Lang->proc_noargs_call);\
-            efprintf(F, "%;\n");}
+              efprintf(F, "%s", Lang->proc_call);\
+              efprintf(F, fcall);\
+              efprintf(F, "%s", Lang->proc_noargs_call);\
+              efprintf(F, "%;\n");}
 #define CALL1(fcall,arg) {\
-            efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
-            efprintf(F, fcall, arg);\
-            efprintf(F, "%;\n");}
+              efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
+              efprintf(F, fcall, arg);\
+              efprintf(F, "%;\n");}
 #define CALL2(fcall,arg1,arg2) {\
-            efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
-            efprintf(F, fcall, arg1, arg2);\
-            efprintf(F, "%;\n");}
+              efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
+              efprintf(F, fcall, arg1, arg2);\
+              efprintf(F, "%;\n");}
 #define CALL3(fcall,arg1,arg2,arg3) {\
-            efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
-            efprintf(F, fcall, arg1, arg2, arg3);\
-            efprintf(F, "%;\n");}
+              efprintf(F, "%:Rs%s", Lang->ref, Lang->proc_call);\
+              efprintf(F, fcall, arg1, arg2, arg3);\
+              efprintf(F, "%;\n");}
 
 /* Return from function `fname' with function value set to val.  Works
  * right even if fname begins with %A.   If you use this at the end of
@@ -132,6 +132,6 @@
 #define REF(var) efprintf(F, "%s%s", Lang->deref, var)
 #define SETREF(var,val) efprintf(F, "%s%s%=%s%;\n", Lang->deref, var, val)
 #define INCREF(var,val)\
-            efprintf(F, "%s%s%=%s%s+%s%;\n", \
+               efprintf(F, "%s%s%=%s%s+%s%;\n", \
                Lang->deref,var,Lang->deref,var,val)
 

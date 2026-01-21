@@ -12,13 +12,8 @@
  * limitations under the License.
  */
 
-#ifdef THINK_C
-#include <Storage.h>
-#include "::calc:../calc/language.h"
-#else
 #include "../calc/language.h"
 #define MAX(a,b) ((a)>(b)?(a):(b))
-#endif
 #include "libs.h"
 #include "libsprot.h"
 #include "words.h"
@@ -97,9 +92,9 @@ READ_SYSTEM(FILE *System,
      */
 
     /* This option may be changed in the input file. */
-    SystemInfo->Grounded = 0;                /* assume system is not grounded */
+    SystemInfo->Grounded = 0;       /* assume system is not grounded */
 
-    SystemInfo->GravExpr = NULL;        /* no gravity or stabilization yet */
+    SystemInfo->GravExpr = NULL;    /* no gravity or stabilization yet */
     SystemInfo->StabVelExpr = NULL;        
     SystemInfo->StabPosExpr = NULL;        
     /* This can be any strange value.  It's the unique ADDRESS that makes
@@ -107,27 +102,27 @@ READ_SYSTEM(FILE *System,
     SystemInfo->QuestionMark = PERM(SC(1234.5678));
 
     /* These are accumulated as the input file is read in. */
-    SystemInfo->n = 0;                /* body count (don't count ground) */
-    SystemInfo->s = 0;                /* `tree' degrees of freedom */
-    SystemInfo->nl = 0;                /* number of loop joints */
-    SystemInfo->sl = 0;                /* loop joint `degrees of freedom' */
-    SystemInfo->nu = 0;                /* number of user constraints */
+    SystemInfo->n = 0;   /* body count (don't count ground) */
+    SystemInfo->s = 0;   /* `tree' degrees of freedom */
+    SystemInfo->nl = 0;  /* number of loop joints */
+    SystemInfo->sl = 0;  /* loop joint `degrees of freedom' */
+    SystemInfo->nu = 0;  /* number of user constraints */
 
     /* These are calculated below after the input file is read in. */
-    SystemInfo->nb  = 0;                /* # ball joints in the tree system */
-    SystemInfo->nlb = 0;                /* # loop joints containing balls */
-    SystemInfo->np  = 0;                /* # prescribed motion constraints */
-    SystemInfo->nlc = 0;                /* # loop constraints */
-    SystemInfo->nxc = 0;                /* # explicit constraints */
-    SystemInfo->nc  = 0;                /* total # constraints */
-    SystemInfo->nq  = 0;                /* # of q's (=s+nb) */
-    SystemInfo->nlq = 0;                /* # of lq's (=sl+nlb) */
-    SystemInfo->nj  = 0;                /* # of joints (=n+nl) */
-    SystemInfo->nh  = 0;                /* # of hinges (=s+sl) */
+    SystemInfo->nb  = 0; /* # ball joints in the tree system */
+    SystemInfo->nlb = 0; /* # loop joints containing balls */
+    SystemInfo->np  = 0; /* # prescribed motion constraints */
+    SystemInfo->nlc = 0; /* # loop constraints */
+    SystemInfo->nxc = 0; /* # explicit constraints */
+    SystemInfo->nc  = 0; /* total # constraints */
+    SystemInfo->nq  = 0; /* # of q's (=s+nb) */
+    SystemInfo->nlq = 0; /* # of lq's (=sl+nlb) */
+    SystemInfo->nj  = 0; /* # of joints (=n+nl) */
+    SystemInfo->nh  = 0; /* # of hinges (=s+sl) */
 
-    SystemInfo->s_free = 0;        /* # of guaranteed free tree DOF */
-    SystemInfo->s_pres = 0;        /* # of guaranteed prescribed tree DOF */
-    SystemInfo->s_runtime = 0;  /* # of runtime-switchable tree DOF */
+    SystemInfo->s_free = 0;    /* # of guaranteed free tree DOF */
+    SystemInfo->s_pres = 0;    /* # of guaranteed prescribed tree DOF */
+    SystemInfo->s_runtime = 0; /* # of runtime-switchable tree DOF */
     
     /* Process the input file. */
 
@@ -656,24 +651,24 @@ void declare_sys_types(FILE *F,
      */
         
     declare_type(F, decl_flags,
-      &sys->type_Int,      VT_INTEGER,                 "tInt",
-      &sys->type_Vec,      VT_VECTOR,                  "tVec",
-      &sys->type_Mat,      VT_MATRIX,                  "tMat",
+      &sys->type_Int,      VT_INTEGER,          "tInt",
+      &sys->type_Vec,      VT_VECTOR,           "tVec",
+      &sys->type_Mat,      VT_MATRIX,           "tMat",
       &sys->type_Arr_n,    VT_ARRAY,            "tArr_n",    n,         0,
       &sys->type_Vec_n,    VT_ARRAY|VT_VECTOR,  "tVec_n",    n,         0,
       &sys->type_Mat_n,    VT_ARRAY|VT_MATRIX,  "tMat_n",    n,         0,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_IntArr_s, VT_INTEGER|VT_ARRAY, "tIntArr_s", s,         0,
-      &sys->type_Arr_s,    VT_ARRAY,                   "tArr_s",    s,         0,
+      &sys->type_Arr_s,    VT_ARRAY,            "tArr_s",    s,         0,
       &sys->type_Vec_s,    VT_ARRAY|VT_VECTOR,  "tVec_s",    s,         0,
       &sys->type_Mat_s,    VT_ARRAY|VT_MATRIX,  "tMat_s",    s,         0,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_Arr_s_s,  VT_ARRAY,            "tArr_s_s",  s,   s, 0,
       &sys->type_Vec_s_s,  VT_ARRAY|VT_VECTOR,  "tVec_s_s",  s,   s, 0,
-      &sys->type_Arr_nq,   VT_ARRAY,                   "tArr_nq",   nq,     0,
-      &sys->type_Arr_nh,   VT_ARRAY,                   "tArr_nh",   nh,     0,
+      &sys->type_Arr_nq,   VT_ARRAY,            "tArr_nq",   nq,     0,
+      &sys->type_Arr_nh,   VT_ARRAY,            "tArr_nh",   nh,     0,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_Vec_nh,   VT_ARRAY|VT_VECTOR,  "tVec_nh",   nh,  0,
@@ -693,10 +688,10 @@ void declare_sys_types(FILE *F,
       NULL);
 
     declare_type(F, decl_flags,
-      &sys->type_Arr_nl,   VT_ARRAY,                 "tArr_nl",  nl,  0,
+      &sys->type_Arr_nl,   VT_ARRAY,            "tArr_nl",  nl,  0,
       &sys->type_Vec_nl,   VT_ARRAY|VT_VECTOR,  "tVec_nl",  nl,  0,
       &sys->type_Mat_nl,   VT_ARRAY|VT_MATRIX,  "tMat_nl",  nl,  0,
-      &sys->type_Arr_sl,   VT_ARRAY,                 "tArr_sl",  sl,  0,
+      &sys->type_Arr_sl,   VT_ARRAY,            "tArr_sl",  sl,  0,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_Arr_nlq,   VT_ARRAY,            "tArr_nlq",   nlq, 0,
@@ -710,7 +705,7 @@ void declare_sys_types(FILE *F,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_IntVec_nl, VT_ARRAY|VT_VECTOR|VT_INTEGER, "tIntVec_nl", nl, 0,
-      &sys->type_IntArr_sl, VT_ARRAY|VT_INTEGER,            "tIntArr_nl", sl, 0,
+      &sys->type_IntArr_sl, VT_ARRAY|VT_INTEGER,           "tIntArr_nl", sl, 0,
       NULL);
     declare_type(F, decl_flags,
       &sys->type_Arr_nxc, VT_ARRAY,           "tArr_nxc",  nxc,  0,
@@ -725,8 +720,8 @@ void declare_sys_types(FILE *F,
  * The internal symbols should be declared only once!
  */
 void declare_input_parms(FILE *F,
-                    int  decl_flags,
-                    register SystemInfo_t *sys)
+                         int  decl_flags,
+                         register SystemInfo_t *sys)
 {
     int i;
 
@@ -738,10 +733,10 @@ void declare_input_parms(FILE *F,
       0);
     declare_vars(F, decl_flags,
       VT_USER|VT_DSYM, &sys->type_Vec_n,   "rk",      &sys->rk,
-      VT_DUP|VT_DSYM,                          "ri",      &sys->ri,
+      VT_DUP|VT_DSYM,                      "ri",      &sys->ri,
       VT_USER|VT_DSYM, &sys->type_Arr_s,   "pres",    &sys->pres,
-      VT_REAL|VT_DSYM,                            "stabvel", &sys->stabvel,
-      VT_DUP|VT_DSYM,                            "stabpos", &sys->stabpos,
+      VT_REAL|VT_DSYM,                     "stabvel", &sys->stabvel,
+      VT_DUP|VT_DSYM,                      "stabpos", &sys->stabpos,
       0);
 
     if (sys->nl > 0) {
@@ -755,7 +750,7 @@ void declare_input_parms(FILE *F,
           VT_USER|VT_DSYM, &sys->type_Vec_nl,  "bodypin", &sys->bodypin,
           VT_DUP|VT_DSYM,                      "bodyref", &sys->bodyref,
           VT_DUP|VT_DSYM,                      "lbtj",    &sys->lbtj,
-          VT_DUP|VT_DSYM,                          "litj",    &sys->litj,
+          VT_DUP|VT_DSYM,                      "litj",    &sys->litj,
           VT_USER|VT_DSYM, &sys->type_Arr_sl,  "lpres",   &sys->lpres,
           0);
     }

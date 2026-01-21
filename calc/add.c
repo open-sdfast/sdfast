@@ -25,13 +25,13 @@ static char IS_SINORCOSSQ(pExpr E,
     enum tKnownFunction Func;
 
     if (!IS_MUL(E) ||
-      E->LeftOpnd->NodeKind != cFunctionCallNode ||
-      E->RtOpnd->NodeKind != cFunctionCallNode)
+        E->LeftOpnd->NodeKind != cFunctionCallNode ||
+        E->RtOpnd->NodeKind != cFunctionCallNode)
         return 0;
     Func = E->LeftOpnd->FuncVarRef->WhichFunction;
     if (Func != cSine && Func != cCosine || 
-      E->RtOpnd->FuncVarRef->WhichFunction != Func ||
-      !SAME_EXPR(E->LeftOpnd->FuncCallParm, E->RtOpnd->FuncCallParm))
+        E->RtOpnd->FuncVarRef->WhichFunction != Func ||
+        !SAME_EXPR(E->LeftOpnd->FuncCallParm, E->RtOpnd->FuncCallParm))
         return 0;
     *Parm = E->LeftOpnd->FuncCallParm;
     *Need = Func == cSine ? cCosine : cSine;
@@ -53,8 +53,7 @@ static char IS_FUNCSQ(pExpr E,
       SAME_EXPR(E->RtOpnd->FuncCallParm, Parm);
 }
 
-static char IS_ASINORCOSSQ(
-                           pExpr E,
+static char IS_ASINORCOSSQ(pExpr E,
                            pExpr *Parm, 
                            pExpr *a,
                            enum tKnownFunction *Need)
@@ -76,8 +75,7 @@ static char IS_ASINORCOSSQ(
     return 0;
 }
 
-static char IS_BSINORCOSSQ(
-                           pExpr E, 
+static char IS_BSINORCOSSQ(pExpr E, 
                            pExpr Parm,
                            enum tKnownFunction Func,
                            pExpr *b,
@@ -105,8 +103,7 @@ static char IS_BSINORCOSSQ(
 /* ADD */
 /*=====*/
 
-pExpr DO_ADD(
-             register pExpr E1,
+pExpr DO_ADD(register pExpr E1,
              register pExpr E2
 )
 {

@@ -17,20 +17,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdint.h>
-#ifdef THINK_C
-#undef E        /* math.h defines this */
-#include <strings.h>        /* really wrong filename for USG-named functions */
-#define bcopy(src, dest, len)        movmem(src, dest, len)
-#define memcpy(dest, src, len)        movmem(src, dest, len)
-#else
-#ifdef apollo
-#include <strings.h>
-extern char *strchr();
-extern char *strrchr();
-#else
 #include <string.h>
-#endif
-#endif
  
 #define cVeryClose 1e-15        /* used to see if a constant is "equal" to
                                    a particular numerical value */
@@ -41,12 +28,14 @@ extern char *strrchr();
 /* these are values for ProtectionLevels */
 #define cTemporary 0
 #define cPermanent 32765
-#define cMaxProtection 10000        /* bomb out if we need more protection */
-                                /* than this (something's wrong!)      */
+#define cMaxProtection 10000     /* bomb out if we need more protection */
+                                 /* than this (something's wrong!)      */
 
-#define pExpr struct tExprNode *        /* until tExprNode is defined */
+// N.B. pExpr is temporarily defined as a macro here, then later
+// undef'ed and replaced with an actual typedef.
+#define pExpr struct tExprNode * /* until tExprNode is defined */
 
-#define MAX_SYMBOL_NAME_LEN        15
+#define MAX_SYMBOL_NAME_LEN 15
 
 typedef double scalar;
 typedef scalar vector[3];
@@ -60,8 +49,8 @@ typedef enum {cScalarVal, cVectorVal, cMatrixVal, cArray1dVal, cArray2dVal}
              NodeValueType_t;
 
 /*=========================================================*/
-/* This type is used to describe the type of a partic-     */
-/* ular expression node or variable                           */
+/* This type is used to describe the type of a particular  */
+/* expression node or variable                             */
 /*=========================================================*/
 
 struct tExprType {
@@ -133,28 +122,28 @@ typedef struct tSymTabEntry *pSym;
 
 /* can't use enums for these since some compilers whine too much about type */
 typedef char tUnaryOperator;
-#define cNegate                0
-#define cLogicalNot        1
+#define cNegate          0
+#define cLogicalNot      1
 
 typedef char tBinaryOperator;
-#define cAdd                0        /* numeric */
+#define cAdd             0        /* numeric */
 #define cSubtract        1
 #define cMultiply        2
-#define cDivide                3
-#define cDot                4
-#define cCross                5
-#define cDeriv                6
-#define cIsEqual        7        /* logical */
+#define cDivide          3
+#define cDot             4
+#define cCross           5
+#define cDeriv           6
+#define cIsEqual         7        /* logical */
 #define cNotEqual        8
 #define cLessThan        9
-#define cGreaterThan        10
-#define cLessOrEq            11
-#define cGreaterOrEq        12
-#define cLogicalAnd        13
-#define cLogicalOr        14
+#define cGreaterThan     10
+#define cLessOrEq        11
+#define cGreaterOrEq     12
+#define cLogicalAnd      13
+#define cLogicalOr       14
 
 typedef char tTernaryOperator;
-#define cIfThenElse        0
+#define cIfThenElse      0
 
 enum tParentOp
   {cTopLevelOp, cSpecialOp, cPlusOp, cMinusOp, cMulOp, cDivOp, cNegateOp};
@@ -165,7 +154,7 @@ enum tNodeKind {
   cFunction2CallNode, cVarRefNode};
 
 /*                 tExprNode                               
- *  All expressions are composed of one or more expression 
+ *   All expressions are composed of one or more expression 
  * nodes.  Nodes can be either operators or operands.      
  * Operators can be unary (negate, not) binary (like +,-,*, dot, etc) or 
  * ternary (if-then-else). Operands can be scalar constants, or    
@@ -219,7 +208,7 @@ struct tExprNode {
         } Array2dNode;
         struct {
             pSym uVarRef;
-            long uAssignCountE;        /* should match in symbol */
+            long uAssignCountE;  /* should match in symbol */
             Index_t uNumIndices;
             Index_t uIndices[cMaxNumIndices];
         } VarRefNode;
@@ -257,7 +246,7 @@ struct tExprNode {
 #define Func2CallParm2 un.Function2CallNode.uFunc2CallParm2
 
 #undef pExpr
-typedef struct tExprNode *pExpr;        /* now do it properly */
+typedef struct tExprNode *pExpr; /* now do it properly */
 
 enum tExprOrder {cBeforeOrder = -1, cSameOrder = 0, cAfterOrder = 1};
 
@@ -280,14 +269,14 @@ struct user_type {
 
 /* Holds a "packed" variable declaration. */
 typedef struct packedvar_s {
-    unsigned         pv_flags;                /* e.g. VT_INTEGER|VT_ARRAY */
-    char         *pv_name;                /* name of variable */
-    char         *pv_typename;                /* if VT_TYPENAME */
-    unsigned        pv_cond;                /* if VT_COND */
-    pSym        *pv_sym;                /* if VT_DSYM */
-    struct user_type        *pv_usertype;        /* if VT_USER */
-    dim_t        pv_dimu;                /* if VT_ARRAY|VECTOR|MATRIX */
-    struct packedvar_s        *pv_next;        /* next allocated packedvar */
+    unsigned            pv_flags;     /* e.g. VT_INTEGER|VT_ARRAY */
+    char               *pv_name;      /* name of variable */
+    char               *pv_typename;  /* if VT_TYPENAME */
+    unsigned            pv_cond;      /* if VT_COND */
+    pSym               *pv_sym;       /* if VT_DSYM */
+    struct user_type   *pv_usertype;  /* if VT_USER */
+    dim_t               pv_dimu;      /* if VT_ARRAY|VECTOR|MATRIX */
+    struct packedvar_s *pv_next;      /* next allocated packedvar */
 } packedvar_t;
 
 
@@ -330,10 +319,10 @@ void IFEND();
 /* Handy defines for use with CLEANVAR */
 #define CL_FLUSHCOMPLEX  0        /* flush out complicated stuff only */
 #define CL_FLUSHNONCONST 1        /* flush out all but constant stuff */
-#define CL_FLUSHALL          2        /* flush out everything */
+#define CL_FLUSHALL      2        /* flush out everything */
 
-#define CL_FORGET         0        /* forget the value after flushing */
-#define CL_REMEMBER         1        /* remember the value after flushing */
+#define CL_FORGET        0        /* forget the value after flushing */
+#define CL_REMEMBER      1        /* remember the value after flushing */
 
 #ifdef RDEBUG
 #define C_ASSERT(cond, num, pname)        c_assert(cond, num, pname)
@@ -347,13 +336,13 @@ void IFEND();
 /*==================*/
 
 /* User-supplied global values (set in INIT_CALC) */
-extern long gMaxExprLen;        /* Max length of printed expr. */
-extern Index_t gMaxTemps;        /* Max no. temporary variables. */
-extern int gSinglePrecision;        /* use single precision if true, else double */
-extern char gPrefix[];                /* prefix for generated external symbol names */
+extern long    gMaxExprLen;       /* Max length of printed expr. */
+extern Index_t gMaxTemps;         /* Max no. temporary variables. */
+extern int     gSinglePrecision;  /* use single precision if true, else double */
+extern char    gPrefix[];         /* prefix for generated external symbol names */
 
-extern pSym gTempSym;        /* The symbol used for temporary variables TEMP(i) */
-extern pExpr gScalarZero;        /* scalar constant node = 0.0 */
-extern pExpr gScalarOne;        /* scalar constant node = 1.0 */
+extern pSym  gTempSym;     /* The symbol used for temporary variables TEMP(i) */
+extern pExpr gScalarZero;  /* scalar constant node = 0.0 */
+extern pExpr gScalarOne;   /* scalar constant node = 1.0 */
 extern pExpr gVectorZero;
 

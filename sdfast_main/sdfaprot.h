@@ -12,11 +12,7 @@
  * limitations under the License.
  */
 
-#ifdef THINK_C
-#  include "::libs:libsprot.h"
-#else
-#  include "../libs/libsprot.h"
-#endif
+#include "../libs/libsprot.h"
 
 // Sherm 20260117
 // #include "common/src/include/cpp_optional.h"

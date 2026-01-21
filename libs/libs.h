@@ -30,64 +30,49 @@
  * searching for ":"!
  */
 
-#ifdef THINK_C
-#  include "::calc:calc.h"
-#  include "::calc:decl.h"
-#  define PATHNAME_DELIM1        ':'
-#  define PATHNAME_DELIM2        ':'
-#  define PATHNAME_DELIM3        ':'
+#include "../calc/calc.h"
+#include "../calc/decl.h"
+#ifdef apollo
 #else
-#  include "../calc/calc.h"
-#  include "../calc/decl.h"
-#  ifdef apollo
-#  else
-#    ifndef vms
-#      ifndef RWIN32
-#        include <values.h>
-#      endif
+#  ifndef vms
+#    ifndef RWIN32
+#      include <values.h>
 #    endif
 #  endif
-#  ifdef RWIN32
-#    define PATHNAME_DELIM1        '\\'
-#    define PATHNAME_DELIM2        '/'
-#    define PATHNAME_DELIM3        ':'
-#  else
-#    ifdef vms
-#      define PATHNAME_DELIM1        ']'
-#      define PATHNAME_DELIM2        ']'
-#      define PATHNAME_DELIM3        ']'
-#    else /* unix */
-#      define PATHNAME_DELIM1        '/'
-#      define PATHNAME_DELIM2        '/'
-#      define PATHNAME_DELIM3        '/'
-#    endif
+#endif
+#ifdef RWIN32
+#  define PATHNAME_DELIM1    '\\'
+#  define PATHNAME_DELIM2    '/'
+#  define PATHNAME_DELIM3    ':'
+#else
+#  ifdef vms
+#    define PATHNAME_DELIM1  ']'
+#    define PATHNAME_DELIM2  ']'
+#    define PATHNAME_DELIM3  ']'
+#  else /* unix */
+#    define PATHNAME_DELIM1  '/'
+#    define PATHNAME_DELIM2  '/'
+#    define PATHNAME_DELIM3  '/'
 #  endif
 #endif
 
 typedef pExpr expr;
 typedef pSym sym;
-typedef char flags_t;        /* holds up to 7 flags (don't use high bit) */
-typedef char small_t;        /* holds non-neg number < 128 (don't use high bit) */
-typedef char bool_t;        /* holds 0 or 1 for false or true */
+typedef char flags_t; /* holds up to 7 flags (don't use high bit) */
+typedef char small_t; /* holds non-neg number < 128 (don't use high bit) */
+typedef char bool_t;  /* holds 0 or 1 for false or true */
 
-#define NULLEXPR        ((expr)NULL)
-#define SPECIALEXPR        ((expr)-1)        /* used as a flag */
+#define NULLEXPR    ((expr)NULL)
+#define SPECIALEXPR ((expr)-1)        /* used as a flag */
 
-#ifdef THINK_C
-#define cMaxNumBodies             150
-#define cMaxNumDOF             200                /* array must be < 32k */
-#define cMaxNumLoops             100
-#define cMaxNumExplicitConst 100
-#else
-#define cMaxNumBodies             500
-#define cMaxNumDOF            3000
-#define cMaxNumLoops             300
+#define cMaxNumBodies        500
+#define cMaxNumDOF           3000
+#define cMaxNumLoops         300
 #define cMaxNumExplicitConst 300
-#endif
 
 #define cMaxNumJoints             (cMaxNumBodies+cMaxNumLoops)
 
-#define cGroundBody               -1   /* fake body number for ground */
+#define cGroundBody            -1   /* fake body number for ground */
 #define cUnspecifiedBody       -100 /* used to init body nos. (-1 is legit) */
 #define cUnspecifiedJoint      -101 /* used to initialize jt nos. */
 #define cUnspecifiedConstraint -102 /* used to initialize constraint nos. */
@@ -108,13 +93,13 @@ typedef char bool_t;        /* holds 0 or 1 for false or true */
  * redundant constraints and massless bodies.  This should be a few 
  * orders of magnitude larger than the machine precision.
  */
-#define cEquationNegligible        1e-13
+#define cEquationNegligible 1e-13
 
 /* These are option codes for lines in the keyfile. */
-#define cOptionKane        1 /* Actually needed by both Kane & Order(N) */
-#define cOptionOrderN        2
-#define cOptionADSIM        3
-#define cOptionAda        4
+#define cOptionKane   1 /* Actually needed by both Kane & Order(N) */
+#define cOptionOrderN 2
+#define cOptionADSIM  3
+#define cOptionAda    4
 
 typedef char string3[4];
 typedef char string10[11];
@@ -148,70 +133,70 @@ typedef enum {cEndOfFileNext, cNumberNext, cEqualNext, cQuestionNext,
  * be perpendicular to Pin2.  A reference line must be perpendicular to
  * the pin specified on the same body.  Reference lines are always optional.
  */
-#define INBPIN1 0         /* pin1, pin2, and pin3 *must* be 0, 1, 2 here */
+#define INBPIN1 0  /* pin1, pin2, and pin3 *must* be 0, 1, 2 here */
 #define INBPIN2 1
 #define INBPIN3 2
 #define INBREF  3
 #define BODYPIN 4
 #define BODYREF 5
-#define LOW_PIN INBPIN1                /* for iterating over loop pins and refs */
+#define LOW_PIN INBPIN1  /* for iterating over loop pins and refs */
 #define HIGH_PIN BODYREF
 
 /* Bit numbers for per-input value flags. */
-#define ISQUESFLG 1                /* is this element variable? */
-#define HASNOMFLG 2             /* if so, is there a nominal value? */
+#define ISQUESFLG 1  /* is this element variable? */
+#define HASNOMFLG 2  /* if so, is there a nominal value? */
 
 /* Information about joint pins.  (This is just a fancy constant.) */
 typedef struct {
-    char        *jtname;        /* printable joint name for _info file */
-    small_t     dof;                /* no. of degrees of freedom provided by jt. */
-    small_t        nreq;                /* min number of (inb)pins required */
-    small_t        nmax;                /* max number of (inb)pins allowed */
-    bool_t      inbrefOK;        /* can have inbref? */
-    bool_t      bodypinOK;        /* can have bodypin? */
-    bool_t      bodyrefOK;        /* can have bodyref? */
-    bool_t      hasball;        /* does this jt contain a ball? */
-    bool_t      hasgimbal;      /* does this jt contain a gimbal? */
+    char        *jtname;      /* printable joint name for _info file */
+    small_t     dof;          /* no. of degrees of freedom provided by jt. */
+    small_t     nreq;         /* min number of (inb)pins required */
+    small_t     nmax;         /* max number of (inb)pins allowed */
+    bool_t      inbrefOK;     /* can have inbref? */
+    bool_t      bodypinOK;    /* can have bodypin? */
+    bool_t      bodyrefOK;    /* can have bodyref? */
+    bool_t      hasball;      /* does this jt contain a ball? */
+    bool_t      hasgimbal;    /* does this jt contain a gimbal? */
 
-    small_t     doftype[6];     /* axis type for each dof */
-#define AX_NONE  0                /* doftype defines */
+    small_t     doftype[6];   /* axis type for each dof */
+#define AX_NONE  0            /* doftype defines */
 #define AX_ROT   1
 #define AX_TRANS 2
 #define AX_BALL  3
-    small_t     whichpin[6];    /* which input pin to use for each axis */
+    small_t     whichpin[6];  /* which input pin to use for each axis */
 } JointInfo_t;
 
 /* Applied Motion depends on these numbers, and they are documented
  * in the SD/FAST User's manual.  DON'T CHANGE THEM when you add more!
  * Feel free to occupy the "Unused" slots.
  */
-typedef enum {cUnknownJoint        = 0, 
-              cPinJoint                = 1, 
-              cUjoint                = 2, 
-              c3dJoint                = 3, 
-              cBallJoint        = 4, 
-              cSlidingJoint        = 5,
-              c6dJoint                = 6,
-              cCylJoint                = 7,
-              cPlanarJoint        = 8,
-              cWeldJoint        = 9,
-              cBushingJoint        = 10,
-              cBearingJoint        = 11,
+typedef enum {cUnknownJoint    = 0, 
+              cPinJoint        = 1, 
+              cUjoint          = 2, 
+              c3dJoint         = 3, 
+              cBallJoint       = 4, 
+              cSlidingJoint    = 5,
+              c6dJoint         = 6,
+              cCylJoint        = 7,
+              cPlanarJoint     = 8,
+              cWeldJoint       = 9,
+              cBushingJoint    = 10,
+              cBearingJoint    = 11,
 
-              cUnusedJt12        = 12,
-              cUnusedJt13        = 13,
-              cUnusedJt14        = 14,
-              cUnusedJt15        = 15,
-              cUnusedJt16        = 16,
-              cUnusedJt17        = 17,
-              cUnusedJt18        = 18,
-              cUnusedJt19        = 19,
+              cUnusedJt12      = 12,
+              cUnusedJt13      = 13,
+              cUnusedJt14      = 14,
+              cUnusedJt15      = 15,
+              cUnusedJt16      = 16,
+              cUnusedJt17      = 17,
+              cUnusedJt18      = 18,
+              cUnusedJt19      = 19,
 
               /* tree only! */
-              cRevPlanarJoint         = 20,
-              cRev6dJoint             = 21,
-              cRevBushingJoint        = 22,
-              cRevBearingJoint        = 23  }  
+              cRevPlanarJoint  = 20,
+              cRev6dJoint      = 21,
+              cRevBushingJoint = 22,
+              cRevBearingJoint = 23  }  
 JointKind_t;
 
 #ifdef SDMAIN
@@ -335,34 +320,34 @@ extern JointInfo_t         JointInfo[];
 #endif
 
 typedef struct {
-    string32        JointName;
-    int         InbBody;        /* inboard and outboard body numbers    */
-    int                OutbBody;        /*   (can be real or pseudo body index) */
+    string32    JointName;
+    int         InbBody;       /* inboard and outboard body numbers    */
+    int         OutbBody;      /*   (can be real or pseudo body index) */
     JointKind_t JointKind;
 
-    expr        Pins[6];        /* 0-6 vectors */
-    expr        Pres[6];        /* 0-6 `booleans' (scalar 0,1,?) */
-    expr         BodyToJoint;        /* vector */
-    expr         InbToJoint;        /* vector */
-    flags_t        PinFlg[6][3];        /* flags for each input element */
-    flags_t        PresFlg[6];     /*             |                */
-    flags_t        BtjFlg[3];      /*             |                */
-    flags_t        ItjFlg[3];      /*             v                */
+    expr        Pins[6];       /* 0-6 vectors */
+    expr        Pres[6];       /* 0-6 `booleans' (scalar 0,1,?) */
+    expr        BodyToJoint;   /* vector */
+    expr        InbToJoint;    /* vector */
+    flags_t     PinFlg[6][3];  /* flags for each input element */
+    flags_t     PresFlg[6];    /*             |                */
+    flags_t     BtjFlg[3];     /*             |                */
+    flags_t     ItjFlg[3];     /*             v                */
 
-    int         JointDOF;        /* 1-6 hinges */
-    int         JointPres;        /* 1-6 # of hinges that may be prescribed */
-    int                whichaxis;        /* 0 except for pseudo-BallJoint is 0-2 */
+    int         JointDOF;      /* 1-6 hinges */
+    int         JointPres;     /* 1-6 # of hinges that may be prescribed */
+    int         whichaxis;     /* 0 except for pseudo-BallJoint is 0-2 */
 } JointDesc_t;
 
 /* Information about constraints.  (This is just a fancy constant.) */
 typedef struct {
-    small_t        nbod;                /* number of bodies needed */
-    small_t        njnt;                /* number of joints needed */
-    small_t        nsc;                /* number of scalars needed */
-    small_t        npt;                /* number of points needed */
-    small_t        nvec;                /* number of vectors needed */
-    small_t        nmult;                /* number of multipliers generated */
-    bool_t        holonomic;        /* is this a position constraint? */
+    small_t nbod;       /* number of bodies needed */
+    small_t njnt;       /* number of joints needed */
+    small_t nsc;        /* number of scalars needed */
+    small_t npt;        /* number of points needed */
+    small_t nvec;       /* number of vectors needed */
+    small_t nmult;      /* number of multipliers generated */
+    bool_t  holonomic;  /* is this a position constraint? */
 } ConstraintInfo_t;
 typedef enum {cUnknownCons, cUserCons, cGearCons, cScrewCons, 
               cDistanceCons,cPerpCons,cCoordCons} 
@@ -373,12 +358,12 @@ ConstraintKind_t;
  * supported constraint types here.  Numbers in the ConstraintInfo table should
  * never exceed the associated constant defined here.
  */
-#define MAXCONSBODS  2        /* bodies */
-#define MAXCONSJNTS  2        /* joints */
-#define MAXCONSSCS   1        /* scalars */
-#define MAXCONSPTS   2        /* points */
-#define MAXCONSVECS  2        /* vectors */
-#define MAXCONSMULTS 1        /* multipliers */
+#define MAXCONSBODS  2  /* bodies */
+#define MAXCONSJNTS  2  /* joints */
+#define MAXCONSSCS   1  /* scalars */
+#define MAXCONSPTS   2  /* points */
+#define MAXCONSVECS  2  /* vectors */
+#define MAXCONSMULTS 1  /* multipliers */
 
 #ifdef SDMAIN
 ConstraintInfo_t ConstraintInfo[] = {
@@ -387,14 +372,14 @@ ConstraintInfo_t ConstraintInfo[] = {
  * us what type of constraint before supplying any parameters.
  */
 
- /* Constraint              nbod  njnt  nsc  npt  nvec  nmult   holonomic */
-{/*cUnknownCons           */   0,    0,   0,   0,    0,     0,           0},
-{/*cUserCons              */   0,    0,   0,   0,    0,     1,  /*maybe*/1},
-{/*cGearCons              */   2,    0,   0,   1,    2,     1,           0},
-{/*cScrewCons             */   0,    2,   1,   0,    0,     1,           0},
-{/*cDistanceCons   */   0,    0,   1,   2,    0,     1,           1},
-{/*cPerpCons       */   0,    0,   0,   0,    2,     1,           1},
-{/*cCoordCons      */   0,    0,   1,   2,    1,     1,           1},
+ /* Constraint      nbod  njnt  nsc  npt  nvec  nmult   holonomic */
+{/*cUnknownCons  */   0,    0,   0,   0,    0,     0,           0},
+{/*cUserCons     */   0,    0,   0,   0,    0,     1,  /*maybe*/1},
+{/*cGearCons     */   2,    0,   0,   1,    2,     1,           0},
+{/*cScrewCons    */   0,    2,   1,   0,    0,     1,           0},
+{/*cDistanceCons */   0,    0,   1,   2,    0,     1,           1},
+{/*cPerpCons     */   0,    0,   0,   0,    2,     1,           1},
+{/*cCoordCons    */   0,    0,   1,   2,    1,     1,           1},
 };
 #else
 extern ConstraintInfo_t ConstraintInfo[];
@@ -421,9 +406,9 @@ typedef struct {
 
     int nbod,njnt,npt,nvec,nsc,nmult;
 
-    int  Bodies [MAXCONSBODS];
-    int  Joints [MAXCONSJNTS];
-    int  Axes   [MAXCONSJNTS];
+    int     Bodies [MAXCONSBODS];
+    int     Joints [MAXCONSJNTS];
+    int     Axes   [MAXCONSJNTS];
     vexpr_t Points [MAXCONSPTS];
     vexpr_t Vectors[MAXCONSVECS];
     expr    Scalars[MAXCONSSCS];
@@ -432,7 +417,7 @@ typedef struct {
     flags_t VectorsFlg[MAXCONSPTS][3];
     flags_t ScalarsFlg[MAXCONSPTS];
 
-    Index_t Mindex;        /* index in mults array for first assoc. multiplier */
+    Index_t Mindex;  /* index in mults array for first assoc. multiplier */
 } ConstraintDesc_t;
 typedef ConstraintDesc_t ConstTable_t[cMaxNumExplicitConst];
 
@@ -456,23 +441,23 @@ typedef ConstraintDesc_t ConstTable_t[cMaxNumExplicitConst];
  * Later, the mass properties of all welded-together bodies will be combined
  * into a composite pseudobody which will be used for most computations.
  */
-typedef struct BodyDesc_s        BodyDesc_t;
+typedef struct BodyDesc_s BodyDesc_t;
 struct BodyDesc_s {
-    string32         BodyName;        /* the body name */
-    expr         Mass;                /* scalar */
-    expr         Inertia;        /* matrix */
-    flags_t        MassFlg;
-    flags_t        InerFlg[3][3];
-    int                realbody;        /* boolean */
-    JointDesc_t        jnt;
-    BodyDesc_t        *weldlist;
+    string32    BodyName;       /* the body name */
+    expr        Mass;           /* scalar */
+    expr        Inertia;        /* matrix */
+    flags_t     MassFlg;
+    flags_t     InerFlg[3][3];
+    int         realbody;       /* boolean */
+    JointDesc_t jnt;
+    BodyDesc_t  *weldlist;
 };
 typedef BodyDesc_t BodyTable_t[cMaxNumBodies];
 typedef BodyDesc_t PseudoBodyTable_t[cMaxNumDOF];
 
 typedef struct {
-    string32         OutbBodyName;        /* name of the `outboard' body */
-    JointDesc_t        jnt;
+    string32    OutbBodyName;  /* name of the `outboard' body */
+    JointDesc_t jnt;
 } LoopDesc_t;
 typedef LoopDesc_t LoopConstTable_t[cMaxNumLoops];
 
@@ -543,30 +528,30 @@ typedef struct {
     int Grounded;        /* is this a grounded system? */
 
     /* Expressions associated with system as a whole. */
-    expr GravExpr;        /* holds the gravity vector if specified */
-    expr StabVelExpr;        /* holds the stabvel value if specified */
-    expr StabPosExpr;        /* holds the stabpos value if specified */
-    expr QuestionMark;        /* dummy expr which stands for `?' */
+    expr    GravExpr;     /* holds the gravity vector if specified */
+    expr    StabVelExpr;  /* holds the stabvel value if specified */
+    expr    StabPosExpr;  /* holds the stabpos value if specified */
+    expr    QuestionMark; /* dummy expr which stands for `?' */
     flags_t GravFlg[3];
     flags_t StabVelFlg;
     flags_t StabPosFlg;
 
     /* Tree and loop system counts. */
-    Index_t n;         /* # of real bodies in the system, not counting ground */
-    Index_t nb;         /* # of tree ball joints */
-    Index_t s;         /* # of hinges (DOF) in tree joints */
-    Index_t nl;         /* # of loop joints */
+    Index_t n;   /* # of real bodies in the system, not counting ground */
+    Index_t nb;  /* # of tree ball joints */
+    Index_t s;   /* # of hinges (DOF) in tree joints */
+    Index_t nl;  /* # of loop joints */
     Index_t nlb; /* # of loop ball joints */
-    Index_t sl;         /* # of hinges in loop joints */
+    Index_t sl;  /* # of hinges in loop joints */
 
     /* Real body and joint stuff */
-    Index_t FirstDOF[cMaxNumJoints];         /* q/lq indx of 1st DOF of joint */
-    Index_t LastDOF[cMaxNumJoints];          /* q/lq indx of last DOF of joint */
-    Index_t BallQ[cMaxNumJoints];          /* q/lq indx for 4th Euler param */
-    Index_t FirstM[cMaxNumLoops];        /* 1st mults indx for loop constraint
-                                           (loop joints only) */
-    Index_t PresM[cMaxNumJoints];          /* 1st mults indx for pres constraint */
-    BodyDesc_t *Bodies;                 /* points to a BodyTable_t */
+    Index_t FirstDOF[cMaxNumJoints]; /* q/lq indx of 1st DOF of joint */
+    Index_t LastDOF[cMaxNumJoints];  /* q/lq indx of last DOF of joint */
+    Index_t BallQ[cMaxNumJoints];    /* q/lq indx for 4th Euler param */
+    Index_t FirstM[cMaxNumLoops];    /* 1st mults indx for loop constraint
+                                        (loop joints only) */
+    Index_t PresM[cMaxNumJoints];    /* 1st mults indx for pres constraint */
+    BodyDesc_t *Bodies;              /* points to a BodyTable_t */
 
     /* Pseudo-body stuff (tree joints only).  This includes topology, 
      * geometry and mass properties for each DOF in the system, plus a
@@ -585,20 +570,20 @@ typedef struct {
     /* Intermediate symbols associated with pseudobody properties. */
     sym rhead, rcom, psrcomg, psrcom, mkrcomt;
 
-    BodyDesc_t GndPseudoBody;                /* special PseudoBody for ground */
+    BodyDesc_t GndPseudoBody; /* special PseudoBody for ground */
     sym psmkg, psikg, psrkg, psrig;
 
-    BodyDesc_t *PseudoBodies;                /* points to a PseudoBodyTable_t */
+    BodyDesc_t *PseudoBodies; /* points to a PseudoBodyTable_t */
     sym psmk, psik, psrk, psri;
 
     /* Constraint stuff */
-    Index_t np;         /* # of (maybe) prescribed hinges (1 constraint per) */
+    Index_t np;  /* # of (maybe) prescribed hinges (1 constraint per) */
     Index_t nlc; /* # of loop constraints */
     Index_t nxc; /* # of explicit constraints */
-    Index_t nu;         /* # of user constraints */
-    Index_t nc;         /* total # of constraints (np+nlc+nxc+nu) */
-    LoopDesc_t            *LoopConst;                /* points to a LoopConstTable_t */
-    ConstraintDesc_t *Const;                /* points to a ConstTable_t */
+    Index_t nu;  /* # of user constraints */
+    Index_t nc;  /* total # of constraints (np+nlc+nxc+nu) */
+    LoopDesc_t       *LoopConst; /* points to a LoopConstTable_t */
+    ConstraintDesc_t *Const;     /* points to a ConstTable_t */
 
     /* Handy stuff. */
     Index_t nq;  /* # of q's (= s+nb) */
@@ -614,7 +599,7 @@ typedef struct {
      */
     Index_t s_free;        /* # of definitely NOT prescribed tree DOF */
     Index_t s_pres;        /* # of definitely prescribed tree DOF */
-    Index_t s_runtime;        /* # of tree DOF which may be prescribed at run time */
+    Index_t s_runtime;     /* # of tree DOF which may be prescribed at run time */
 
     /* type definitions used for declaring variables */
     struct user_type type_Int;
@@ -658,7 +643,7 @@ typedef struct {
     /* Input file-related symbols and their nominal values */
 
     /* system and body parameters */
-    sym  grav;        /* gravity */
+    sym  grav;      /* gravity */
     expr grav_nom;
     sym  mk;        /* masses */
     expr mk_nom;
@@ -666,13 +651,13 @@ typedef struct {
     expr ik_nom;
 
     /* tree joint parameters */
-    sym  pin;        /* pin axis orientation vectors */
+    sym  pin;       /* pin axis orientation vectors */
     expr pin_nom;
     sym  rk;        /* vectors from COM to joints */
     expr rk_nom;
     sym  ri;        /* vectors from COM of inboard body to joint */
     expr ri_nom;
-    sym  pres;        /* which tree degrees of freedom are prescribed? */
+    sym  pres;      /* which tree degrees of freedom are prescribed? */
     expr pres_nom;
 
     /* loop parameter stuff */
@@ -696,11 +681,11 @@ typedef struct {
     expr lpres_nom;
 
     /* constraint stuff */
-    sym  conspt     [MAXCONSPTS];            /* array of points */
+    sym  conspt     [MAXCONSPTS];  /* array of points */
     expr conspt_nom [MAXCONSPTS];
-    sym  consvec    [MAXCONSVECS];            /* array of vectors */
+    sym  consvec    [MAXCONSVECS]; /* array of vectors */
     expr consvec_nom[MAXCONSVECS];
-    sym  conssc     [MAXCONSSCS];            /* array of scalars */
+    sym  conssc     [MAXCONSSCS];  /* array of scalars */
     expr conssc_nom [MAXCONSSCS];
 
     /* numerical stuff */
@@ -713,60 +698,60 @@ typedef struct {
 /* Command line option stuff. */
 
 #ifdef unix
-#define DYNSUF                 "_dyn"
-#define INFOSUF                "_info"
-#define SARSUF                "_sar"
-#define LIBNAME         "lib"                /* must add prefix (e.g. sdlib) */
+#define DYNSUF          "_dyn"
+#define INFOSUF         "_info"
+#define SARSUF          "_sar"
+#define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
 #endif
 
 #ifdef vms
-#define DYNSUF                 "_dyn"
-#define INFOSUF                "_info"
-#define SARSUF                "_sar"
-#define LIBNAME         "lib"                /* must add prefix (e.g. sdlib) */
+#define DYNSUF          "_dyn"
+#define INFOSUF         "_info"
+#define SARSUF          "_sar"
+#define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
 #endif
 
 #ifdef RWIN32
-#define DYNSUF                 "_d"
-#define INFOSUF                "_i"
-#define SARSUF                 "_s"
-#define LIBNAME         "lib"                /* must add prefix (e.g. sdlib) */
+#define DYNSUF          "_d"
+#define INFOSUF         "_i"
+#define SARSUF          "_s"
+#define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
 #endif
 
-#define OPT_DEFAULT        -1        /* means `use default for this option' */
-#define OPT_STRDEFAULT        ((char *)0)
-#define OPT_LANGDEFAULT        ((struct language *)0)
+#define OPT_DEFAULT     -1     /* means `use default for this option' */
+#define OPT_STRDEFAULT  ((char *)0)
+#define OPT_LANGDEFAULT ((struct language *)0)
 
-#define OPT_KANE        1        /* formulation */
-#define OPT_ORDERN        2
-#define OPT_EXP                3
+#define OPT_KANE        1 /* formulation */
+#define OPT_ORDERN      2
+#define OPT_EXP         3
 #define OPT_EXP2        4
 
-#define OPT_SINGLE        1        /* precision */
-#define OPT_DOUBLE        2
+#define OPT_SINGLE      1 /* precision */
+#define OPT_DOUBLE      2
 
 /* char which introduces an option on cmdline */
 #define OPT_CHAR        '-'        
 
 typedef struct {
-    int                formulation;        /* kane or ordern */
-    int                precision;        /* single or double */
-    int                verbose;        /* 0, 1, or 2 */
-    int                breakup;        /* break up dyn file into multiple files? */
-    int                magic_no;        /* magic number for security (0 if none) */
-    struct language *lang;        /* C, FORTRAN */
-    char         *prefix;        /* external symbol prefix */
-    char        *infile;        /* Input File name */
-    char        *basename;        /* Prefix for constructing output file names */
-    int                gendyn;                /* generate Dynamics File? */
-    int                geninfo;        /* generate Information File? */
-    int                gensar;                /* generate Simplified Analysis File? */
-    int                genlib;                /* generate Library File? */
-    char        *dynname;        /* special name for Dynamics File */
-    char        *infoname;        /* special name for Info File */
-    char        *sarname;        /* special name for Simplified Analysis File */
-    char        *libname;        /* special name for Library File */
-    char        *progname;        /* e.g. `sdfast' */
+    int              formulation; /* kane or ordern */
+    int              precision;   /* single or double */
+    int              verbose;     /* 0, 1, or 2 */
+    int              breakup;     /* break up dyn file into multiple files? */
+    int              magic_no;    /* magic number for security (0 if none) */
+    struct language* lang;        /* C, FORTRAN */
+    char*            prefix;      /* external symbol prefix */
+    char*            infile;      /* Input File name */
+    char*            basename;    /* Prefix for constructing output file names */
+    int              gendyn;      /* generate Dynamics File? */
+    int              geninfo;     /* generate Information File? */
+    int              gensar;      /* generate Simplified Analysis File? */
+    int              genlib;      /* generate Library File? */
+    char*            dynname;     /* special name for Dynamics File */
+    char*            infoname;    /* special name for Info File */
+    char*            sarname;     /* special name for Simplified Analysis File */
+    char*            libname;     /* special name for Library File */
+    char*            progname;    /* e.g. `sdfast' */
 } options_t;
 
 extern options_t sdfast_opt;
