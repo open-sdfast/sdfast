@@ -172,8 +172,8 @@ Compute system linear and angular momentum, and kinetic energy.\n\n");
     ASSIGN(hnk, NULLEXPR);
 
     if (sdfast_opt.verbose)
-        printf("System momentum and energy computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("System momentum and energy computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 }
 
 /*
@@ -250,7 +250,7 @@ void make_mat(expr r,
 void PRINT_SDSYS(FILE *F,
             opstats_t *opcnt)
 {
-    register Index_t i, j, k, p;
+    register Index_t i, j, p;
     sym icm,ikcnkt;
     expr icm_expr, ikcnkt_expr;
     expr temp,r,mat;
@@ -363,6 +363,6 @@ inertia matrix.\n\n");
     ASSIGN(ikcnkt, NULLEXPR);
 
     if (sdfast_opt.verbose)
-        printf("System mass properties computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("System mass properties computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 }

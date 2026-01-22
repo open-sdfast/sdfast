@@ -175,8 +175,8 @@ COMPUTE_kane_mm(FILE         *mainF,
 
     fflush(F);
     if (sdfast_opt.verbose)
-        printf("Mass matrix computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Mass matrix computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     cleanup:
 
@@ -564,8 +564,8 @@ COMPUTE_ordern_mm(FILE         *mainF,
     }
 
     if (sdfast_opt.verbose)
-        printf("Gains computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Gains computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     cleanup:
 

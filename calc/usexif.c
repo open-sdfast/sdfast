@@ -74,5 +74,5 @@ pExpr USEXIF(register pExpr X,
             DISPOSE_EXPR(UNUSE(VX));
             return UNUSE(E);
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }

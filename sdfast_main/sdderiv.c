@@ -48,16 +48,16 @@ static void ordern_inward_pass(), ordern_outward_pass(), print_comments(),
  * not necessarily mean they get formed explicitly!  But unfortunately
  * we really do have to form and factor WW.
  */
-int PRINT_SDDOWW(FILE           *mainF,
-             int maxaux,
-             char          *dynname,
-             int            *nxtaux,
-             opstats_t *opcnt,
-             int  *nonred)
+void PRINT_SDDOWW(FILE      *mainF,
+                  int        maxaux,
+                  char      *dynname,
+                  int       *nxtaux,
+                  opstats_t *opcnt,
+                  int       *nonred)
 {
     int c,k;
     long ladd, lmul, ldiv, lasg;
-    sym          dfs,deps,dZ1,dZ2;
+    sym  dfs,deps,dZ1,dZ2;
     mfrcsym_t syms;
 #        define DFK        syms.fk_    
 #        define DTK        syms.tk_    
@@ -194,7 +194,7 @@ int PRINT_SDDOWW(FILE           *mainF,
                 efprintf(mainF, "%<%<"); /* reset indentation to left edge */
             if (openaux(&F, dynname, *nxtaux)) {
                 efprintf(mainF, "%>%>"); /* restore indentation level */
-                return 1;
+                return;
             }
             doww_head(F, *nxtaux, &syms, &dfs, &deps, &dZ1, &dZ2);
             (*nxtaux)++;
@@ -395,7 +395,7 @@ static void
 doww_head(FILE      *F,
           int       auxno,
           mfrcsym_t *syms,
-          sym           *dfs,
+          sym       *dfs,
           sym       *deps,
           sym       *dZ1,
           sym       *dZ2)
@@ -936,7 +936,6 @@ void PRINT_SDDERIV(FILE *F,
               opstats_t *opcnt,
               int nindepc)
 {
-    int k;
     char str_0[10], str_flt0[10], str_s1[10], str_nq1[10], str_nc1[10];
     char str_nindepc1[10];
     long ladd,lmul,ldiv,lasg;

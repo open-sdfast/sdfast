@@ -12,11 +12,12 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
-#include <ctype.h>
 #include "calc.h"
 #include "calcprot.h"
 #include "language.h"
+
+#include <stdio.h>
+#include <ctype.h>
 
 /*
 eprintf(format [, arg] ... )
@@ -342,10 +343,10 @@ do_eprintf(
                         *cp = toupper(*cp);
             }
             if (deststr == outtmp)        /* not a macro definition */
-                (*out_func)(outstr, strlen(outstr),
+                (*out_func)(outstr, (int)strlen(outstr),
                   leave_lc || outstr == outtmp, begin_line);
         } else {        /* no % found */
-            (*out_func)(fmt, strlen(fmt), 0, 0);
+            (*out_func)(fmt, (int)strlen(fmt), 0, 0);
             fmt = "";        /* make while loop get out */
         }
         if (cmtmode < 0)        /* flag for not indenting comment terminator */
@@ -374,7 +375,7 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
     }
     while (len) {
         register char *nlpos;
-        int sublen;
+        uintptr_t sublen;
 
         if (*s == '\n') {
             s++;
@@ -412,8 +413,8 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
         } else if (!linepos && cmtmode == 0) {
             linepos = fprintfcnt(stream, "%s%*s", Lang->begin_stmt, indent, "");
         }
-        len -= sublen;
-        linepos += sublen;
+        len -= (int)sublen;
+        linepos += (int)sublen;
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {
@@ -433,7 +434,7 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
 {
     while (len) {
         register char *nlpos;
-        int sublen;
+        uintptr_t sublen;
 
         if (*s == '\n') {
             s++;
@@ -446,7 +447,7 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
                 break;
         if (!(sublen = nlpos - s))
             continue;
-        len -= sublen;
+        len -= (int)sublen;
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {

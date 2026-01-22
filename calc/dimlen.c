@@ -57,9 +57,9 @@ tIndex LEN1d(pExpr E)
             return DIMLEN(E->VarRef, E->NumIndices);
         default:
             fatal("LEN1d: disaster");
-            /*NOTREACHED*/
+            return -1; /*NOTREACHED*/
     }
-}        /* LEN1d */
+}
 
 /*=======*/
 /* LEN2d */
@@ -85,6 +85,6 @@ tIndex LEN2d(pExpr E)
             return E->NodeValueType.Dim2;
         case cVarRefNode:
             return DIMLEN(E->VarRef, E->NumIndices + 1);
-    }        /* case */
-    /*NOTREACHED*/
-}        /* LEN2d */
+    }
+    return -1; /*NOTREACHED*/
+}

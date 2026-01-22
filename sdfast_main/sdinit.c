@@ -1281,9 +1281,11 @@ PRINT_SDINIT(FILE *F)
     } else
         efprintf(F, Lang->proc_end);
 
-    if (sdfast_opt.verbose)
+    if (sdfast_opt.verbose) {
         printf("SDINIT generated.  CPU seconds used so far: %g\n\
-Bytes of memory used so far: %ld\n", CPU_SECONDS()-gStartTime, BYTES_USED());
+Bytes of memory used so far: %lu\n", CPU_SECONDS() - gStartTime,
+(unsigned long)BYTES_USED());
+    }
 
     return 0;
 }

@@ -555,7 +555,7 @@ if you try to steal one.\n");
  * at am_debug to decide what to say; that won't be present in the
  * standalone setup either.
  */
-#if defined(RWIN32) && !defined(APPLIED_MOTION)
+#if defined(_WIN32) && !defined(APPLIED_MOTION)
 int am_debug;
 
 EX2UI_heartbeat(void)
@@ -581,14 +581,14 @@ void auxnoname(int auxno,
           char  *auxname)
 {
     char num[10], *dotloc, *p;
-    int  oldlen, st;
+    int  oldlen;
 
     ASSERT(auxno >= 0 && auxno <= 99, 1, "auxfilename");
 
     strncpy(auxname, origname, sz-3);
     auxname[sz-3] = '\0';
 
-    oldlen = strlen(auxname);
+    oldlen = (int)strlen(auxname);
     dotloc = strrchr(auxname, '.');
     if (dotloc) {
         for (p = &auxname[oldlen-1]; p >= dotloc; p--)
@@ -615,8 +615,8 @@ openaux(FILE **dynbF,
         char *dynname,
         int auxno)
 {
-    char numnm[200], num[10], *dotloc, *p;
-    int  oldlen, st;
+    char numnm[200];
+    int  st;
 
     auxnoname(auxno, dynname, 200, numnm);
 

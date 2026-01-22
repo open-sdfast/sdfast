@@ -176,7 +176,6 @@ COMPUTE_S_AND_C(FILE *F)
 void 
 PRINT_SDQDOT(FILE *F)
 {
-    int i;
     char str_0[10], str_nq1[10];
 
     esprintf(str_0, "%@d", 0);
@@ -234,7 +233,7 @@ Return position coordinate derivatives for tree joints.\n%}");
 void 
 PRINT_SDU2QDOT(FILE *F)
 {
-    register Index_t i, b, bno, loc;
+    register Index_t b, bno, loc;
     char str_0[10], str_s1[10];
     sym uin;
     expr tmpx;

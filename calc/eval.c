@@ -40,7 +40,7 @@ pExpr CALL_FUNC(enum tKnownFunction Func,
         default:
             fatal("CALL_FUNC: unrecognized one-arg function");
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }
 
 /*============*/
@@ -58,7 +58,7 @@ pExpr CALL_FUNC2(enum tKnownFunction Func,
         default:
             fatal("CALL_FUNC: unrecognized two-arg function");
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }
 
 /*======*/

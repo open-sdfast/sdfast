@@ -21,10 +21,10 @@
 static void count_temp_nodes();
 static void dispose_temp_nodes();
 
-long gNewCount;  /* counts # expression nodes allocated */
-long gNewSize;   /* # bytes allocated for expr nodes */
-long gDispCount; /*counts # expresson nodes disposed. */
-long gDispSize;  /* # bytes disposed for expr nodes */
+int64_t gNewCount;  /* counts # expression nodes allocated */
+int64_t gNewSize;   /* # bytes allocated for expr nodes */
+int64_t gDispCount; /*counts # expresson nodes disposed. */
+int64_t gDispSize;  /* # bytes disposed for expr nodes */
 
 /*=============*/
 /* NEW_1dARRAY */
@@ -148,8 +148,6 @@ pExpr MAT(matrix M)
 
 void DISPOSE_EXPR(pExpr E)
 {
-    register tIndex I, J;
-
     if (!E || E->Protection != cTemporary)
         return;
 
@@ -303,8 +301,8 @@ pExpr MAKE_EXPR_LIKE(pExpr E)
         case cArray2dVal:
             return NEW_2dARRAY(E->NodeValueType.BaseType, LEN1d(E), LEN2d(E));
     }
-    /*NOTREACHED*/
-} /* MAKE_EXPR_LIKE */
+    return NULL; /*NOTREACHED*/
+}
 
 /*===========*/
 /* MAKE_ZERO */
@@ -331,7 +329,7 @@ pExpr MAKE_ZERO(NodeValueType_t T)
             return X;
         default:
             fatal("MAKE_ZERO: only works for scalar,vec,mat");
-            /*NOTREACHED*/
+            return NULL; /*NOTREACHED*/
     }
 } /* MAKE_ZERO */
 

@@ -12,10 +12,11 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
+
 #include "libs.h"
 #include "libsprot.h"
 #include "../calc/language.h"
+#include <stdio.h>
 
 options_t sdfast_opt;
 
@@ -51,7 +52,7 @@ usage: %s [-sdknvb] [-l language] [-p prefix] [-g disle] [infile [basename]]\n\
     -k -n  Use Kane's or Order(N) formulation\n\
        -v  Verbose: output roadmap, stats, etc.; -vv echos input file also\n\
        -b  Break up Dynamics file into multiple smaller files\n",
-#if defined(vms) || defined(RWIN32)
+#if defined(vms) || defined(_WIN32)
     "sdfast"        /* the returned name is too ugly under VMS or WIN32 */
 #else
     sdfast_opt.progname

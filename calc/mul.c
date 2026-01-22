@@ -116,8 +116,8 @@ static pExpr DUMBMUL(pExpr E1,
                     DISPOSE_EXPR(E1);
                     DISPOSE_EXPR(UNUSE(E2));
                     return E;
-            }        /* case */
-            /*NOTREACHED*/
+            }
+            return NULL; /*NOTREACHED*/
         } else {        /* can't actually multiply. */
             if (ORDER(E1, E2) == cAfterOrder) {
                 E = E1;        /* swap the two expressions */
@@ -154,7 +154,7 @@ static pExpr DUMBMUL(pExpr E1,
         DISPOSE_EXPR(UNUSE(O));
         return UNUSE(E);
     }
-}        /* DUMBMUL */
+}
 
 pExpr DO_MUL(pExpr E1, 
              pExpr E2)
@@ -258,8 +258,7 @@ pExpr MUL(pExpr E1,
     /* multiply two non-scalars, use DOT, CROSS or MATMUL  as   */
     /* appropriate.                                             */
     register pExpr E, F;
-    pExpr best, trial;
-    long bcost, trcost;
+    pExpr best;
 
     /* If this is A*(C*D), and some of A,C, and D are VREFs with       */
     /* remembered values, we'll try shuffling the terms around to see  */
@@ -301,35 +300,4 @@ pExpr MUL(pExpr E1,
     best = INUSE(best);
     DISPOSE_EXPR(UNUSE(F));
     return UNUSE(best);
-
-#ifdef notdef
-    E = INUSE(E);
-    F = INUSE(F);
-    best = APPLYBIN_OP(cMultiply, E, F);
-    bcost = EXPR_COST(best);
-
-    trial = DO_MUL(APPLYBIN_OP(cMultiply, E, F->LeftOpnd), F->RtOpnd);
-    trcost = EXPR_COST(trial);
-    if (trcost < bcost) {
-        DISPOSE_EXPR(best);
-        best = trial;
-        bcost = trcost;
-    }
-    else
-        DISPOSE_EXPR(trial);
-
-    trial = DO_MUL(APPLYBIN_OP(cMultiply, E, F->RtOpnd), F->LeftOpnd);
-    trcost = EXPR_COST(trial);
-    if (trcost < bcost) {
-        DISPOSE_EXPR(best);
-        best = trial;
-        bcost = trcost;
-    } else
-        DISPOSE_EXPR(trial);
-
-    best = INUSE(best);
-    DISPOSE_EXPR(UNUSE(E));
-    DISPOSE_EXPR(UNUSE(F));
-    return UNUSE(best);
-#endif
 }

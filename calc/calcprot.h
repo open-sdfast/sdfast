@@ -158,7 +158,7 @@ extern CC_C pExpr CALL_KNOWN_FUNC(enum tKnownFunction func, pExpr arg);
 extern CC_C pExpr CALL_KNOWN_FUNC2(enum tKnownFunction func, pExpr arg1, pExpr arg2);
 extern CC_C long ADDOPS_USED(void );
 extern CC_C long ASGOPS_USED(void );
-extern CC_C long BYTES_USED(void );
+extern CC_C int64_t BYTES_USED(void );
 extern CC_C long DIVOPS_USED(void );
 extern CC_C long MULOPS_USED(void );
 extern CC_C void  RESET_OPS(void );

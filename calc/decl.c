@@ -56,7 +56,7 @@ declare_sym(unsigned vtype,
             register  pSym *S,
             unsigned decl_flags);
 
-pSym newsym(SymbolKind_t)
+pSym newsym(SymbolKind_t kind)
 {
     /* maybe someday bother with variant allocation (for 8 bytes?) */
     pSym S;
@@ -991,7 +991,7 @@ declare_sym(
             register  pSym *S,
             unsigned decl_flags)
 {
-    unsigned d0,d1;
+    uintptr_t d0,d1;
     if (!vname || decl_flags & DECL_NODSYM)
         return;
     if ((vtype & VT_BASETYPE) && (vtype & VT_BASETYPE) != VT_REAL)
@@ -1022,7 +1022,7 @@ declare_sym(
         if ((int)(dimp - dimu->ut_dim) == 1) {
             d0 = dimu->ut_dim[0];
             if (d0 < 1 || d0 > cMaxDim) {
-                fprintf(stderr, "declare_sym: bad 1d dimension (%d)\n", d0);
+                fprintf(stderr, "declare_sym: bad 1d dimension (%d)\n", (int)d0);
                 abort();
             }
             ARRAY1d_TYPE(basetype, (Index_t)d0, &(*S)->SymValueType);
@@ -1032,7 +1032,7 @@ declare_sym(
             d1 = dimu->ut_dim[1];
             if (d0 < 1 || d0 > cMaxDim || d1 < 1 || d1 > cMaxDim) {
                 fprintf(stderr, "declare_sym: bad 2d dimension (RxC=%dx%d)\n",
-                  d0, d1);
+                  (int)d0, (int)d1);
                 abort();
             }
             ARRAY2d_TYPE(basetype, (Index_t)d0, (Index_t)d1, 

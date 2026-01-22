@@ -30,17 +30,21 @@
  * searching for ":"!
  */
 
+#ifdef _WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "../calc/calc.h"
 #include "../calc/decl.h"
 #ifdef apollo
 #else
 #  ifndef vms
-#    ifndef RWIN32
+#    ifndef _WIN32
 #      include <values.h>
 #    endif
 #  endif
 #endif
-#ifdef RWIN32
+#ifdef _WIN32
 #  define PATHNAME_DELIM1    '\\'
 #  define PATHNAME_DELIM2    '/'
 #  define PATHNAME_DELIM3    ':'
@@ -711,7 +715,7 @@ typedef struct {
 #define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
 #endif
 
-#ifdef RWIN32
+#ifdef _WIN32
 #define DYNSUF          "_d"
 #define INFOSUF         "_i"
 #define SARSUF          "_s"

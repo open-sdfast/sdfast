@@ -12,6 +12,10 @@
  * limitations under the License.
  */
 
+#ifdef _WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 /*==========================================================================*/
 /*                     MACHINE DEPENDENT ROUTINES                           */
 /*==========================================================================*/
@@ -30,9 +34,8 @@
 #include <errno.h>
 #include <netio.h>
 #else
-#ifdef RWIN32
+#ifdef _WIN32
 #include <time.h>
-#include "rainbow.h"
 #else
 #if defined(RSUN5) || defined(RNEC_MIPS)
 #include <sys/times.h>
@@ -210,7 +213,7 @@ int CLOSE_FILE(FILE *f)
 
 double CPU_SECONDS(void)
 {
-#ifdef RWIN32
+#ifdef _WIN32
     return clock() / (double)CLOCKS_PER_SEC;
 #else 
 #ifdef vms
@@ -520,7 +523,7 @@ void GETMACHINEID(string20 machID)
         else machID[i+8] = nodenm[i];
     machID[i+8] = '\0';
 #else
-#ifdef RWIN32
+#ifdef _WIN32
     strcpy(machID, "unknown");
     return;
 #else

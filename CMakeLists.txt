@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(InheritedCProject C)
+project(SDFAST C)
 
 # Collect sources for calc library
 file(GLOB CALC_SOURCES calc/*.c)
@@ -15,4 +15,10 @@ target_include_directories(libs PUBLIC libs)
 file(GLOB SDFAST_SOURCES sdfast_main/*.c)
 add_executable(sdfast ${SDFAST_SOURCES})
 target_include_directories(sdfast PRIVATE sdfast_main)
-target_link_libraries(sdfast PRIVATE calc libs m)
+
+# Link libraries - libm is only needed on Unix-like systems
+if(UNIX)
+    target_link_libraries(sdfast PRIVATE calc libs m)
+else()
+    target_link_libraries(sdfast PRIVATE calc libs)
+endif()

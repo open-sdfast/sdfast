@@ -1297,7 +1297,7 @@ void OLD_DECOMPOSE_QUAT(FILE *F,
  */
 void PRINT_SDDC2ANG(FILE *F)
 {
-    sym dircos,a1,a2,a3,quot,angle,th1,th2,th3,costh2;
+    sym dircos,a1,a2,a3,th1,th2,th3;
     expr a1x,a2x,a3x;
 
     declare_proc(F, 0, "dc2ang",

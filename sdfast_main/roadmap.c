@@ -37,7 +37,7 @@ void PRINT_ROADMAP(FILE *F)
     /* Find longest body name -- but at least 9 */
     mxlen = 9;
     for (i = 0; i < SysI.n; i++)
-        if ((j = strlen(SysI.Bodies[i].BodyName)) > mxlen && j <= MAX1LINENM)
+        if ((j = (int)strlen(SysI.Bodies[i].BodyName)) > mxlen && j <= MAX1LINENM)
             mxlen = j;
 
     efprintf(F, "%:P*s\nROADMAP (%s)\n\n\
@@ -183,7 +183,7 @@ No  Name%P body Joint type  Coords q",
         for (i = 0; i < SysI.nu; i++) {
             /* always room on one line for the name & info */
             efprintf(F, "%@3d %@-*s",i,mxlen,SysI.Const[i].ConstraintName);
-            actlen = strlen(SysI.Const[i].ConstraintName);
+            actlen = (int)strlen(SysI.Const[i].ConstraintName);
             if (actlen < mxlen) 
                actlen = mxlen;
             efprintf(F, "%@-*s", 34+mxlen-actlen,"");
