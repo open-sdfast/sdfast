@@ -233,10 +233,13 @@ int main(int argc, char *argv[])
     PRINT_SDST2ANG(F);
 
     if (SysI.sl > 0) {
-        lqx    = INUSE(NEW_1dARRAY(cScalarVal, SysI.nlq));
-        lux    = INUSE(NEW_1dARRAY(cScalarVal, SysI.sl));
+        lqx = INUSE(NEW_1dARRAY(cScalarVal, SysI.nlq));
+        lux = INUSE(NEW_1dARRAY(cScalarVal, SysI.sl));
         lqdotx = INUSE(NEW_1dARRAY(cScalarVal, SysI.nlq));
         ludotx = INUSE(NEW_1dARRAY(cScalarVal, SysI.sl));
+    }
+    else {
+        lqx = lux = lqdotx = ludotx = NULLEXPR;
     }
 
     PRINT_SDSTATE(dynF, lqx, lux, lqdotx, &opstats[SDSTATE]);
