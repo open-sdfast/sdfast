@@ -22,38 +22,38 @@
 
 static char *
 skip_decl(unsigned    vtype,
-          va_list     argptr,
+          va_list     *argptr,
           packedvar_t *pvar,
           unsigned    decl_flags);
 
 static void
-do_declare_vars1(FILE            *F,
-                 unsigned        vtype,
-                 packedvar_t     *pvar,
-                 va_list         argptr,
-                 unsigned        decl_flags,
-                 unsigned        num_suffix);
+do_declare_vars1(FILE        *F,
+                 unsigned    vtype,
+                 packedvar_t *pvar,
+                 va_list     *argptr,
+                 unsigned    decl_flags,
+                 unsigned    num_suffix);
 
 static void
 do_declare_vars2(FILE        *F,
                  unsigned    next_vtype,
                  packedvar_t *pvar,
-                 va_list     argptr,
+                 va_list     *argptr,
                  unsigned    decl_flags,
                  unsigned    num_suffix);
 
 static void
 get_dims(unsigned    vtype,
          dim_t       *dimu,
-         va_list     argptr,
+         va_list     *argptr,
          packedvar_t *pvar,
          unsigned    decl_flags);
 
 static void
 declare_sym(unsigned vtype,
-            char *vname,
-            dim_t *dimu,
-            register  pSym *S,
+            char     *vname,
+            dim_t    *dimu,
+            register pSym *S,
             unsigned decl_flags);
 
 pSym newsym(SymbolKind_t kind)
@@ -213,7 +213,7 @@ static packedvar_t *pv_alloclist = PVNULL;
 packedvar_t *
 packvar(unsigned vtype, ...)
 {
-    va_list        argptr;
+    va_list     argptr;
     packedvar_t *pvar;
 
     va_start(argptr, vtype);
@@ -248,7 +248,7 @@ packvar(unsigned vtype, ...)
 
     if (vtype & VT_ARRAY) {
         uintptr_t *dimp = pvar->pv_dimu.ut_dim;
-        while (*dimp++ = va_arg(argptr, uintptr_t));
+        while (*dimp++ = va_arg(argptr, unsigned));
     } else if (vtype & VT_SARRAY) {
         char **sdimp = pvar->pv_dimu.ut_sdim;
         while (*sdimp++ = va_arg(argptr, char *));
@@ -274,30 +274,81 @@ free_packedvars( )
     }
 }
 
-/* This macro gets the next packed variable (if we're packing) and then
+/* This function gets the next packed variable (if we're packing) and then
  * returns its type.  If we're not packing, then the next vararg is
  * simply the type, and it is returned.
  */
+static unsigned
+GETPVAR(va_list      *argptr,
+        unsigned     decl_flags,
+        packedvar_t  **pvar)
+{
+    if (decl_flags & DECL_PACKED) {
+        *pvar = va_arg(*argptr, packedvar_t*);
+        return (*pvar)->pv_flags;
+    } else {
+        return va_arg(*argptr, unsigned);
+    }
+}
 
-#define GETPVAR() (decl_flags & DECL_PACKED ? \
-                   pvar=va_arg(argptr, packedvar_t *), pvar->pv_flags \
-                   : va_arg(argptr, unsigned))
-
-/* These macros either return a field from the already-loaded packed
+/* These functions either return a field from the already-loaded packed
  * variable pvar, or they use the next vararg as the field.
  */
-#define VARTYPE() (decl_flags & DECL_PACKED ? \
-                   pvar->pv_flags : va_arg(argptr, unsigned))
-#define VARNAME() (decl_flags & DECL_PACKED ? \
-                   pvar->pv_name : va_arg(argptr, char *))
-#define VARTYPENAME() (decl_flags & DECL_PACKED ? \
-                       pvar->pv_typename : va_arg(argptr, char *))
-#define VARCOND() (decl_flags & DECL_PACKED ? \
-                   pvar->pv_cond : va_arg(argptr, unsigned))
-#define VARSYM()  (decl_flags & DECL_PACKED ? \
-                   pvar->pv_sym : va_arg(argptr, pSym *))
-#define VARUSER() (decl_flags & DECL_PACKED ? \
-                   pvar->pv_usertype : va_arg(argptr, struct user_type *))
+#ifdef NOTDEF
+static unsigned
+VARTYPE(va_list     *argptr,
+        unsigned    decl_flags,
+        packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_flags
+                                    : va_arg(*argptr, unsigned);
+}
+#endif
+
+static char*
+VARNAME(va_list     *argptr,
+        unsigned    decl_flags,
+        packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_name
+                                    : va_arg(*argptr, char*);
+}
+
+static char*
+VARTYPENAME(va_list     *argptr,
+            unsigned    decl_flags,
+            packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_typename
+                                    : va_arg(*argptr, char*);
+}
+
+static unsigned
+VARCOND(va_list     *argptr,
+        unsigned    decl_flags,
+        packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_cond
+                                    : va_arg(*argptr, unsigned);
+}
+
+static pSym*
+VARSYM(va_list     *argptr,
+       unsigned    decl_flags,
+       packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_sym
+                                    : va_arg(*argptr, pSym*);
+}
+
+static struct user_type*
+VARUSER(va_list     *argptr,
+        unsigned    decl_flags,
+        packedvar_t *pvar)
+{
+    return decl_flags & DECL_PACKED ? pvar->pv_usertype
+                                    : va_arg(*argptr, struct user_type*);
+}
 
 /*VARARGS*/
 void 
@@ -306,7 +357,7 @@ declare_vars(FILE *F, unsigned decl_flags, ...)
     va_list argptr;
     unsigned first_vtype;
     unsigned num_suffix = -1;
-    packedvar_t *pvar;
+    packedvar_t *pvar = NULL;
 
     va_start(argptr, decl_flags);
 
@@ -316,13 +367,13 @@ declare_vars(FILE *F, unsigned decl_flags, ...)
     if (decl_flags & DECL_NUMSUFFIX)
         num_suffix = va_arg(argptr, int);
 
-    first_vtype = GETPVAR();
+    first_vtype = GETPVAR(&argptr, decl_flags, &pvar);
     if (Lang->flags & LANG_DECL2) {
         /* languages with the "name, name: [array%(subs%) of] type" model */
-        do_declare_vars2(F, first_vtype, pvar, argptr, decl_flags, num_suffix);
+        do_declare_vars2(F, first_vtype, pvar, &argptr, decl_flags, num_suffix);
     } else {        /* must be type 1 */
         /* languages with the "type name[%(subs%)], name[%(subs%)]" model */
-        do_declare_vars1(F, first_vtype, pvar, argptr, decl_flags, num_suffix);
+        do_declare_vars1(F, first_vtype, pvar, &argptr, decl_flags, num_suffix);
     }
 
     if (Lang == &ADSIM_language_decl)
@@ -357,7 +408,7 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
     va_list     argptr;
     unsigned    vtype, ftype;
     char        *pname;
-    packedvar_t *pvar;
+    packedvar_t *pvar = NULL;
 
     va_start(argptr, decl_flags);
     if (Lang == &ADSIM_language)
@@ -388,15 +439,15 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
         goto allDone;
     }
 
-    vtype = GETPVAR();
+    vtype = GETPVAR(&argptr, decl_flags, &pvar);
     if (vtype) {
         efprintf(F, "(");
         if (Lang->flags & LANG_DECL_IN_ARGLIST) {
             /* declare arguments within the () */
             if (Lang->flags & LANG_DECL2)
-                do_declare_vars2(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+                do_declare_vars2(F, vtype, pvar, &argptr, decl_flags|DECL_PROC, 0);
             else
-                do_declare_vars1(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+                do_declare_vars1(F, vtype, pvar, &argptr, decl_flags|DECL_PROC, 0);
             efprintf(F, ")\n");
         } else {
             /* list arguments first, then declare them */
@@ -408,14 +459,14 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
                     fprintf(stderr, "declare_proc: bad type %#x\n", vtype);
                     abort();
                 }
-                if (vtype & VT_COND && !VARCOND() ||
+                if (vtype & VT_COND && !VARCOND(&argptr, decl_flags, pvar) ||
                   skip && (vtype & VT_BASETYPE) == VT_DUP) {
-                    (void) skip_decl(vtype, argptr, pvar, decl_flags);
+                    (void) skip_decl(vtype, &argptr, pvar, decl_flags);
                     if ((vtype & VT_BASETYPE) != VT_DUP)
                         skip = 1;
                 } else {
                     skip = 0;
-                    if (name = skip_decl(vtype, argptr, pvar, decl_flags)) {
+                    if (name = skip_decl(vtype, &argptr, pvar, decl_flags)) {
                         if (!first_name)
                             efprintf(F, ",");
                         else
@@ -423,7 +474,7 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
                         efprintf(F, name);
                     }
                 }
-                vtype = GETPVAR();
+                vtype = GETPVAR(&argptr, decl_flags, &pvar);
             }
             va_end(argptr);
             efprintf(F, ")\n");
@@ -433,8 +484,8 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
             if (decl_flags & DECL_FUNCTION)
                 (void) va_arg(argptr, unsigned);        /* ftype */
             (void) va_arg(argptr, char *);        /* pname */
-            vtype = GETPVAR();
-            do_declare_vars1(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+            vtype = GETPVAR(&argptr, decl_flags, &pvar);
+            do_declare_vars1(F, vtype, pvar, &argptr, decl_flags|DECL_PROC, 0);
         }
     } else {
         /* no arguments */
@@ -514,10 +565,10 @@ VT_REAL is the default base type.
 void 
 declare_type(FILE *F, unsigned decl_flags, ...)
 {
-    va_list        argptr;
+    va_list  argptr;
     uintptr_t *dimp;
-    int prt;
-    char **sdimp;
+    int      prt;
+    char     **sdimp;
     register struct user_type *user_type;
 
     va_start(argptr, decl_flags);
@@ -535,11 +586,11 @@ declare_type(FILE *F, unsigned decl_flags, ...)
         if (!(decl_flags&DECL_NODSYM)) {
             user_type->type = va_arg(argptr, unsigned);
             if (user_type->type & VT_COND && !va_arg(argptr, unsigned)) {
-                (void) skip_decl(user_type->type, argptr, PVNULL, 0);
+                (void) skip_decl(user_type->type, &argptr, PVNULL, 0);
                 continue;
             }
             user_type->name = va_arg(argptr, char *);
-            get_dims(user_type->type, &user_type->dimu, argptr, PVNULL, 0);
+            get_dims(user_type->type, &user_type->dimu, &argptr, PVNULL, 0);
             user_type->type |= VT_ISUSER;
         } 
         if ((user_type->type & VT_BASETYPE) > VT_PAUSE
@@ -591,11 +642,10 @@ declare_type(FILE *F, unsigned decl_flags, ...)
  * and suppress the final separator.
  */
 static void 
-do_declare_vars1(
-                 FILE            *F,
+do_declare_vars1(FILE            *F,
                  unsigned        vtype,
                  packedvar_t     *pvar,
-                 va_list         argptr,
+                 va_list         *argptr,
                  unsigned        decl_flags,
                  unsigned        num_suffix)
 {
@@ -610,7 +660,7 @@ do_declare_vars1(
     int        prt = !(decl_flags&DECL_NOPRINT);
     int formal = (Lang->flags & LANG_DECL_IN_ARGLIST) && (decl_flags & DECL_PROC);
 
-    for (;; vtype = GETPVAR()) {
+    for (;; vtype = GETPVAR(&*argptr, decl_flags, &pvar)) {
         if ((vtype & VT_BASETYPE) > VT_PAUSE) {
             fprintf(stderr, "do_declare_vars1: bad type %#x\n", vtype);
             abort();
@@ -619,10 +669,10 @@ do_declare_vars1(
         if (vtype == VT_PAUSE)
             break;        /* exit in current state */
 
-        if (    ((vtype & VT_COND) && !VARCOND())
+        if (    ((vtype & VT_COND) && !VARCOND(&*argptr, decl_flags, pvar))
              || (skip && ((vtype & VT_BASETYPE) == VT_DUP)))
         {
-            (void) skip_decl(vtype, argptr, pvar, decl_flags);
+            (void) skip_decl(vtype, &*argptr, pvar, decl_flags);
             if ((vtype & VT_BASETYPE) != VT_DUP)
                 skip = 1;
             continue;
@@ -631,7 +681,7 @@ do_declare_vars1(
         skip = 0;
         if ((vtype & VT_BASETYPE) == VT_USER) {
             /* just expand the pesky user type */
-            user_type = VARUSER();
+            user_type = VARUSER(&*argptr, decl_flags, pvar);
             vtype = (vtype & (VT_BYREF|VT_DSYM)) | user_type->type;
             if (vtype & VT_SARRAY)
                 memcpy((char *)dimu.ut_sdim, (char *)user_type->dimu.ut_sdim, 
@@ -682,7 +732,7 @@ do_declare_vars1(
                     if (decl_flags & DECL_STATIC && (Lang->flags & LANG_C_FAMILY))
                         efprintf(F, "static ");
                     if ((last_vtype & VT_BASETYPE) == VT_TYPENAME) {
-                        efprintf(F, VARTYPENAME());
+                        efprintf(F, VARTYPENAME(&*argptr, decl_flags, pvar));
                         efprintf(F, " ");
                     } else if ((last_vtype & VT_BASETYPE) == VT_INTEGER)
                         efprintf(F, Lang->int_decl);
@@ -700,19 +750,19 @@ do_declare_vars1(
             }
         }
 
-        vname = VARNAME();
+        vname = VARNAME(&*argptr, decl_flags, pvar);
         if ((decl_flags & DECL_NUMSUFFIX) && vname) {
             esprintf(tmpvname, "%@s%@d", vname, num_suffix);
             vname = tmpvname;
         }
 
-        get_dims(vtype, &dimu, argptr, pvar, decl_flags);
+        get_dims(vtype, &dimu, &*argptr, pvar, decl_flags);
 
         if ((vtype & VT_BASETYPE) == VT_DUP)
             vtype = last_vtype | (vtype & (VT_BYREF|VT_DSYM));
 
         if (vtype & VT_DSYM)
-            declare_sym(vtype, vname, &dimu, VARSYM(), decl_flags);
+            declare_sym(vtype, vname, &dimu, VARSYM(&*argptr, decl_flags, pvar), decl_flags);
 
         if ((decl_flags & DECL_STRUCT) && (Lang->flags & LANG_C_FAMILY) && vname) {
             /* We have to tweak the field names in this struct so that
@@ -777,11 +827,10 @@ do_declare_vars1(
 
 /* languages with the "name, name: [array%(subs%) of] type" model */
 static void 
-do_declare_vars2(
-                 FILE        *F,
+do_declare_vars2(FILE        *F,
                  unsigned    next_vtype,
                  packedvar_t *pvar,
-                 va_list     argptr,
+                 va_list     *argptr,
                  unsigned    decl_flags,
                  unsigned    num_suffix)
 {
@@ -795,7 +844,7 @@ do_declare_vars2(
     char tmpvname[50], tmpvname2[50];
     int        prt = !(decl_flags&DECL_NOPRINT);
 
-    for (;; next_vtype = GETPVAR()) {
+    for (;; next_vtype = GETPVAR(&*argptr, decl_flags, &pvar)) {
         if ((vtype & VT_BASETYPE) > VT_PAUSE) {
             fprintf(stderr, "do_declare_vars2: bad type %#x\n", vtype);
             abort();
@@ -804,9 +853,9 @@ do_declare_vars2(
         if (next_vtype == VT_PAUSE)
             break;        /* exit in current state */
 
-        if (next_vtype & VT_COND && !VARCOND() ||
+        if (next_vtype & VT_COND && !VARCOND(&*argptr, decl_flags, pvar) ||
           skip && (next_vtype & VT_BASETYPE) == VT_DUP) {
-            (void) skip_decl(next_vtype, argptr, pvar, decl_flags);
+            (void) skip_decl(next_vtype, &*argptr, pvar, decl_flags);
             if ((next_vtype & VT_BASETYPE) != VT_DUP)
                 skip = 1;
             continue;
@@ -880,7 +929,7 @@ do_declare_vars2(
             if (!vtype)
                 break;
             if ((vtype & VT_BASETYPE) == VT_USER) {
-                user_type = VARUSER();
+                user_type = VARUSER(&*argptr, decl_flags, pvar);
                 vtype = vtype & (VT_BYREF|VT_DSYM) | user_type->type;
                 if (vtype & VT_SARRAY)
                     memcpy((char *)dimu.ut_sdim,(char *)user_type->dimu.ut_sdim,
@@ -890,7 +939,7 @@ do_declare_vars2(
                           sizeof(dimu.ut_dim));
             }
             if ((vtype & VT_BASETYPE) == VT_TYPENAME)
-                typename = VARTYPENAME();
+                typename = VARTYPENAME(&*argptr, decl_flags, pvar);
             if (vtype & (VT_ARRAY|VT_SARRAY|VT_VECTOR|VT_MATRIX))
                 vtype |= VT_BYREF;
             if (prt && decl_flags & DECL_PROC && vtype & VT_BYREF &&
@@ -898,7 +947,7 @@ do_declare_vars2(
                 efprintf(F, "var ");
             first_name = 1;
         }
-        vname = VARNAME();
+        vname = VARNAME(&*argptr, decl_flags, pvar);
         if (decl_flags & DECL_NUMSUFFIX && vname) {
             esprintf(tmpvname, "%@s%@d", vname, num_suffix);
             vname = tmpvname;
@@ -907,9 +956,9 @@ do_declare_vars2(
             esprintf(tmpvname2, "%@A%@s", vname);
             vname = tmpvname2;
         }
-        get_dims(next_vtype, &dimu, argptr, pvar, decl_flags);
+        get_dims(next_vtype, &dimu, &*argptr, pvar, decl_flags);
         if (next_vtype & VT_DSYM)
-            declare_sym(vtype, vname, &dimu, VARSYM(), decl_flags);
+            declare_sym(vtype, vname, &dimu, VARSYM(&*argptr, decl_flags, pvar), decl_flags);
         if (vname) {
             if (first_name)
                 first_name = 0;
@@ -934,10 +983,9 @@ do_declare_vars2(
  * successive varargs, which are consumed here (and argptr is updated).
  */
 static void 
-get_dims(
-         unsigned    vtype,
+get_dims(unsigned    vtype,
          dim_t       *dimu,
-         va_list     argptr,
+         va_list     *argptr,
          packedvar_t *pvar,
          unsigned    decl_flags)
 {
@@ -959,10 +1007,10 @@ get_dims(
         }
     } else {
         if (vtype & VT_ARRAY) {
-            while (*dimp++ = va_arg(argptr, uintptr_t));
+            while (*dimp++ = va_arg(*argptr, unsigned));
             dimp--;
         } else if (vtype & VT_SARRAY) {
-            while (*sdimp++ = va_arg(argptr, char *));
+            while (*sdimp++ = va_arg(*argptr, char *));
             sdimp--;
         }
     }
@@ -1062,9 +1110,8 @@ declare_sym(
  * of the next variable.
  */
 static char *
-skip_decl(
-          unsigned    vtype,
-          va_list     argptr,
+skip_decl(unsigned    vtype,
+          va_list     *argptr,
           packedvar_t *pvar,
           unsigned    decl_flags)
 {
@@ -1077,18 +1124,18 @@ skip_decl(
         return pvar->pv_name;
 
     if ((vtype & VT_BASETYPE) == VT_USER)
-        (void) va_arg(argptr, struct user_type *);
+        (void) va_arg(*argptr, struct user_type *);
     if ((vtype & VT_BASETYPE) == VT_TYPENAME)
-        (void) va_arg(argptr, char *);
+        (void) va_arg(*argptr, char *);
 
-    name = va_arg(argptr, char *);
+    name = va_arg(*argptr, char *);
 
     if (vtype & VT_ARRAY)
-        while (va_arg(argptr, unsigned));        /* past dimensions */
+        while (va_arg(*argptr, unsigned));        /* past dimensions */
     else if (vtype & VT_SARRAY)
-        while (va_arg(argptr, char *));        /* past dimensions */
+        while (va_arg(*argptr, char *));        /* past dimensions */
     if (vtype & VT_DSYM)
-        (void) va_arg(argptr, pSym *);
+        (void) va_arg(*argptr, pSym *);
 
     return name;
 }
