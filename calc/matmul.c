@@ -45,7 +45,7 @@ static NodeValueType_t MULBASETYPE(register NodeValueType_t t1,
             fatal("MULBASETYPE: second argument wasn't scalar, vector, or matrix");
     } else
         fatal("MULBASETYPE: first argument wasn't scalar, vector, or matrix");
-    /*NOTREACHED*/
+    return cScalarVal; /*NOTREACHED*/
 }
 
 /*========*/

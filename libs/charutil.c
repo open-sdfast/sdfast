@@ -126,7 +126,7 @@ READSTR(FILE *F,
         s[0] = '\0';
         return 1;
     }
-    if (s[i = strlen(s) - 1] == '\n')
+    if (s[i = (int)strlen(s) - 1] == '\n')
         s[i] = '\0';
     else {
         while ((i = getc(F)) != EOF && i != '\n') ;

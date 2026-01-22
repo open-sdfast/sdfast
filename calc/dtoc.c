@@ -86,9 +86,9 @@ int NiceDTOC(scalar r,
                 dp++;        /* keep negative exponent sign */
         while (*++sp == '0' && sp[1]) ;                /* skip leading zeros */
         bcopy(sp, dp, strlen(sp) + 1);
-        return (int)(dp - Out) + strlen(dp);
+        return (int)(dp - Out) + (int)strlen(dp);
     } else {
-        int len = strlen(Out);
+        int len = (int)strlen(Out);
 
         if (gSinglePrecision ||
           Lang != &FORTRAN_language && Lang != &ADSIM_language) {

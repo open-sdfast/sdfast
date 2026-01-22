@@ -78,8 +78,9 @@ void PRINT_STUB(FILE *F)
  * generated at once!
  */
 
-float Ctime;
-long Addops, Mulops, Divops, Asgops, BytesUsed;
+double Ctime;
+long Addops, Mulops, Divops, Asgops;
+int64_t BytesUsed;
 
 void ZERO_OPCNTS(opstats_t *opcnt)
 {

@@ -170,7 +170,7 @@ extern CC_C void PRINT_SDANGVEL(FILE* F);
 extern CC_C void PRINT_SDTRANS(FILE* F);
 extern CC_C void PRINT_SDACC(FILE* F);
 extern CC_C void PRINT_SDANGACC(FILE* F);
-extern CC_C int PRINT_SDDOWW(FILE* mainF, int maxaux, char* dynname, int* nxtaux, opstats_t* opcnt, int* nonred);
+extern CC_C void PRINT_SDDOWW(FILE* mainF, int maxaux, char* dynname, int* nxtaux, opstats_t* opcnt, int* nonred);
 extern CC_C void PRINT_SDUDOT0(FILE* F, opstats_t* opcnt);
 extern CC_C void PRINT_SDUDOTM(FILE* F, opstats_t* opcnt);
 extern CC_C void PRINT_SDDERIV(FILE* F, opstats_t* opcnt, int nindepc);

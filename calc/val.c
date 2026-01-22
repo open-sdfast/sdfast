@@ -41,7 +41,7 @@ pExpr VAL(pSym V)
         default:
             fatal("VAL: only variables allowed.");
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }
 
 /*======*/
@@ -71,7 +71,7 @@ pExpr VAL1(pSym V,
         default:
             fatal("VAL1: only variables allowed.");
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }
 
 /*======*/
@@ -102,5 +102,5 @@ pExpr VAL2(pSym V,
         default:
             fatal("VAL2: only variables allowed.");
     }
-    /*NOTREACHED*/
+    return NULL; /*NOTREACHED*/
 }

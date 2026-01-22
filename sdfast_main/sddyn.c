@@ -109,8 +109,8 @@ void PRINT_SDDOVPK(FILE *F,
         ENDIF;
 
         if (sdfast_opt.verbose)
-            printf("Partial velocities computed. (CPU: %g MEM: %ld)\n",
-              CPU_SECONDS() - gStartTime, BYTES_USED());
+            printf("Partial velocities computed. (CPU: %g MEM: %lu)\n",
+              CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
     } else {
         /* SDDOPING()
          *
@@ -240,8 +240,8 @@ void PRINT_SDDOINER(FILE *F,
     ENDIF;
 
     if (sdfast_opt.verbose)
-          printf("Inertial accelerations computed. (CPU: %g MEM: %ld)\n",
-            CPU_SECONDS() - gStartTime, BYTES_USED());
+          printf("Inertial accelerations computed. (CPU: %g MEM: %lu)\n",
+            CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     END_COMPSUB(F,opcnt,0L,0L,0L,0L);
     efprintf(F, Lang->proc_end);
@@ -297,8 +297,8 @@ void PRINT_SDDOFS0(FILE *F,
     ENDIF;
 
     if (sdfast_opt.verbose)
-        printf("Inertial and applied forces computed. (CPU: %g MEM: %ld)\n",
-               CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Inertial and applied forces computed. (CPU: %g MEM: %lu)\n",
+               CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     END_COMPSUB(F,opcnt,0L,0L,0L,0L);
     efprintf(F, Lang->proc_end);
@@ -948,8 +948,8 @@ void PRINT_SDRHS(FILE *F,
     efprintf(F, Lang->proc_end);
 
     if (sdfast_opt.verbose)
-        printf("Accelerations computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Accelerations computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 }
 
 /* We use one routine to generate the three flavors of FS-computing 
@@ -1334,6 +1334,6 @@ void PRINT_SDREAC(FILE *F,
     fflush(F);
 
     if (sdfast_opt.verbose)
-        printf("Reaction forces computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Reaction forces computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 }

@@ -12,6 +12,10 @@
  * limitations under the License.
  */
 
+#ifdef _WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <stdio.h>
 #include "../libs/libs.h"
 #include "../calc/language.h"
@@ -319,8 +323,8 @@ SystemInfo_t SysI; /* This is the parsed form of the input file. */
 #ifndef SDMAIN
 extern 
 #endif
-float gStartTime;  /* clock setting at beginning of program.  All CPU */
-                   /* times are relative to this time.                */
+double gStartTime;  /* clock setting at beginning of program.  All CPU */
+                    /* times are relative to this time.                */
 
 #ifndef SDMAIN
 extern 
@@ -329,4 +333,4 @@ long gGenerateTime;  /* time of day (hhmmss) at which this run of sdfast
                         was begun. */
 
 expr BALL_COS(), PIN_COS(), U_COS();
-long BYTES_USED();
+int64_t BYTES_USED();

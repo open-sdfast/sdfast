@@ -22,23 +22,20 @@ extern long gNewSize;        /* # bytes allocated for expr nodes */
 extern long gDispCount;        /*counts # expresson nodes disposed. */
 extern long gDispSize;        /* # bytes disposed for expr nodes */
 
-#ifdef THINK_C
-#include <MemoryMgr.h>
-#else
+#ifndef _WIN32
 char *sbrk();
-#endif
 static char *start_brk;
+#endif
 
 /*===========*/
 /* BYTES_USED*/
 /*===========*/
 
-long BYTES_USED(void)
+int64_t BYTES_USED(void)
 {
     /* Return number of bytes allocated so far. */
-
-#ifdef THINK_C
-    return HeapEnd - start_brk;
+#ifdef _WIN32
+    return 0;
 #else
     return sbrk(0) - start_brk;
 #endif
@@ -125,9 +122,7 @@ void RESET_COUNTS(void)
     /* Set Node allocation counts to zero. */
 
     gNewCount = gNewSize = gDispCount = gDispSize = 0;
-#ifdef THINK_C
-    start_brk = HeapEnd;
-#else
+#ifndef _WIN32
     start_brk = sbrk(0);
 #endif
 }

@@ -41,7 +41,7 @@ void SHOW_TYPE(register pExpr E)
     extern char BinOpNames[][6];
     extern char UnOpNames[][2];
 
-    fprintf(stderr, "**SHOW_TYPE** (E=0x%lx)\n", (uintptr_t)E);
+    fprintf(stderr, "**SHOW_TYPE** (E=%p)\n", E);
     if (!E) {
         fputs("Nil expression\n", stderr);
         return;

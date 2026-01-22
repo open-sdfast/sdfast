@@ -326,8 +326,8 @@ Calculate forces due to constraint multipliers.\n\n");
     efprintf(F, Lang->proc_end);
 
     if (sdfast_opt.verbose)
-        printf("Multiplier-generated forces computed.  (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Multiplier-generated forces computed.  (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 }
 
 /*

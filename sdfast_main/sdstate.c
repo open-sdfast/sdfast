@@ -286,8 +286,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     }
 
     if (sdfast_opt.verbose)
-        printf("Direction cosines computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Direction cosines computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     /* This says that we passed all security checks. */
     UtoQexpr = SCALAR_ONE();
@@ -305,8 +305,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     COMPUTE_com(F);
     fflush(F);
     if (sdfast_opt.verbose)
-        printf("Mass center locations computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Mass center locations computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     if (SysI.nl) {
         efprintf(F, "%{\nCompute loop joint q-related temps\n%}");
@@ -464,8 +464,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     COMPUTE_wb(F);
     fflush(F);
     if (sdfast_opt.verbose)
-        printf("Angular velocities computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Angular velocities computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     efprintf(F, "%{\nCompute auxiliary variables involving wk\n%}");
     compute_aux_wk(F);
@@ -481,8 +481,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     COMPUTE_vnb(F);
     fflush(F);
     if (sdfast_opt.verbose)
-        printf("Linear velocities computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Linear velocities computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     if (SysI.nl) {
         efprintf(F, "%{\nCompute loop joint u-related temps\n%}");
@@ -504,8 +504,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     COMPUTE_qdot(F);
     fflush(F);
     if (sdfast_opt.verbose)
-        printf("Qdot equations computed. (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Qdot equations computed. (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     COMPUTE_lqdot(lqdotx);
 
@@ -607,8 +607,8 @@ Compute kinematic information and store it in sdgstate.\n\n");
     }
 
     if (sdfast_opt.verbose)
-        printf("Done with kinematic equations.  (CPU: %g MEM: %ld)\n",
-          CPU_SECONDS() - gStartTime, BYTES_USED());
+        printf("Done with kinematic equations.  (CPU: %g MEM: %lu)\n",
+          CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
 
     END_COMPSUB(F,opcnt,0L,0L,0L,lasg);
     efprintf(F, Lang->proc_end);

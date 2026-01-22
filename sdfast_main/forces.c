@@ -123,7 +123,7 @@ void COMPUTE_Fstar(FILE *F)
 void COMPUTE_Tstar(FILE *F)
 {
     register Index_t b,k;
-    expr temp, Tstar_expr;
+    expr Tstar_expr;
 
     if (SysI.s == 0)
         return;
@@ -541,7 +541,7 @@ void COMPUTE_fsmult(FILE *F,
 void COMPUTE_reaction(FILE *F)
 {
     register Index_t i,k,inb,realbody;
-    expr fc_expr, tc_expr, ffk_expr, ttk_expr, fccikt_expr, ffkbx, ttkbx, temp;
+    expr fc_expr, tc_expr, ffk_expr, ttk_expr, fccikt_expr, ffkbx, ttkbx;
 
     ffkbx       = INUSE(NEW_1dARRAY(cVectorVal, SysI.n));
     ttkbx       = INUSE(NEW_1dARRAY(cVectorVal, SysI.n));
@@ -627,11 +627,11 @@ void COMPUTE_reaction(FILE *F)
                                 CROSS(VAL1(rpri,k),INDX(fccikt_expr,k)))));
     }
 
-    ASSIGN(ffk,                UNUSE(ffk_expr));
-    ASSIGN(ttk,                UNUSE(ttk_expr));
-    ASSIGN(fc,                UNUSE(fc_expr));
-    ASSIGN(tc,                UNUSE(tc_expr));
-    ASSIGN(fccikt,        UNUSE(fccikt_expr));
+    ASSIGN(ffk,    UNUSE(ffk_expr));
+    ASSIGN(ttk,    UNUSE(ttk_expr));
+    ASSIGN(fc,     UNUSE(fc_expr));
+    ASSIGN(tc,     UNUSE(tc_expr));
+    ASSIGN(fccikt, UNUSE(fccikt_expr));
 }
 
 /* COMPUTE_ltauforces
@@ -999,7 +999,7 @@ void PRINT_SDEQUIVHT(FILE *F)
 {
     Index_t b,k;
     sym  fstareq, tstareq, tau;
-    expr fstx, tstx, taux, temp;
+    expr fstx, tstx, taux;
     opstats_t opcnt;
 
     START_COMPSUB(&opcnt);
@@ -1164,7 +1164,7 @@ void PRINT_SDFULLTRQ(FILE *F,
 {
     int k,b;
     sym udotin, Otkr, Atir, Atkr, fstarr, tstarr, trqout;
-    expr fstarrx, tstarrx, trqoutx, taux, temp, ftemp, ttemp;
+    expr fstarrx, tstarrx, trqoutx, taux, ftemp, ttemp;
     char str_nc[10], str_s[10];
 
     esprintf(str_nc, "%d", SysI.nc);
@@ -1394,7 +1394,7 @@ void PRINT_SDFULLTRQ(FILE *F,
 void COMPUTE_weld_reaction(FILE *F, int b, sym frc, sym trq, 
                       expr *fexpr, expr *texpr)
 {
-    int  i,j,k,p;
+    int  j,k,p;
     expr rx, fstarx, tstarx, f, t;
 
     /* First compute fstar and tstar.  These are the force and torque

@@ -81,7 +81,7 @@ rbod_is_gnd(int bnum)
  */
 void COMPUTE_cnk(FILE *F)
 {
-    register Index_t i,j,k,inb;
+    register Index_t k,inb;
     expr temp, cnk_expr;
 
     if (SysI.s == 0)
@@ -121,7 +121,7 @@ void COMPUTE_cnk(FILE *F)
  */
 void COMPUTE_rnk(FILE *F)
 {
-    register Index_t i,k,inb;
+    register Index_t k,inb;
     expr temp, rnk_expr;
 
     ASSIGN_CLN(F, rnkg, NEG(VAL(SysI.psrcomg)));
@@ -163,7 +163,7 @@ void COMPUTE_rnk(FILE *F)
  */
 void COMPUTE_wk(FILE *F)
 {
-    register Index_t i,k,inb;
+    register Index_t k,inb;
     expr temp, wk_expr;
 
     if (SysI.s == 0)
@@ -209,7 +209,7 @@ void COMPUTE_wk(FILE *F)
  */
 void COMPUTE_vnk(FILE *F)
 {
-    register Index_t i,k,inb;
+    register Index_t k,inb;
     expr temp, vnk_expr;
 
     if (SysI.s == 0)

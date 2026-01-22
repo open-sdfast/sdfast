@@ -12,11 +12,12 @@
  * limitations under the License.
  */
 
-#include <assert.h>
-#include <ctype.h>
 #include "libs.h"
 #include "libsprot.h"
 #include "words.h"
+
+#include <assert.h>
+#include <ctype.h>
 
 /*======================================================================*/
 /* Procedures used for parsing and processing the input file (System). */

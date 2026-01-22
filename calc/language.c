@@ -23,7 +23,7 @@ struct language FORTRAN_language = {
 #ifdef vms
         ".for",
 #else
-#ifdef RWIN32
+#ifdef _WIN32
         ".for",
 #else
         ".f",
