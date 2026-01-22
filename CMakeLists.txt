@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(InheritedCProject C)
+project(SDFAST C)
 
 # Collect sources for calc library
 file(GLOB CALC_SOURCES calc/*.c)
