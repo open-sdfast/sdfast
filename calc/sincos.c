@@ -26,7 +26,7 @@ CALL_KNOWN_FUNC(enum tKnownFunction func,
 {
     /* produces the expression func(arg) */
     register pExpr X;
-    double (*cfunc)();
+    double (*cfunc)(double);
     pSym calcfunc;
     extern pSym gSineFunction,gCosineFunction,gAsinFunction,gAcosFunction,
                 gAbsFunction,gSqrtFunction;
@@ -80,7 +80,7 @@ CALL_KNOWN_FUNC2(enum tKnownFunction func,
 {
     /* produces the expression func(arg1,arg2) */
     register pExpr X;
-    double (*cfunc)();
+    double (*cfunc)(double,double);
     pSym calcfunc;
     extern pSym gAtan2Function;
 

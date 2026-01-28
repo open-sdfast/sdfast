@@ -16,8 +16,8 @@
 #include "calcprot.h"
 
 static tProtectionLevel Level;
-static void DO_PROTECT();
-static void DO_UNPROTECT();
+static void DO_PROTECT(pExpr E);
+static void DO_UNPROTECT(pExpr E);
 
 /* Profiling shows a significant amount of time spent in these routines.
    Due to their heavily recursive nature, thay have been optimized for

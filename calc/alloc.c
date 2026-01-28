@@ -18,8 +18,8 @@
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
  */
-static void count_temp_nodes();
-static void dispose_temp_nodes();
+static void count_temp_nodes(pExpr E);
+static void dispose_temp_nodes(pExpr E);
 
 int64_t gNewCount;  /* counts # expression nodes allocated */
 int64_t gNewSize;   /* # bytes allocated for expr nodes */
