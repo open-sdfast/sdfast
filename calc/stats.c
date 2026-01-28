@@ -23,7 +23,8 @@ extern long gDispCount;        /*counts # expresson nodes disposed. */
 extern long gDispSize;        /* # bytes disposed for expr nodes */
 
 #ifndef _WIN32
-char *sbrk();
+#include <unistd.h>
+#include <stdint.h>
 static char *start_brk;
 #endif
 
@@ -37,7 +38,7 @@ int64_t BYTES_USED(void)
 #ifdef _WIN32
     return 0;
 #else
-    return sbrk(0) - start_brk;
+    return (int64_t)((char *)sbrk(0) - start_brk);
 #endif
 }
 

@@ -74,8 +74,6 @@
 #  define IFREQCNT        64
 #endif
 
-time_t time();
-
 /*===================================*/
 /*            GETDATE                */
 /* Return date in format DD-MON-YYYY */
