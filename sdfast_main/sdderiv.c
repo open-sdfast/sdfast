@@ -17,20 +17,20 @@
 #include "sderror.h"
 #include "../calc/gencode.h"
 
-static void ordern_inward_pass(FILE *F, int flags, struct tSymTabEntry *tau, 
-                               struct tSymTabEntry *z1, struct tSymTabEntry *z2, 
-                               struct tExprNode *z1x, struct tExprNode *z2x, 
-                               struct tSymTabEntry *eps);
+static void ordern_inward_pass(FILE *F, int flags, sym tau,
+                               sym z1, sym z2,
+                               expr z1x, expr z2x,
+                               sym eps);
 
-static void ordern_outward_pass(FILE *F, struct tSymTabEntry *eps, 
-                                struct tSymTabEntry *a1, struct tSymTabEntry *a2, 
-                                struct tSymTabEntry *k1, struct tSymTabEntry *k2);
+static void ordern_outward_pass(FILE *F, sym eps,
+                                sym a1, sym a2,
+                                sym k1, sym k2);
 
 static void print_comments(FILE *F);
 
-static void doww_head(FILE *F, int nxtaux, mfrcsym_t *syms, 
-               struct tSymTabEntry **dfs, struct tSymTabEntry **deps, 
-               struct tSymTabEntry **dZ1, struct tSymTabEntry **dZ2);
+static void doww_head(FILE *F, int nxtaux, mfrcsym_t *syms,
+               sym *dfs, sym *deps,
+               sym *dZ1, sym *dZ2);
 
 static void doww_tail(FILE *F);
 

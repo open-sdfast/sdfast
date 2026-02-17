@@ -332,5 +332,5 @@ extern
 long gGenerateTime;  /* time of day (hhmmss) at which this run of sdfast
                         was begun. */
 
-// expr BALL_COS(), PIN_COS(), U_COS();
-int64_t BYTES_USED();
+
+int64_t BYTES_USED(void);
