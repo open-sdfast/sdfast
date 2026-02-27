@@ -13,8 +13,8 @@ c  AZCMD, ELCMD = location of command values in system state array
 c  The body numbers.  Note that these are also the numbers for these
 c  bodies' inboard joints.
 
-        integer GROUND,BUS,CLOCK,BOOM,CAMERA,SCANNER
-        parameter (GROUND=0,BUS=1,CLOCK=2,CAMERA=3,BOOM=4,SCANNER=5)
+        integer GROUND,BUS,CLOCK,BOOM,CAMERA,SCANNER_ID
+        parameter (GROUND=0,BUS=1,CLOCK=2,CAMERA=3,BOOM=4,SCANNER_ID=5)
 
         real*8 y(NEQ),t,dt,tol,camscan(3)
         real*8 savey(NEQ),tscan,slwstrt,slwstp,azrate,elrate,scanrt
@@ -101,8 +101,8 @@ c beginning at tscan.)
 c  Put state back to the end of the first analysis.
         do 44 i=1, NEQ
  44             y(i) = savey(i)
-        y(   SDINDX(SCANNER,1)) = 0d0
-        y(NQ+SDINDX(SCANNER,1)) = scanrt
+        y(   SDINDX(SCANNER_ID,1)) = 0d0
+        y(NQ+SDINDX(SCANNER_ID,1)) = scanrt
         t = tscan
 
         call simulate(3,nout,nbtw,dt,tol,scan,t,y)
@@ -113,14 +113,14 @@ c=================================================================
         
         write(6,*) 'Changing geometry.'
          camscan(2) = -.2d0
-        call SDITJ(SCANNER,camscan)
+        call SDITJ(SCANNER_ID,camscan)
         call SDINIT
 
 c  Put state back to the end of the first analysis.
         do 60 i=1, NEQ
  60             y(i) = savey(i)
-        y(   SDINDX(SCANNER,1)) = 0d0
-        y(NQ+SDINDX(SCANNER,1)) = scanrt
+        y(   SDINDX(SCANNER_ID,1)) = 0d0
+        y(NQ+SDINDX(SCANNER_ID,1)) = scanrt
         t = tscan
 
         call simulate(4,nout,nbtw,dt,tol,scan,t,y)
@@ -137,9 +137,9 @@ c data.  Set scan nonzero to enable the scanner.  Output goes to file
 c 10+<simulation number>, i.e., fort.11, fort.12, fort.13, or fort.14.
 c
         subroutine simulate(n,nout,nbtw,dt,tol,scan,t,y)
-        integer NQ,NU,NEQ,AZCMD,ELCMD,BUS,BOOM,SCANNER
+        integer NQ,NU,NEQ,AZCMD,ELCMD,BUS,BOOM,SCANNER_ID
         parameter (NQ=12,NU=11,AZCMD=NQ+NU+1,ELCMD=AZCMD+1,NEQ=NQ+NU+2)
-        parameter (BUS=1,BOOM=4,SCANNER=5)
+        parameter (BUS=1,BOOM=4,SCANNER_ID=5)
         integer i,j,n,nout,nbtw,scan,err,SDINDX
         real*8 dt,tol,t,y(NEQ),param(1),dy(NEQ),cone,ori(3),dc(3,3)
         real*8 est,work(4*NEQ),fire(3)
@@ -171,7 +171,7 @@ c  Euler angles (millirad) rather than Euler parameters.
           call pointerr(y(AZCMD),y(ELCMD),cone)
 
           write(10+n,30) t, ori(1)*1000., ori(2)*1000., ori(3)*1000., 
-     &      y(SDINDX(SCANNER,1)), y(SDINDX(BOOM,1))*1000., 
+     &      y(SDINDX(SCANNER_ID,1)), y(SDINDX(BOOM,1))*1000., 
      &      y(SDINDX(BOOM,2))*1000., fire(1), fire(2), fire(3), cone
 
           if (i .le. nout) then
@@ -268,21 +268,21 @@ c  0 (i.e., locked).  Otherwise, prescribe it to follow a sinusoidal
 c  motion with frequency w=scanrt radian per second.
 
         subroutine motions(t,q,u)
-        integer NQ,NU,SCANNER
-        parameter (NQ=12, NU=11, SCANNER=5)
+        integer NQ,NU,SCANNER_ID
+        parameter (NQ=12, NU=11, SCANNER_ID=5)
         real*8 t,q(NQ),u(NU),w,tscan,scanrt
         integer scan
         common /scanner/tscan,scanrt,scan
 
         w = scanrt
         if (scan .eq. 0) then
-          call SDPRESPOS(SCANNER,1,0d0)
-          call SDPRESVEL(SCANNER,1,0d0)
-          call SDPRESACC(SCANNER,1,0d0)
+          call SDPRESPOS(SCANNER_ID,1,0d0)
+          call SDPRESVEL(SCANNER_ID,1,0d0)
+          call SDPRESACC(SCANNER_ID,1,0d0)
         else
-          call SDPRESPOS(SCANNER,1,      sin(w*(t-tscan)))
-          call SDPRESVEL(SCANNER,1,    w*cos(w*(t-tscan)))
-          call SDPRESACC(SCANNER,1, -w*w*sin(w*(t-tscan)))
+          call SDPRESPOS(SCANNER_ID,1,      sin(w*(t-tscan)))
+          call SDPRESVEL(SCANNER_ID,1,    w*cos(w*(t-tscan)))
+          call SDPRESACC(SCANNER_ID,1, -w*w*sin(w*(t-tscan)))
         end if
 
         return

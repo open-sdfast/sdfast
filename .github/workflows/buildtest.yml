@@ -1,0 +1,80 @@
+name: BUILD_TEST
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    continue-on-error: ${{ matrix.os != 'ubuntu-latest' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install Dependencies
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            gfortran
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install gcc
+
+      - name: Install dependencies (Windows - MinGW)
+        if: runner.os == 'Windows'
+        run: |
+          choco install mingw -y
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+
+      # Configure
+
+      - name: Configure
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            GCC_PREFIX=$(brew --prefix gcc)
+
+            C_COMPILER=$(ls $GCC_PREFIX/bin/gcc-* | head -n1)
+            CXX_COMPILER=$(ls $GCC_PREFIX/bin/g++-* | head -n1)
+            FC_COMPILER=$(ls $GCC_PREFIX/bin/gfortran-* | head -n1)
+
+            cmake -S . -B build \
+              -DCMAKE_C_COMPILER=$C_COMPILER \
+              -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
+              -DCMAKE_Fortran_COMPILER=$FC_COMPILER \
+              -DCMAKE_BUILD_TYPE=Release
+
+          else
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          fi
+
+      # Build
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # Test
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure

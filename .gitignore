@@ -7,3 +7,5 @@
 # CLion
 /cmake-build-*
 .idea/
+
+build/
