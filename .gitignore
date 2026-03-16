@@ -41,3 +41,13 @@ Temporary Items
 ### macOS Patch ###
 # iCloud generated files
 *.icloud
+
+
+### Claude ###
+
+CLAUDE.md
+.claude
+
+
+### GitHub ###
+.github
