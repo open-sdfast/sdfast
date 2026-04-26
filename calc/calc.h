@@ -279,6 +279,7 @@ typedef struct packedvar_s {
     unsigned            pv_cond;      /* if VT_COND */
     pSym               *pv_sym;       /* if VT_DSYM */
     struct user_type   *pv_usertype;  /* if VT_USER */
+    char               *pv_prototype; /* if VT_PROCNAME: C prototype string */
     dim_t               pv_dimu;      /* if VT_ARRAY|VECTOR|MATRIX */
     struct packedvar_s *pv_next;      /* next allocated packedvar */
 } packedvar_t;

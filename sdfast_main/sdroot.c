@@ -160,6 +160,8 @@ void PRINT_SDROOT(FILE *F)
     char lowlmt[10],str_flt0[10];
     char uplmtntrys[15];
     char numtrys[15],maxfixits[15];
+    char root_func_proto[80];
+    esprintf(root_func_proto, "%t[], %t[], %t[]");
 
     esprintf(lowlmt, "%@d", 0);
     esprintf(str_flt0, "%r", 0.);
@@ -242,7 +244,8 @@ void PRINT_SDROOT(FILE *F)
  * the direction of movement is preserved.
  */
     declare_proc(F, DECL_PACKED, "adjvars",
-      packvar(VT_PROCNAME,                 "func"),
+      packvar(VT_PROCNAME,                 "func",
+              root_func_proto),
       packvar(VT_SARRAY,                   "vars", "nvar", NULL),
       packvar(VT_SARRAY,                   "param", Lang->unknown_len, NULL),
       packvar(VT_INTEGER,                  "nfunc"),
@@ -374,7 +377,8 @@ void PRINT_SDROOT(FILE *F)
  * by the number of evaluations of f() performed here.
  */
     declare_proc(F, DECL_PACKED, "calcjac",
-      packvar(VT_PROCNAME,                 "func"),
+      packvar(VT_PROCNAME,                 "func",
+              root_func_proto),
       packvar(VT_SARRAY,                   "vars",  "nvar",   NULL),
       packvar(VT_SARRAY,                   "param",  Lang->unknown_len, NULL),
       packvar(VT_INTEGER,                  "nfunc"),
@@ -509,7 +513,8 @@ Work arrays should be dimensioned as follows:\n\
 ====================================================================\n%}");
 
     declare_proc(F, DECL_PACKED, "root",
-      packvar(VT_PROCNAME,                 "func"),
+      packvar(VT_PROCNAME,                 "func",
+              root_func_proto),
       packvar(VT_SARRAY,                   "vars", "nvar",  NULL),
       packvar(VT_SARRAY,                   "param", Lang->unknown_len, NULL),
       packvar(VT_INTEGER,                  "nfunc"),

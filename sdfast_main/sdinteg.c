@@ -113,6 +113,8 @@
 void PRINT_SDINTEG(FILE *F)
 {
     char str_flt0[10], lowlmt[10];
+    char integ_func_proto[80];
+    esprintf(integ_func_proto, "%t, %t[], %t[], %t[], int*");
 
     esprintf(str_flt0, "%r", 0.);
     esprintf(lowlmt, "%@d", 0);
@@ -141,7 +143,8 @@ void PRINT_SDINTEG(FILE *F)
  */
 
     declare_proc(F, DECL_PACKED, "rk4m",
-      packvar(VT_PROCNAME,                 "func"),
+      packvar(VT_PROCNAME,                 "func",
+              integ_func_proto),
       packvar(VT_REAL,                  "time"),
       packvar(VT_SARRAY,                   "st",   "neq",              NULL),
       packvar(VT_DUP,                      "dst0"), 
@@ -238,7 +241,7 @@ void PRINT_SDINTEG(FILE *F)
 A fixed-step integrator.  Work should be dimensioned 4*neq.%}\n");
 
     declare_proc(F, 0,  "finteg",
-      VT_PROCNAME,      "func",
+      VT_PROCNAME,      "func", integ_func_proto,
       VT_REAL|VT_BYREF,        "time",
       VT_SARRAY,           "st", "neq", NULL,
       VT_DUP,                "dst",
@@ -300,7 +303,8 @@ A fixed-step integrator.  Work should be dimensioned 4*neq.%}\n");
 A variable-step integrator.  Work should be dimensioned 6*neq.%}");
 
     declare_proc(F, DECL_PACKED,  "vinteg",
-      packvar(VT_PROCNAME,              "func"),
+      packvar(VT_PROCNAME,              "func",
+              integ_func_proto),
       packvar(VT_REAL|VT_BYREF,                "time"),
       packvar(VT_SARRAY,                   "st",   "neqin",            NULL),
       packvar(VT_DUP,                        "dst"),
