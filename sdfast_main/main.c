@@ -561,7 +561,7 @@ if you try to steal one.\n");
 #if defined(_WIN32) && !defined(APPLIED_MOTION)
 int am_debug;
 
-int EX2UI_heartbeat(void)
+void EX2UI_heartbeat(void)
 {
 }
 #endif

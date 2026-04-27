@@ -602,6 +602,8 @@ declare_type(FILE *F, unsigned decl_flags, ...)
                 continue;
             }
             user_type->name = va_arg(argptr, char *);
+            if ((user_type->type & VT_BASETYPE) == VT_PROCNAME)
+                (void) va_arg(argptr, char *);  /* past prototype */
             get_dims(user_type->type, &user_type->dimu, &argptr, PVNULL, 0);
             user_type->type |= VT_ISUSER;
         } 
