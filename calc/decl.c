@@ -664,6 +664,7 @@ do_declare_vars1(FILE            *F,
     static unsigned last_vtype;
     static int skip, first_name;
     static char *vname;
+    static char *last_prototype;
     static dim_t dimu;
     uintptr_t *dimp;
     char **sdimp;
@@ -764,10 +765,13 @@ do_declare_vars1(FILE            *F,
 
         vname = VARNAME(&*argptr, decl_flags, pvar);
         char *prototype = NULL;
-        if ((vtype & VT_BASETYPE) == VT_PROCNAME ||
-            ((vtype & VT_BASETYPE) == VT_DUP &&
-             (last_vtype & VT_BASETYPE) == VT_PROCNAME))
+        if ((vtype & VT_BASETYPE) == VT_PROCNAME) {
             prototype = VARPROTOTYPE(&*argptr, decl_flags, pvar);
+            last_prototype = prototype;
+        } else if ((vtype & VT_BASETYPE) == VT_DUP &&
+                   (last_vtype & VT_BASETYPE) == VT_PROCNAME) {
+            prototype = last_prototype;
+        }
         if ((decl_flags & DECL_NUMSUFFIX) && vname) {
             esprintf(tmpvname, "%@s%@d", vname, num_suffix);
             vname = tmpvname;
@@ -966,7 +970,7 @@ do_declare_vars2(FILE        *F,
             first_name = 1;
         }
         vname = VARNAME(&*argptr, decl_flags, pvar);
-        if ((vtype & VT_BASETYPE) == VT_PROCNAME)
+        if ((next_vtype & VT_BASETYPE) == VT_PROCNAME)
             (void) VARPROTOTYPE(&*argptr, decl_flags, pvar);
         if (decl_flags & DECL_NUMSUFFIX && vname) {
             esprintf(tmpvname, "%@s%@d", vname, num_suffix);

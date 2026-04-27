@@ -113,7 +113,7 @@
 void PRINT_SDINTEG(FILE *F)
 {
     char str_flt0[10], lowlmt[10];
-    char integ_func_proto[80];
+    char integ_func_proto[128];
     esprintf(integ_func_proto, "%t, %t[], %t[], %t[], int*");
 
     esprintf(str_flt0, "%r", 0.);

@@ -160,7 +160,7 @@ void PRINT_SDROOT(FILE *F)
     char lowlmt[10],str_flt0[10];
     char uplmtntrys[15];
     char numtrys[15],maxfixits[15];
-    char root_func_proto[80];
+    char root_func_proto[128];
     esprintf(root_func_proto, "%t[], %t[], %t[]");
 
     esprintf(lowlmt, "%@d", 0);
