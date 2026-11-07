@@ -143,7 +143,7 @@ char WHATS_NEXT(FILE *System,
     /* skips blanks, tells what's coming up in the input */
     char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System))
         *Next = cEndOfFileNext;
@@ -237,7 +237,7 @@ char READ_ID(FILE *System,
         if (sdfast_opt.verbose > 1)
             putchar(ch);
         if ((int)(cp - Ident) < 32)
-            *cp++ = ch;
+            *cp++ = (char)ch;
         if (ILLEGAL_CHAR(ch = GETCH(System)))
             goto done;
     }
@@ -246,7 +246,7 @@ char READ_ID(FILE *System,
 
   done:
     *cp = '\0';
-    return err;
+    return (char)err;
 }
 
 /*============*/
@@ -258,7 +258,7 @@ char FIND_EQUAL(FILE *System)
     /* read whitespace from System until we see an equal sign. */
     register char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();
@@ -285,7 +285,7 @@ char GET_INT(FILE *System,
 {
     char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();
@@ -313,7 +313,7 @@ char GET_REAL(FILE *System,
 {
     char ch, ostr[50];
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();

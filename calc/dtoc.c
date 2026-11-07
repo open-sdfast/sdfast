@@ -16,8 +16,7 @@
 #include "calcprot.h"
 #include "language.h"
 
-/* in this file, bcopy() is used for overlapping moves */
-#define bcopy(src, dest, len)        memmove(dest, src, len)
+/* Overlapping moves. Not named bcopy: macOS headers already define that. */
 
 /* this is the number of digits to output when writing a constant */
 #define DBL_DIGITS        15
@@ -50,31 +49,31 @@ int NiceDTOC(scalar r,
         /* if this leaves a trailing decimal pt, remove it */
         if (sp == dp) --sp;
         /* now copy the exponent (or null) after the 1st non-zero */
-        bcopy(ep, sp + 1, (zp-ep)+1);
+        memmove(sp + 1, ep, (zp-ep)+1);
     }
 
     if (Lang == &Pascal_language || Lang == &Ada_language) {
         /* insert leading zero before decimal point if not present already */
         if (Out[0] == '.') {
-            bcopy(Out, Out + 1, strlen(Out) + 1);
+            memmove(Out + 1, Out, strlen(Out) + 1);
             Out[0] = '0';
         } else if (Out[0] == '-' && Out[1] == '.') {
-            bcopy(Out + 1, Out + 2, strlen(Out + 1) + 1);
+            memmove(Out + 2, Out + 1, strlen(Out + 1) + 1);
             Out[1] = '0';
         }
     } else {
         if (Out[0] == '0' && Out[1] == '.')
             /* delete 0 before . */
-            bcopy(Out + 1, Out, strlen(Out + 1) + 1);
+            memmove(Out, Out + 1, strlen(Out + 1) + 1);
         else if (Out[0] == '-' && Out[1] == '0')
             /* delete 0 before -0. */
-            bcopy(Out + 2, Out + 1, strlen(Out + 2) + 1);
+            memmove(Out + 1, Out + 2, strlen(Out + 2) + 1);
     }
     if ((sp = strchr(Out, expchar))) {
         if ((Lang == &Pascal_language || Lang == &Ada_language) &&
           !strchr(Out, '.')) {
             /* if no ., add .0 before exponent */
-            bcopy(sp, sp + 2, strlen(sp) + 1);
+            memmove(sp + 2, sp, strlen(sp) + 1);
             *sp++ = '.';
             *sp++ = '0';
         }
@@ -85,7 +84,7 @@ int NiceDTOC(scalar r,
         if (*dp == '-')
                 dp++;        /* keep negative exponent sign */
         while (*++sp == '0' && sp[1]) ;                /* skip leading zeros */
-        bcopy(sp, dp, strlen(sp) + 1);
+        memmove(dp, sp, strlen(sp) + 1);
         return (int)(dp - Out) + (int)strlen(dp);
     } else {
         int len = (int)strlen(Out);

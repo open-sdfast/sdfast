@@ -24,7 +24,7 @@ pExpr CONST_PART(pExpr F)
     /* Returns the constant factor of F, 1 if none.            */
     char Negated;
 
-    if ((Negated = IS_NEGOP(F)))
+    if ((Negated = (char)IS_NEGOP(F)))
         F = F->Opnd;
 
     F = IS_MUL(F) && IS_CONST(F->LeftOpnd) ? F->LeftOpnd : gScalarOne;

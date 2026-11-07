@@ -353,8 +353,8 @@ do_eprintf(
             if (!leave_lc && outstr == outtmp &&
               Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
                 for (cp = deststr; *cp; cp++)
-                    if (islower(*cp))
-                        *cp = toupper(*cp);
+                    if (islower((unsigned char)*cp))
+                        *cp = (char)toupper((unsigned char)*cp);
             }
             if (deststr == outtmp)        /* not a macro definition */
                 (*out_func)(outstr, (int)strlen(outstr),
@@ -427,7 +427,8 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {
-                register char ch = islower(*s) ? toupper(*s) : *s;
+                register char ch = (char)(islower((unsigned char)*s)
+                    ? toupper((unsigned char)*s) : *s);
                 putc(ch, stream);
                 s++;
             }
@@ -461,7 +462,8 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {
-                *output_str++ = islower(*s) ? toupper(*s) : *s;
+                *output_str++ = (char)(islower((unsigned char)*s)
+                    ? toupper((unsigned char)*s) : *s);
                 s++;
             }
         } else {
@@ -483,12 +485,12 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
  */
 /*VARARGS*/
 int 
-fprintfcnt(FILE *stream, char *fmt, ...)
+fprintfcnt(FILE *out, char *fmt, ...)
 {
     va_list argptr;
 
     va_start(argptr, fmt);
-    return vfprintf(stream, fmt, argptr);
+    return vfprintf(out, fmt, argptr);
 }
 
 /*VARARGS*/

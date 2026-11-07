@@ -346,7 +346,6 @@ pExpr MAKE_ZERO(NodeValueType_t T)
             return X;
         default:
             fatal("MAKE_ZERO: only works for scalar,vec,mat");
-            return NULL; /*NOTREACHED*/
     }
 } /* MAKE_ZERO */
 

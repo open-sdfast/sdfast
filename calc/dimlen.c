@@ -57,7 +57,6 @@ tIndex LEN1d(pExpr E)
             return DIMLEN(E->VarRef, E->NumIndices);
         default:
             fatal("LEN1d: disaster");
-            return -1; /*NOTREACHED*/
     }
 }
 

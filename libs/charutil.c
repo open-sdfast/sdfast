@@ -27,7 +27,7 @@ void UPSTR(char *S)
 
     for (cp = S; *cp; cp++)
         if (islower(*cp))
-            *cp = toupper(*cp);
+            *cp = (char)toupper((unsigned char)*cp);
 }
 
 /*============*/

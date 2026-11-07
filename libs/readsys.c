@@ -349,12 +349,12 @@ READ_SYSTEM(FILE *System,
          * after the `=' (one per joint DOF).
          */
         if (jntp->Pres[0] == NULLEXPR)
-            for (j = 0; j < jntp->JointDOF; j++) {
+            for (j = 0; j < jntp->JointDOF && j < 6; j++) {
                 jntp->Pres[j] = SCALAR_ZERO();
                 jntp->PresFlg[j] = 0;
             }
         else if (jntp->Pres[0] == SPECIALEXPR)
-            for (j = 0; j < jntp->JointDOF; j++) {
+            for (j = 0; j < jntp->JointDOF && j < 6; j++) {
                 jntp->Pres[j] = SCALAR_ONE();
                 jntp->PresFlg[j] = 0;
             }

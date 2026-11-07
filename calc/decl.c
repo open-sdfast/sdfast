@@ -356,7 +356,7 @@ declare_vars(FILE *F, unsigned decl_flags, ...)
 {
     va_list argptr;
     unsigned first_vtype;
-    unsigned num_suffix = -1;
+    unsigned num_suffix = (unsigned)-1;
     packedvar_t *pvar = NULL;
 
     va_start(argptr, decl_flags);
