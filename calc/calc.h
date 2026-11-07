@@ -285,42 +285,6 @@ typedef struct packedvar_s {
 } packedvar_t;
 
 
-#if 0
-/* external function declarations */
-
-pExpr ADD(), APPLYBIN_OP(), B1(), B2(), B3(), BIN_OP(), CONST_PART(),
-  COPY_EXPR(), CROSS(), DERIV(), DOT(), DO_ADD(), DO_DVD(),
-  DO_MUL(), DO_SUB(), DVD(), EVAL(), INDX(), INDX11(), INDX12(), INDX2(),
-  INDX21(), INDX22(), INUSE(), LIMIT_EXPR(), MAKE_EXPR_LIKE(), MAKE_ZERO(),
-  MAKE_ZERO_LIKE(), MAT(), MATMUL(), MATRIX_IDENT(), MATRIX_ZERO(), MUL(),
-  NEG(), NEWX(), NEW_1dARRAY(), NEW_2dARRAY(), NEW_MATX(), NEW_VECX(),
-  OTHER_PART(), OUTER(), PERM(), SC(), SCALAR_ONE(), SCALAR_ZERO(), TER_OP(),
-  SUB(), TILDA(), TRANSPOSE(), UNUSE(), UN_OP(), USEXIF(), VAL(), VAL1(),
-  VAL2(), VEC(), VECTOR_ZERO(), VREF(), VREF1(), VREF2(), CALL_FUNC(),
-  REMOVE_QUES();
-#if defined(RALPHA)
-#undef ABS
-#endif
-pExpr SINE(),COSINE(),ASINE(),ACOSN(),ABS(),SQRTT(),ATANG2();
-pExpr AND(),OR(),NOT(),EQUAL(),NOTEQUAL(),LESSTHAN(),GREATERTHAN(),
-      LESSOREQ(),GREATEROREQ(),NEARTO(),QUES(),QUESDVD();
-pSym newsym();
-long ADDOPS_USED(), ASGOPS_USED(), BYTES_USED(), DIVOPS_USED(), EXPR_COST(),
-  MULOPS_USED();
-Index_t LEN1d(), LEN2d();
-enum tExprOrder ORDER();
-char *PRINTNAME();
-
-int fprintfcnt(FILE *stream, char *fmt, ...);
-void eprintf(char *fmt, ...), efprintf(FILE *F, char *fmt, ...);
-char *esprintf(char *ostr, char *fmt, ...);
-
-double NUMVAL();
-int IFTHEN(),IFELSE();
-void IFEND();
-
-#endif
-
 /* Handy defines for use with CLEANVAR */
 #define CL_FLUSHCOMPLEX  0        /* flush out complicated stuff only */
 #define CL_FLUSHNONCONST 1        /* flush out all but constant stuff */

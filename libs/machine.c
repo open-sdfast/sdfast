@@ -12,6 +12,13 @@
  * limitations under the License.
  */
 
+#ifndef _WIN32
+/* getrusage is POSIX. -std=c11 does not expose it otherwise. */
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200112L
+#endif
+#endif
+
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -20,30 +27,13 @@
 /*                     MACHINE DEPENDENT ROUTINES                           */
 /*==========================================================================*/
 
-#ifdef vms
 #include <errno.h>
-#include <common/src/include/types.h>
-#include <time.h>
-#else
-#if defined(RHP)
-#include <sys/times.h>
-#include <limits.h>
 #include <stdio.h>
-#include <errno.h>
-#else
-#ifdef _WIN32
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
-#else
-#if defined(RSUN5) || defined(RNEC_MIPS)
-#include <sys/times.h>
-#endif
-#include <sys/errno.h>
-#include <sys/types.h>
-// #include <sys/time.h>
-#include <time.h>
+#ifndef _WIN32
 #include <sys/resource.h>
-#endif
-#endif
 #endif
 
 #include "libs.h"
@@ -171,29 +161,13 @@ double CPU_SECONDS(void)
 {
 #ifdef _WIN32
     return clock() / (double)CLOCKS_PER_SEC;
-#else 
-#ifdef vms
-    struct tbuffer tbuf;
-
-    times(&tbuf);
-    return tbuf.proc_user_time/100.;
 #else
-#if defined(RHP) || defined(RSUN5) || defined(RNEC_MIPS)
-    struct tms tbuf;
+    struct rusage usage;
 
-    times(&tbuf);
-    return ((double)tbuf.tms_utime)/CLK_TCK;
-#else
-    struct rusage rusage;
-
-    if (getrusage(RUSAGE_SELF, &rusage)) {
-#ifndef apollo /* apollo appears to screw up the error return */
+    if (getrusage(RUSAGE_SELF, &usage)) {
         perror("getrusage");
         exit(4);
-#endif
     }
-    return rusage.ru_utime.tv_sec + rusage.ru_utime.tv_usec / 1000000.;
-#endif
-#endif
+    return usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1000000.;
 #endif
 }

@@ -70,11 +70,16 @@ void USER_WARN(void)
 
 static char ILLEGAL_CHAR(int Ch)
 {
-    /* This routine defines the particular characters which are NEVER allowed
-       in an input file.  Mainly this is a guard against accidental control
-       characters. */
-
-    return Ch != EOF && (!isascii(Ch) || !isprint(Ch) && !isspace(Ch));
+    /* Characters which are never allowed in an input file. This is a guard
+     * against accidental control characters. ASCII printable characters and
+     * whitespace are allowed. ctype.h is only called for 0..127; a negative
+     * value other than EOF is illegal and is not passed to isprint/isspace.
+     */
+    if (Ch == EOF)
+        return 0;
+    if (Ch < 0 || Ch > 127)
+        return 1;
+    return !isprint(Ch) && !isspace(Ch);
 }
 
 /*=======*/

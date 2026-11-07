@@ -98,7 +98,6 @@ appear without any flags (except for @), field width, or precision:
 This routine is dependent on a character set in which 'H' thru 'Z' are
 contiguous.
 */
-extern int sd_check_for_interrupt(void);
 
 static int linepos, cmtmode, stmt_lexlev;
 int lexlev;
@@ -359,12 +358,6 @@ static void
 foutput_str(char *s, int len, int leave_lc, int begin_line)
 {
     int indent = (lexlev > 0 ? lexlev : 0) * Lang->indent;
-
-    /* This routine won't return if an interrupt is detected.  (Only 
-     * does anything if we're in Applied Motion mode, that is, linked
-     * in with the ApM engine.)
-     */
-    sd_check_for_interrupt();
 
     if (begin_line && !cmtmode && !linepos) {
         /* handle the special case of %B conversion.  It is assumed the string

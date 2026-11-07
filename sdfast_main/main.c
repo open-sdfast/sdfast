@@ -17,17 +17,8 @@
 #include "sdfast.h"
 #include "sdfaprot.h"
 #include "sderror.h"
-#ifdef apollo
-#include <strings.h>
-extern char *strchr();
-extern char *strrchr();
-#else
+#include <locale.h>
 #include <string.h>
-#endif
-
-#ifdef ardent
-extern fprintf();
-#endif
 
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
@@ -70,6 +61,12 @@ static void adj_stats(opstats_t opstats[],  int which);
 
 int main(int argc, char *argv[])
 {
+    /* Numeric literals in generated files must use '.' even when the
+     * process locale uses a comma. Only LC_NUMERIC is pinned; ctime
+     * stamps are unchanged.
+     */
+    setlocale(LC_NUMERIC, "C");
+
     string32 DateTime;
     opstats_t opstats[NUM_OP_COUNTS];
     FILE *dynF, *infoF, *libF, *sarF, *F;
@@ -504,13 +501,8 @@ Equation complexity:\n\
             printf("Library File %s generated.\n", sdfast_opt.libname);
     }
 
-#ifdef APPLIED_MOTION
-    FREE_SYSTEM(&SysI);
-    return EXIT_SUCCESS;
-#else
     FREE_SYSTEM(&SysI);
     exit(EXIT_SUCCESS);
-#endif
 
     /* If we branch to here, we have an exit or return status in
      * exitstat, and we have space allocated in SysI that must be
@@ -518,27 +510,9 @@ Equation complexity:\n\
      */
   error_return:
     FREE_SYSTEM(&SysI);
-#ifdef APPLIED_MOTION
-    return exitstat;
-#else
     exit(exitstat);
     return 0;
-#endif
 }
-
-/* If we're building the standalone version of SD/FAST, use a
- * stub for this routine rather than the real thing, which carries
- * along a lot of baggage.  Also, the heartbeat routine will look
- * at am_debug to decide what to say; that won't be present in the
- * standalone setup either.
- */
-#if defined(_WIN32) && !defined(APPLIED_MOTION)
-int am_debug;
-
-void EX2UI_heartbeat(void)
-{
-}
-#endif
 
 /* auxnoname
  *
@@ -708,95 +682,3 @@ adj_stats(opstats_t opstats[],
        opstats[which].ndovpk    * opstats[SDDOVPK].nassign +
        opstats[which].nfulltrq  * opstats[SDFULLTRQ].nassign;
 }
-
-#ifdef APPLIED_MOTION
-extern time_t time();
-static time_t last_intrchk;
-
-void
-sd_init_intrchk(void)
-{
-    last_intrchk = (time_t)0;
-}
-
-void
-sd_check_for_interrupt(void)
-{
-    time_t        now;
-
-    (void)time(&now);
-
-    if (now < last_intrchk + SD_INTRCHK_RATE) 
-        return;
-
-    if (mm_checkintr())
-        longjmp(sdfast_intr, 1);
-
-    (void)time(&last_intrchk);
-}
-#else
-/* This stub will be called even when we're not in APPLIED_MOTION,
- * but we won't ever interrupt in that case.
- */
-void
-sd_check_for_interrupt(void)
-{
-}
-#endif
-
-#ifdef NOTDEF
-void
-dump_opstats(opstats_t opstats[],
-             int which)
-{
-    opstats_t *op = &opstats[which];
-
-    printf("nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    printf("nldubsl=%d nldubsd=%d nmfrc=%d nlhs=%d nrhs=%d\n",
-        op->nldubsl,op->nldubsd,op->nmfrc,op->nlhs,op->nrhs);
-    printf("nfs0=%d nfsmult=%d nfsfull=%d nqrdcomp=%d nqrbslv=%d ndoww=%d\n",
-        op->nfs0,op->nfsmult,op->nfsfull,op->nqrdcomp,op->nqrbslv,op->ndoww);
-
-    
-    op = &opstats[SDLDUBSL];
-    printf("ldubsl: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDLDUBSD];
-    printf("ldubsd: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDMFRC];
-    printf("mfrc: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDLHS];
-    printf("lhs: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDRHS];
-    printf("rhs: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDFS0];
-    printf("fs0: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDFSMULT];
-    printf("fsmult: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDFSFULL];
-    printf("fsfull: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDQRDCOMP];
-    printf("qrdcomp: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDQRBSLV];
-    printf("qrbslv: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDDOWW];
-    printf("doww: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDUDOT0];
-    printf("udot0: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-    op = &opstats[SDUDOTM];
-    printf("udotm: nadd=%d nmul=%d ndiv=%d nassign=%d\n",
-        op->nadd,op->nmul,op->ndiv,op->nassign);
-}
-#endif

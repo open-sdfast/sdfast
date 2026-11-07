@@ -22,7 +22,6 @@
 extern CC_C int main(int argc, char* argv[]);
 extern CC_C int openaux(FILE** dynbF, char* dynname, int auxno);
 extern CC_C void auxnoname(int auxno, char* origname, int sz, char* auxname);
-extern CC_C void sd_check_for_interrupt(void );
 extern CC_C void kane_mm_decls(FILE* F);
 extern CC_C int COMPUTE_kane_mm(FILE* mainF, char* rouvar, int maxaux, char* dynname, int* nxtaux);
 extern CC_C void ordern_mm_decls(FILE* F);

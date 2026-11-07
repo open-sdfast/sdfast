@@ -12,12 +12,10 @@
  * limitations under the License.
  */
 
-#ifdef vms
-#define MACHINE        2
-#define SERNO        644
-#endif
-
-// Sherm 20260117
+/* Build identification stamped into generated files. The old per-platform
+ * serial (for example VMS MACHINE 2 / SERNO 644) was already overridden by
+ * these constants, so the open-source build id stays 10001.
+ */
 #define MACHINE 1
 #define SERNO 1
 
