@@ -105,20 +105,35 @@ int check_one(bool update, const std::filesystem::path& source,
   std::vector<std::string> produced = {names.dyn, names.sar, names.info,
                                        names.lib};
   auto spellings = path_spellings(sd);
+  // One library golden per language. Written from Kane fbar; every model
+  // is compared to it. The formulation banner is normalized away.
+  const bool library_source =
+      std::string(model.id) == "fbar" && !model.order_n;
 
   int rc = 0;
   for (const auto& filename : produced) {
     std::filesystem::path actual_path = work / filename;
     std::string canon = canonical_output_name(filename);
-    std::filesystem::path golden_path = golden_dir / canon;
+    const bool is_lib = filename == names.lib;
+    std::filesystem::path golden_path =
+        is_lib ? source / "tests" / "golden" / "lib" / canon
+               : golden_dir / canon;
     if (!std::filesystem::exists(actual_path)) {
       std::cerr << "[FAIL] " << label << " did not write " << filename << "\n";
       rc = 1;
       continue;
     }
-    std::string actual = normalize_generated(read_file(actual_path), spellings);
+    std::string actual = is_lib
+                             ? normalize_library(read_file(actual_path), spellings)
+                             : normalize_generated(read_file(actual_path), spellings);
     if (update) {
-      if (!write_file(golden_path, actual)) {
+      if (is_lib && !library_source)
+        continue;
+      // Store the Kane banner in the shared library; compare normalizes it.
+      std::string stored = is_lib ? normalize_generated(read_file(actual_path),
+                                                        spellings)
+                                  : actual;
+      if (!write_file(golden_path, stored)) {
         std::cerr << "[FAIL] cannot write " << golden_path << "\n";
         rc = 1;
       } else {
@@ -134,7 +149,9 @@ int check_one(bool update, const std::filesystem::path& source,
     }
     // Goldens are stored already normalized. Running the same pass again
     // is idempotent and still catches a clock stamp if one was missed.
-    std::string golden = normalize_generated(read_file(golden_path), {});
+    std::string golden_raw = read_file(golden_path);
+    std::string golden = is_lib ? normalize_library(golden_raw, {})
+                                : normalize_generated(golden_raw, {});
     std::string report;
     if (!compare_texts(actual, golden, {}, report)) {
       std::cerr << "[FAIL] " << label << " " << canon << "\n" << report;

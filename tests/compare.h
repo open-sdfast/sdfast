@@ -34,6 +34,12 @@ struct CompareOptions {
 std::string normalize_generated(std::string text,
                                 const std::vector<std::string>& abs_paths);
 
+// Same as normalize_generated, then collapse the formulation banner
+// ("Kane's formulation" / "Order(N) formulation") to FORMULATION.
+// sdlib's code does not depend on the model; only that banner does.
+std::string normalize_library(std::string text,
+                              const std::vector<std::string>& abs_paths);
+
 // Whitespace separates tokens and is not compared, so a CRT that prints
 // a slightly wider literal (and therefore wraps a line differently) does
 // not fail unless it adds or drops a real token. Non-numeric tokens must

@@ -406,6 +406,14 @@ std::string normalize_generated(std::string text,
   return text;
 }
 
+std::string normalize_library(std::string text,
+                              const std::vector<std::string>& abs_paths) {
+  text = normalize_generated(std::move(text), abs_paths);
+  replace_all(text, "Kane's formulation", "FORMULATION");
+  replace_all(text, "Order(N) formulation", "FORMULATION");
+  return text;
+}
+
 bool compare_texts(const std::string& actual, const std::string& golden,
                    const CompareOptions& opt, std::string& report) {
   // strtod honors LC_NUMERIC. Generated text always uses '.'.
@@ -561,6 +569,16 @@ int comparator_self_check() {
       " Equations contain   49 adds/subtracts/negates\n";
   rc |= expect_match("op count stays", normalize_generated(mem_a, {}),
                      normalize_generated(ops_b, {}), false);
+  std::string lib_kane =
+      "Generated TIMESTAMP by SD/FAST, Kane's formulation\nvoid sdroot() {}\n";
+  std::string lib_ordern =
+      "Generated TIMESTAMP by SD/FAST, Order(N) formulation\nvoid sdroot() {}\n";
+  rc |= expect_match("library banner", normalize_library(lib_kane, {}),
+                     normalize_library(lib_ordern, {}), true);
+  std::string lib_changed =
+      "Generated TIMESTAMP by SD/FAST, Order(N) formulation\nvoid sdrootx() {}\n";
+  rc |= expect_match("library body", normalize_library(lib_kane, {}),
+                     normalize_library(lib_changed, {}), false);
 
   std::string stamp1 =
       "Generated  7-Nov-2026 19:44:06 by SD/FAST, Kane's formulation\n"

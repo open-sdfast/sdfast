@@ -21,8 +21,9 @@ add_test(NAME sdfast_numeric COMMAND sdfast_tests numeric)
 add_test(NAME sdfast_build COMMAND sdfast_tests build)
 
 # Rerun sdfast on the .sd files stored under tests/golden and rewrite
-# the outputs. Linux/glibc is the reference checked in; other platforms
-# compare with tolerance. This does not refresh those .sd inputs.
+# the outputs. The shared library golden is rewritten once, from Kane
+# fbar. Linux/glibc is the reference checked in; other platforms compare
+# with tolerance. This does not refresh the .sd inputs.
 add_custom_target(update-golden
     COMMAND ${CMAKE_COMMAND} -E env SDFAST_UPDATE_GOLDEN=1
             $<TARGET_FILE:sdfast_tests> update
