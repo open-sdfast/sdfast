@@ -1,4 +1,4 @@
-#include "compare.hpp"
+#include "compare.h"
 
 #include <algorithm>
 #include <cctype>

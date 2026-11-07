@@ -1,5 +1,5 @@
-#ifndef SDFAST_REGRESS_HPP
-#define SDFAST_REGRESS_HPP
+#ifndef SDFAST_REGRESS_H
+#define SDFAST_REGRESS_H
 
 // Golden source comparison and the fbar numeric trajectory.
 // When SDFAST_UPDATE_GOLDEN is set (not "0"), rewrite tests/golden

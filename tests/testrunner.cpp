@@ -1,6 +1,6 @@
 #include "buildtest.h"
-#include "compare.hpp"
-#include "regress.hpp"
+#include "compare.h"
+#include "regress.h"
 
 #include <clocale>
 #include <cstdlib>

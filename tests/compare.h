@@ -1,5 +1,5 @@
-#ifndef SDFAST_COMPARE_HPP
-#define SDFAST_COMPARE_HPP
+#ifndef SDFAST_COMPARE_H
+#define SDFAST_COMPARE_H
 
 #include <filesystem>
 #include <string>
