@@ -3,6 +3,8 @@
 These tests lock what `sdfast` emits and what the four-bar example does,
 without changing the generator.
 
+CMake 3.21 or newer is required. The generator (`calc/`, `libs/`, `sdfast`) is built as ISO C17.
+
 ```
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build

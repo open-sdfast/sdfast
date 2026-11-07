@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 project(SDFAST C CXX)
 
 # Single-config generators (Makefiles, Ninja, MinGW) otherwise leave
@@ -27,12 +27,10 @@ file(GLOB SDFAST_SOURCES sdfast_main/*.c)
 add_executable(sdfast ${SDFAST_SOURCES})
 target_include_directories(sdfast PRIVATE sdfast_main)
 
-# Generator sources are ISO C11. C17 is a bugfix of C11 and would also
-# be fine, but CMake's C_STANDARD 17 needs CMake >= 3.21 and this
-# project still accepts 3.10. Extensions stay off so a GNU-mode `unix`
-# macro cannot sneak back in.
+# Generator sources are ISO C17. Extensions stay off so a GNU-mode
+# `unix` macro cannot sneak back in.
 set_target_properties(calc libs sdfast PROPERTIES
-    C_STANDARD 11
+    C_STANDARD 17
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF
 )
@@ -48,9 +46,12 @@ endif()
 set(SDFAST_C_COMPILER "${CMAKE_C_COMPILER}")
 set(SDFAST_CXX_COMPILER "${CMAKE_CXX_COMPILER}")
 
-# Try to enable Fortran (optional - if not found, Fortran tests are skipped)
-enable_language(Fortran OPTIONAL)
+# Fortran is optional. check_language is the CMake 3.21 way to skip a
+# missing compiler; enable_language(OPTIONAL) needs 3.25.
+include(CheckLanguage)
+check_language(Fortran)
 if(CMAKE_Fortran_COMPILER)
+    enable_language(Fortran)
     set(SDFAST_FORTRAN_COMPILER "${CMAKE_Fortran_COMPILER}")
 else()
     set(SDFAST_FORTRAN_COMPILER "")

@@ -16,6 +16,10 @@ Please use the GitHub Discussion feature for questions, or file Issues if you ha
 find problems. Pull requests would be greatly appreciated if you fix problems or want to make
 updates.
 
+### Build
+
+CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`.
+
 ### Note from Sherm 20260412
 
 Thanks to @esba1ley for adding Mac support and @DonyDominic for a first crack at CI.
