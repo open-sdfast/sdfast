@@ -698,8 +698,8 @@ C
       UVEL(1)= U(1)
       UPOS(1)= Q(1)
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   16 adds/subtracts/negates
 C                      26 multiplies
 C                       0 divides
@@ -803,8 +803,8 @@ C
         OQDOT(I)= UIN(I)
 100   CONTINUE
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -937,8 +937,8 @@ C
         VPKFLG= 1
       ENDIF
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    4 adds/subtracts/negates
 C                       4 multiplies
 C                       0 divides
@@ -1005,8 +1005,8 @@ C
 C Compute effect of loop hinge torques
 C
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -1088,8 +1088,8 @@ C
         INERFLG= 1
       ENDIF
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    5 adds/subtracts/negates
 C                      10 multiplies
 C                       0 divides
@@ -1178,8 +1178,8 @@ C
         FS0FLG= 1
       ENDIF
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   11 adds/subtracts/negates
 C                       6 multiplies
 C                       0 divides
@@ -1275,8 +1275,8 @@ C
         ENDIF
       ENDIF
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    4 adds/subtracts/negates
 C                       6 multiplies
 C                       0 divides
@@ -1444,8 +1444,8 @@ C
 C
       MTAU(1)= IMULT(1)
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -1535,8 +1535,8 @@ C
 C Op counts below do not include called subroutines
 C
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    9 adds/subtracts/negates
 C                       6 multiplies
 C                       0 divides
@@ -1613,8 +1613,8 @@ C
       FS(3)= FS0(3)
       FS(4)= FS0(4)
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -1692,8 +1692,8 @@ C
       FS(3)= 0D0
       FS(4)= 0D0
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -1771,8 +1771,8 @@ C
       FS(3)= (FS(3)+FS0(3))
       FS(4)= (FS(4)+FS0(4))
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    4 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -1851,8 +1851,8 @@ C
       FS(3)= (MTAU(3)+((MFK(2,1)*S4)+(MFK(2,2)*C4)))
       FS(4)= (MTAU(4)+MTK(2,3))
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    9 adds/subtracts/negates
 C                       6 multiplies
 C                       0 divides
@@ -1930,8 +1930,8 @@ C
       FS(3)= (FS(3)+FS0(3))
       FS(4)= (FS(4)+FS0(4))
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    4 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -2043,8 +2043,8 @@ C
 C Op counts below do not include called subroutines
 C
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   27 adds/subtracts/negates
 C                      19 multiplies
 C                       0 divides
@@ -2253,8 +2253,8 @@ C Compute constraint acceleration errors
 C
       ROUSTATE= 3
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   16 adds/subtracts/negates
 C                      10 multiplies
 C                       0 divides
@@ -3274,8 +3274,8 @@ C
         WWFLG= 1
       ENDIF
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    4 adds/subtracts/negates
 C                       4 multiplies
 C                       0 divides
@@ -3355,8 +3355,8 @@ C
         OUDOT0(I)= UDOT(I)
 5     CONTINUE
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -3501,8 +3501,8 @@ C
         OUDOTM(I)= UDOT(I)
 10    CONTINUE
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    0 adds/subtracts/negates
 C                       0 multiplies
 C                       0 divides
@@ -3680,8 +3680,8 @@ C
         OUDOT(I)= UDOT(I)
 110   CONTINUE
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    7 adds/subtracts/negates
 C                       2 multiplies
 C                       0 divides
@@ -3785,8 +3785,8 @@ C
 375   CONTINUE
       CALL SDRHS
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    5 adds/subtracts/negates
 C                       1 multiplies
 C                       0 divides
@@ -4002,8 +4002,8 @@ C
 C Compute reaction forces for tree weld joints
 C
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   50 adds/subtracts/negates
 C                      13 multiplies
 C                       0 divides
@@ -4074,8 +4074,8 @@ C
       KE= (.5D0*((U(1)*U(1))+((100D0*(WK(4,3)*WK(4,3)))+((VNK(3,1)*
      & VNK(3,1))+(VNK(3,2)*VNK(3,2))))))
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain    6 adds/subtracts/negates
 C                      10 multiplies
 C                       0 divides
@@ -4157,8 +4157,8 @@ C
       ICM(3,2)= ICM(2,3)
       ICM(3,3)= (101D0+(.5D0*((RNK(3,1)*RNK(3,1))+(RNK(3,2)*RNK(3,2)))))
 C
-C  Used 0.00 seconds CPU time,
-C  0 additional bytes of memory.
+C  Used TIMESTAMP seconds CPU time,
+C  TIMESTAMP additional bytes of memory.
 C  Equations contain   13 adds/subtracts/negates
 C                      26 multiplies
 C                       0 divides

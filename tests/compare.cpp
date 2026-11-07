@@ -303,6 +303,28 @@ void strip_gentime_checks(std::string &text) {
   }
 }
 
+// END_COMPSUB prints "Used N seconds CPU time" and "N additional bytes
+// of memory" from CPU_SECONDS() and sbrk(). The byte count is whichever
+// malloc happened to grow the break during that routine, so the same run
+// can report 0 or 135168, and two machines swap which routine gets the
+// bump. The add/multiply counts that follow are the real lock and stay.
+void replace_number_before(std::string &text, const std::string &tail) {
+  size_t pos = 0;
+  while ((pos = text.find(tail, pos)) != std::string::npos) {
+    size_t j = pos;
+    while (j > 0 && (text[j - 1] == ' ' || text[j - 1] == '\t'))
+      --j;
+    size_t end = j;
+    while (j > 0 &&
+           (std::isdigit(static_cast<unsigned char>(text[j - 1])) ||
+            text[j - 1] == '.'))
+      --j;
+    if (j < end)
+      text.replace(j, end - j, "TIMESTAMP");
+    pos += tail.size();
+  }
+}
+
 void strip_cpu_trailer(std::string &text) {
   const std::string key = "CPU seconds used:";
   size_t pos = 0;
@@ -379,6 +401,8 @@ std::string normalize_generated(std::string text,
   strip_gentime(text);
   strip_gentime_checks(text);
   strip_cpu_trailer(text);
+  replace_number_before(text, " seconds CPU time");
+  replace_number_before(text, " additional bytes of memory");
   return text;
 }
 
@@ -524,6 +548,19 @@ int comparator_self_check() {
   std::string serial_b = "sdserialno(&i);\nif (i != 10002) {\n";
   rc |= expect_match("serial stays", normalize_generated(serial_a, {}),
                      normalize_generated(serial_b, {}), false);
+  std::string mem_a =
+      "Used 0.00 seconds CPU time,\n 0 additional bytes of memory.\n"
+      " Equations contain   48 adds/subtracts/negates\n";
+  std::string mem_b =
+      "Used 0.02 seconds CPU time,\n 135168 additional bytes of memory.\n"
+      " Equations contain   48 adds/subtracts/negates\n";
+  rc |= expect_match("sbrk footer", normalize_generated(mem_a, {}),
+                     normalize_generated(mem_b, {}), true);
+  std::string ops_b =
+      "Used 0.02 seconds CPU time,\n 135168 additional bytes of memory.\n"
+      " Equations contain   49 adds/subtracts/negates\n";
+  rc |= expect_match("op count stays", normalize_generated(mem_a, {}),
+                     normalize_generated(ops_b, {}), false);
 
   std::string stamp1 =
       "Generated  7-Nov-2026 19:44:06 by SD/FAST, Kane's formulation\n"

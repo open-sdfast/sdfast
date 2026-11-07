@@ -1389,8 +1389,8 @@ Set lqs -- sdpsstate may override some
     lq[0] = eul1[0];
     lq[1] = eul1[1];
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   58 adds/subtracts/negates
                      76 multiplies
                       0 divides
@@ -1430,8 +1430,8 @@ Convert velocities to qdots.
         oqdot[i] = uin[i];
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    0 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -1475,8 +1475,8 @@ Compute Vpk (partial velocities)
         vpkflg = 1;
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    2 adds/subtracts/negates
                       4 multiplies
                       0 divides
@@ -1498,8 +1498,8 @@ Compute forces due to loop taus
         ltauflg = 1;
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    1 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -1529,8 +1529,8 @@ Compute Atk (inertial linear acceleration)
         inerflg = 1;
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    4 adds/subtracts/negates
                       9 multiplies
                       0 divides
@@ -1575,8 +1575,8 @@ Compute fs0 (RHS ignoring constraints)
         fs0flg = 1;
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   25 adds/subtracts/negates
                      13 multiplies
                       0 divides
@@ -1623,8 +1623,8 @@ Check for singular mass matrix
         }
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    4 adds/subtracts/negates
                       9 multiplies
                       0 divides
@@ -1731,8 +1731,8 @@ Calculate forces due to constraint multipliers.
     Toutb[1][1] = ltc[1][1];
     Toutb[1][2] = -(.265*lfc[1][0]);
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   33 adds/subtracts/negates
                      29 multiplies
                       0 divides
@@ -1778,8 +1778,8 @@ Compute taus (RHS ignoring constraints and inertial forces)
 Op counts below do not include called subroutines
 */
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   20 adds/subtracts/negates
                       8 multiplies
                       0 divides
@@ -1799,8 +1799,8 @@ Compute Fs (ignoring multiplier forces)
     fs[3] = fs0[3];
     fs[4] = fs0[4];
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    0 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -1822,8 +1822,8 @@ Compute Fs (multiplier-generated forces only)
     fs[3] = mfk[3][1];
     fs[4] = (mtk[4][2]+(.05*mfk[4][0]));
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    6 adds/subtracts/negates
                       5 multiplies
                       0 divides
@@ -1844,8 +1844,8 @@ Compute Fs (including all forces)
     fs[3] = (fs[3]+fs0[3]);
     fs[4] = (fs[4]+fs0[4]);
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    5 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -1867,8 +1867,8 @@ Compute Fs (generic multiplier-generated forces)
     fs[3] = (mfk[3][1]+mtau[3]);
     fs[4] = (mtau[4]+(mtk[4][2]+(.05*mfk[4][0])));
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   14 adds/subtracts/negates
                       8 multiplies
                       0 divides
@@ -1889,8 +1889,8 @@ Compute Fs (incl generic mult & other forces)
     fs[3] = (fs[3]+fs0[3]);
     fs[4] = (fs[4]+fs0[4]);
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    5 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -1969,8 +1969,8 @@ Now calculate the torques
 Op counts below do not include called subroutines
 */
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   60 adds/subtracts/negates
                      33 multiplies
                       0 divides
@@ -2161,8 +2161,8 @@ Compute constraint acceleration errors
     aerr[9] = ((vt19[1][1]-(2.*(u[4]*vt12[1][0])))+((udot[4]*vt10c[1][0])-(
       vt11[1][1]*w2w2[4])));
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   49 adds/subtracts/negates
                      45 multiplies
                       0 divides
@@ -2815,8 +2815,8 @@ Form QR decomposition of WW
         wwflg = 1;
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain  111 adds/subtracts/negates
                      99 multiplies
                       0 divides
@@ -2842,8 +2842,8 @@ Solve equations ignoring constraints
         oudot0[i] = udot[i];
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    0 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -2895,8 +2895,8 @@ Compute udots due only to multipliers
         oudotm[i] = udot[i];
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain    0 adds/subtracts/negates
                       0 multiplies
                       0 divides
@@ -3008,8 +3008,8 @@ Compute final udots
         oudot[i] = udot[i];
     }
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   38 adds/subtracts/negates
                      22 multiplies
                       0 divides
@@ -3057,8 +3057,8 @@ void sdresid(double eqdot[5],
     }
     sdrhs();
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   16 adds/subtracts/negates
                      11 multiplies
                       0 divides
@@ -3217,8 +3217,8 @@ Compute reaction forces for loop joints
 Compute reaction forces for tree weld joints
 */
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   75 adds/subtracts/negates
                      27 multiplies
                       0 divides
@@ -3259,8 +3259,8 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
       vnk[2][0])+(vnk[2][1]*vnk[2][1]))))+((.68*(u[1]*u[1]))+(15.87*(u[0]*u[0]))
       )))));
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   31 adds/subtracts/negates
                      43 multiplies
                       0 divides
@@ -3305,8 +3305,8 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
       +(rnk[2][1]*rnk[2][1])))+(15.87*(q[0]*q[0])))))-(23.58*((com[0]*com[0])+(
       com[1]*com[1])))));
 /*
- Used 0.00 seconds CPU time,
- 0 additional bytes of memory.
+ Used TIMESTAMP seconds CPU time,
+ TIMESTAMP additional bytes of memory.
  Equations contain   19 adds/subtracts/negates
                      41 multiplies
                       0 divides

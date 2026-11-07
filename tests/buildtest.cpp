@@ -237,8 +237,12 @@ int test_sdfast_example(const test_program &t,
     }
 
     if (base == "quickret") {
-
-      std::vector<std::string> gen = {"-gl", "-psd2"};
+      // quickret.f calls SD2ROOT. A library-only run with no input file
+      // leaves system dimensions at 0; malloc(0) is non-null on glibc and
+      // null on macOS, and that path segfaults there. Pass the model so
+      // the sd2-prefixed library is generated the same way as sdlib.
+      std::vector<std::string> gen = {"-l" + t.lang, "-gl", "-psd2",
+                                     sd_file.string(), base};
       if (run_program(sdfast_bin.string(), gen, build_dir.string()) !=
           EXIT_SUCCESS) {
         std::cerr << "sdfast preprocessing failed\n";
