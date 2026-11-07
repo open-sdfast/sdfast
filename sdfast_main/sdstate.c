@@ -34,16 +34,6 @@ static void compute_aux_wk(FILE *F);
  *
  * t,q,u, are inputs.
  *
- * Sneaky: if a magic_no has been supplied on the command line, the
- * routine declaration changes to
- *
- *            sdstate(t,u,q,magic)
- *
- * Note that q and u are reversed, and the magic number should be
- * passed in.  Quiet, but terrible, things will happen if the wrong
- * number is supplied.  We give the magic number the discrete name "n"
- * rather than "magic" in the generated code.
- *
  * Note that sdstate() has few local variables.  This is
  * no accident!  Everything that sdstate() generates is put in the global
  * struct or common block `sdgstate'.  This includes all intermediate
@@ -108,20 +98,11 @@ void PRINT_SDSTATE(FILE *F,
     esprintf(str_sl, "%d", SysI.sl);
     esprintf(str_nq, "%d", SysI.nq);
 
-    if (sdfast_opt.magic_no) {
-        declare_proc(F, 0, "state", 
-          VT_REAL,                        "timein",
-          VT_USER, &SysI.type_Arr_s,    "uin",
-          VT_USER, &SysI.type_Arr_nq,   "qin", 
-          VT_INTEGER,                         "n",
-          0);
-    } else {
-        declare_proc(F, 0, "state", 
-          VT_REAL,                        "timein",
-          VT_USER, &SysI.type_Arr_nq,   "qin", 
-          VT_USER, &SysI.type_Arr_s,    "uin",
-          0);
-    }
+    declare_proc(F, 0, "state", 
+      VT_REAL,                        "timein",
+      VT_USER, &SysI.type_Arr_nq,   "qin", 
+      VT_USER, &SysI.type_Arr_s,    "uin",
+      0);
 
     efprintf(F, "%{\n\
 Compute kinematic information and store it in sdgstate.\n\n");
@@ -249,10 +230,6 @@ Compute kinematic information and store it in sdgstate.\n\n");
     ENDFOR("100");
     lasg += SysI.nq;
 
-    /* Save the magic number. */
-    if (sdfast_opt.magic_no)
-        SET("ii", "n");
-
     /* This may set lasterr if q is severely unnormalized. */
     if (SysI.nb) {
         efprintf(F, "%{\nNormalize Euler parameters in state\n%}");
@@ -288,9 +265,6 @@ Compute kinematic information and store it in sdgstate.\n\n");
     if (sdfast_opt.verbose)
         printf("Direction cosines computed. (CPU: %g MEM: %lu)\n",
           CPU_SECONDS() - gStartTime, (unsigned long)BYTES_USED());
-
-    /* This says that we passed all security checks. */
-    UtoQexpr = SCALAR_ONE();
 
     efprintf(F, "%{\nCompute q-related auxiliary variables\n%}");
     compute_aux_q(F);

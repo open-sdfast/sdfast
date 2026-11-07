@@ -148,11 +148,6 @@ COMPUTE_kane_mm(FILE         *mainF,
             DISPOSE_EXPR(temp);
             eltcnt++;
         }
-        if (sdfast_opt.magic_no && i == (SysI.s/2)) {
-          IFCOND efprintf(F, "ii%s%d", NE, sdfast_opt.magic_no);
-            THEN RETURN;
-          ENDIF;
-        }
     }
 
     if (F != mainF) {
@@ -544,12 +539,6 @@ COMPUTE_ordern_mm(FILE         *mainF,
                                               MATMUL(INDX(psiD22x,k),
                                                      TRANSPOSE(INDX(N22x,k))))),
                                       VREF1(P22,i)));
-
-        if (sdfast_opt.magic_no && k == (SysI.s/2)) {
-          IFCOND efprintf(F, "ii%s%d",NE, sdfast_opt.magic_no);
-            THEN RETURN;
-          ENDIF;
-        }
 
     skiprest:
         DISPOSE_EXPR(UNUSE(Pdtx));

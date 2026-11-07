@@ -18,7 +18,7 @@
         0        success
         1        bad command line syntax
         2        out of memory
-        3        key problem
+        3        unused (was the license-key failure)
         4        file open or other OS error
         5        error in input file
         6        singular mass matrix
@@ -35,7 +35,7 @@
 #define EXIT_SUCCESS     0
 #define EXIT_BADCMDLINE  1
 #define EXIT_OUTOFMEMORY 2
-#define EXIT_KEYPROBLEM  3
+/* 3 was the license-key failure. Left unused so later statuses stay put. */
 #define EXIT_FILEERR     4
 #define EXIT_INFILEERR   5
 #define EXIT_SINGMASSMAT 6

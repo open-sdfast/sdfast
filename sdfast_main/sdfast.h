@@ -306,15 +306,6 @@ typedef struct {
     sym fk_, tk_, tau_;                                    /* outputs */
 } mfrcsym_t;
 
-/* Global expressions */
-
-#ifndef SDMAIN
-extern 
-#endif
-expr 
-/* This expression is used as part of security checking in MAIN. */
-  UtoQexpr;
-
 #ifndef SDMAIN
 extern 
 #endif

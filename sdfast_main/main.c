@@ -89,12 +89,6 @@ int main(int argc, char *argv[])
        verify that both were generated at the same time. */
     gGenerateTime = GETNUMTIME();
 
-    /* We use this to quietly determine that a user is trying to get around */
-    /* the expiration date.                                                 */
-    /* If s/he tries to trick us, this will still be nil after calling      */
-    /* PRODUCE_EQUATIONS.                                                   */
-    UtoQexpr = NULL;
-
     /* Zero out all op counts, just to be sure. */
     for (i=0; i<NUM_OP_COUNTS; i++)
         ZERO_OPCNTS(&opstats[i]);
@@ -199,10 +193,8 @@ int main(int argc, char *argv[])
 
     /* The Dynamics File (SDINIT, SDSTATE, SDLHS, SDRHS, SDDERIV, ...) */
 
-    if (!sdfast_opt.gendyn) {
-        UtoQexpr = SCALAR_ONE();        /* don't do additional security check */
+    if (!sdfast_opt.gendyn)
         goto dynDone;
-    }
 
     if (openw(&dynF, sdfast_opt.dynname)) {
         exitstat = EXIT_FILEERR;
@@ -516,26 +508,8 @@ Equation complexity:\n\
     FREE_SYSTEM(&SysI);
     return EXIT_SUCCESS;
 #else
-    if (UtoQexpr) {
-        FREE_SYSTEM(&SysI);
-        exit(EXIT_SUCCESS);
-    }
-
-    /* Failed second security check. */
-
-    fprintf(stderr, "\
-                *** YOU HAVE BEEN CAUGHT ***\n\
-It is a felony to attempt to subvert the expiration date on this\n\
-program.  If you continue, Symbolic Dynamics will prosecute\n\
-you to the fullest extent possible.  To obtain a runnable version\n\
-of SD/FAST, contact Symbolic Dynamics Customer Support by email\n\
-at support@symdyn.com, telephone +1 650 960-1532, fax +1 650 960-0338\n\
-or send mail to Symbolic Dynamics, Inc., 561 Bush Street,\n\
-Mountain View, CA 94041.  In the long run, the cost will\n\
-be much lower for you if you purchase or lease a new version than\n\
-if you try to steal one.\n");
-    exitstat = EXIT_KEYPROBLEM;
-    goto error_return;
+    FREE_SYSTEM(&SysI);
+    exit(EXIT_SUCCESS);
 #endif
 
     /* If we branch to here, we have an exit or return status in

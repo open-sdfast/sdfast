@@ -49,7 +49,7 @@ typedef struct {
     double grav_[3],mk_[1],ik_[1][3][3],pin_[1][3];
     double rk_[1][3],ri_[1][3],pres_[1],stabvel_,stabpos_;
     int mfrcflg_,roustate_,vpkflg_,inerflg_,mmflg_,mmlduflg_,wwflg_,ltauflg_,
-      fs0flg_,ii_,mmap_[1];
+      fs0flg_,mmap_[1];
     int gravq_[3],mkq_[1],ikq_[1][3][3],pinq_[1][3],rkq_[1][3],riq_[1][3],presq_
       [1],stabvelq_,stabposq_;
     double mtot_,psmkg_,rhead_[1][3],rcom_[1][3],mkrcomt_[1][3][3],psikg_[3][3],
@@ -88,7 +88,6 @@ typedef struct {
 #define wwflg (sdginput.wwflg_)
 #define ltauflg (sdginput.ltauflg_)
 #define fs0flg (sdginput.fs0flg_)
-#define ii (sdginput.ii_)
 #define mmap (sdginput.mmap_)
 #define gravq (sdginput.gravq_)
 #define mkq (sdginput.mkq_)
@@ -339,7 +338,6 @@ sdginput_t sdginput = {
     /* wwflg */ 0,
     /* ltauflg */ 0,
     /* fs0flg */ 0,
-    /* ii */ 0,
     /* mmap[0] */ 0,
 
 /* Which parameters were "?" (1) or "<nominal>?" (3) */

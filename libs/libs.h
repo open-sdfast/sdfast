@@ -720,7 +720,6 @@ typedef struct {
     int              precision;   /* single or double */
     int              verbose;     /* 0, 1, or 2 */
     int              breakup;     /* break up dyn file into multiple files? */
-    int              magic_no;    /* magic number for security (0 if none) */
     struct language* lang;        /* C, FORTRAN */
     char*            prefix;      /* external symbol prefix */
     char*            infile;      /* Input File name */

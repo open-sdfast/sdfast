@@ -287,12 +287,6 @@ void generic_kane_fs(FILE *F,
             SINDX(fsx, p, VREF1(fs,p));
         } else 
             SINDX(fsx, p, temp);
-
-        if (sdfast_opt.magic_no && p == (SysI.s/2)) {
-          IFCOND efprintf(F, "ii%s%d", NE, sdfast_opt.magic_no);
-            THEN RETURN;
-          ENDIF;
-        }
     }
 
     taux = UNUSE(taux);
@@ -372,12 +366,6 @@ void generic_ordern_fs(FILE *F,
             temp = ADD(INDX(Tstarkx,i), MATMUL(VAL(tvec1),
                                                TRANSPOSE(VAL1(Cik,k))));
             FLUSH_VEC_NONCONST(F,Tstark,i,Tstarkx,temp);
-        }
-
-        if (sdfast_opt.magic_no && k == (SysI.s/2)) {
-          IFCOND efprintf(F, "ii%s%d", NE, sdfast_opt.magic_no);
-            THEN RETURN;
-          ENDIF;
         }
     }
 

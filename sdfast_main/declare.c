@@ -59,8 +59,6 @@ void declare_sdginput_vars(FILE *F,
         "mfrcflg", "roustate",
         "vpkflg", "inerflg", "mmflg", "mmlduflg", "wwflg",
         "ltauflg", "fs0flg", 
-        "ii",       /* Naughty variable for secure applications.          */
-                    /* ii is the magic no passed to sdstate.                  */
         "mmap",
         "gravq", "mkq", "ikq", "pinq", "rkq", "riq", "presq", "stabvelq", 
         "stabposq", 
@@ -88,7 +86,6 @@ void declare_sdginput_vars(FILE *F,
           VT_DUP,                         "wwflg",
           VT_DUP,                         "ltauflg",
           VT_DUP,                         "fs0flg",
-          VT_DUP,                         "ii",
           VT_USER, &SysI.type_IntArr_s,   "mmap",
           0);
         declare_vars(F, decl_flags,
