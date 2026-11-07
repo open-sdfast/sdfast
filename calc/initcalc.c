@@ -155,12 +155,14 @@ void SET_LANGUAGE(struct language *language)
 
 void SET_PREFIX(char *Prefix)
 {
-    strncpy(gPrefix,Prefix,33);
+    /* gPrefix is 33 bytes. Keep a terminator even if Prefix is longer. */
+    strncpy(gPrefix, Prefix, sizeof gPrefix - 1);
+    gPrefix[sizeof gPrefix - 1] = '\0';
 }
 
 /* fatal(s)
    Print the string + newline to stderr and abort */
-void fatal(char *s)
+_Noreturn void fatal(char *s)
 {
     fputs(s, stderr);
     putc('\n', stderr);

@@ -92,9 +92,9 @@ void RESET_OPS(void)
     register tUnaryOperator unop;
 
     for (binop = cAdd; binop <= cDeriv; binop++)
-        gBinOpCount[binop] = 0;
+        gBinOpCount[(unsigned char)binop] = 0;
     for (unop = cNegate; unop <= cNegate; unop++)
-        gUnOpCount[unop] = 0;
+        gUnOpCount[(unsigned char)unop] = 0;
     gAsgCount = 0;
 }
 

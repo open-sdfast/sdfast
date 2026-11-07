@@ -111,7 +111,7 @@ void parse_cmdline(int argc,
 
         if (*arg == OPT_CHAR) {
             /* an option letter follows */
-            while (ch = *++arg) {
+            while ((ch = *++arg)) {
                 switch (ch) {
                 case 's':
                     sdfast_opt.precision = OPT_SINGLE;
@@ -205,7 +205,7 @@ void parse_cmdline(int argc,
                       } else
                           namep = "";
                     }
-                    while (ch2 = *namep++) {
+                    while ((ch2 = *namep++)) {
                         switch (ch2) {
                         case 'd': case 'D':
                             sdfast_opt.gendyn  = 1; break;

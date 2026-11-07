@@ -85,6 +85,9 @@ tIndex LEN2d(pExpr E)
             return E->NodeValueType.Dim2;
         case cVarRefNode:
             return DIMLEN(E->VarRef, E->NumIndices + 1);
+    
+        default:
+            break;
     }
     return -1; /*NOTREACHED*/
 }

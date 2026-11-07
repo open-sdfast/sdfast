@@ -506,6 +506,9 @@ PROCESS_VAR(FILE                  *System,
                 case cRbearingWord:
                     jntp->JointKind = cRevBearingJoint;
                     break;
+            
+                default:
+                    break;
             }
             jntp->JointDOF = JointInfo[(int)jntp->JointKind].dof;
 

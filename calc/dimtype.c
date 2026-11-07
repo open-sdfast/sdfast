@@ -159,5 +159,8 @@ void DIMTYPE(pSym V,
                     DIM_TOO_BIG(6, V, Dim);
             }
             break;
+    
+        default:
+            break;
     }
 }        /* DIMTYPE */

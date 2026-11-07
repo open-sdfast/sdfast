@@ -60,7 +60,7 @@ void PRINT_SDSTATE(FILE *F,
     long lasg;
     char str_n[10], str_s[10], str_nq[10], str_sl[10];
     sym e1,e2,e3,e4;
-    expr perrx,verrx,tempx;
+    expr perrx = NULL, verrx = NULL, tempx;
     int i,first;
     double fiveaway;
 

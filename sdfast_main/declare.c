@@ -969,21 +969,24 @@ void do_common(FILE *F,
 
     if (more == 0)
         efprintf(F,"common/%@A%s/ ",sname);
-    while(nm = *vnames++) 
+    while ((nm = *vnames++)) {
         if (more)
             efprintf(F,",%s", nm);
         else {
             efprintf(F,"%s", nm);
             more = 1;
         }
-    if (cond)
-        while(nm = *condvnames++) 
+    }
+    if (cond) {
+        while ((nm = *condvnames++)) {
             if (more)
                 efprintf(F,",%s", nm);
             else {
                 efprintf(F,"%s", nm);
                 more = 1;
             }
+        }
+    }
 }
 
 /*
@@ -1000,9 +1003,9 @@ void do_defines(FILE *F,
            char *condvnames[])
 {
     char *nm;
-    while(nm = *vnames++) 
+    while ((nm = *vnames++)) 
         efprintf(F,"#define %s (%@A%s.%s_)\n", nm, sname, nm);
     if (cond)
-        while(nm = *condvnames++) 
+        while ((nm = *condvnames++)) 
             efprintf(F,"#define %s (%@A%s.%s_)\n", nm, sname, nm);
 }

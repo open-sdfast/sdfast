@@ -414,7 +414,7 @@ doww_head(FILE      *F,
           sym       *dZ1,
           sym       *dZ2)
 {
-    sym umult,dfk,dtk,dtau;
+    sym umult = NULL,dfk,dtk,dtau;
     sym dlfci,dlfc,dltc,dltci,dTinb,dToutb;
     sym dltaufi, dltaufo, dltauti, dltauto;
     char rouname[100];

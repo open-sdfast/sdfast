@@ -73,7 +73,7 @@ pExpr EVAL(register pExpr E)
     /* the original expression, except for nodes whose protection=cPermanent. */
     /* This avoids potential disasters which could occur if variables are     */
     /* disposed later, and EVAL has used their values in some expression.     */
-    pExpr X, V;
+    pExpr X = NULL, V;
     register tIndex I;
 
     E = INUSE(E);        /* we don't want E to get hurt yet */
@@ -129,6 +129,9 @@ pExpr EVAL(register pExpr E)
         case cFunction2CallNode:
             X = CALL_FUNC2(E->Func2VarRef->WhichFunction,
                            EVAL(E->Func2CallParm1), EVAL(E->Func2CallParm2));
+            break;
+    
+        default:
             break;
     }        /* case */
 

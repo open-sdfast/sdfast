@@ -361,6 +361,9 @@ PRINT_SDDOMM(FILE           *F,
                 case OPT_EXP2:         if (COMPUTE_ordern_mm(F,"routine",
                                         maxaux,dynname,nxtaux))    return 1;
                                     break;
+            
+                default:
+                    break;
             }
         }
 
@@ -820,7 +823,7 @@ void PRINT_SDRHS(FILE *F,
             opstats_t *opcnt)
 {
     long ldiv, lasg;
-    expr aerrx;
+    expr aerrx = NULL;
     int i;
 
     START_COMPSUB(opcnt);
@@ -1078,6 +1081,9 @@ void PRINT_SDFSROUTINE(FILE *F,
                       break;
         case cFSgenFull: declare_proc(F, 0, "fsgenfull", 0);
                       break;
+    
+        default:
+            break;
     }
 
     efprintf(F, Lang->proc_dbegin);
@@ -1174,6 +1180,9 @@ void PRINT_SDFSROUTINE(FILE *F,
             for (i=0; i<SysI.s; i++)
                 PRINT_ASSN1(F, PRINTNAME(fs), i,
                     ADD(VREF1(fs,i), VAL1(fs0,i)));
+            break;
+    
+        default:
             break;
     }
     fflush(F);
@@ -1284,6 +1293,9 @@ void PRINT_SDREAC(FILE *F,
                 fexpr = VECTOR_ZERO();
                 texpr = VECTOR_ZERO();
                 break;
+            
+                default:
+                    break;
             }
 
             fexpr = INUSE(ADD(fexpr, VAL1(lfc,i)));

@@ -131,6 +131,9 @@ void COMPUTE_qdot(FILE *F)
                 bno++;
                 b += 2;
                 break;
+        
+            default:
+                break;
         }
     }
 

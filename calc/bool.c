@@ -64,8 +64,8 @@ MMBOOL IS_NEG(pExpr E)
     /* true if E is a NEGOP, or a negative scalar constant */
 
     /* first part is same as IS_NEGOP */
-    return E->NodeKind == cUnaryOperatorNode && E->UnOp == cNegate ||
-      E->NodeKind == cScalarConstNode && E->ScalarValue < 0;
+    return (E->NodeKind == cUnaryOperatorNode && E->UnOp == cNegate) ||
+      (E->NodeKind == cScalarConstNode && E->ScalarValue < 0);
 }
 
 /*========*/

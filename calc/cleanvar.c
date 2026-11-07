@@ -107,7 +107,7 @@ char PrintAll)
      * In either case, we'll replace the expression with a VREF 
      * unless the expression is a constant or nil.           
      */
-    pExpr E, LimitedExpr, NoIfExpr;
+    pExpr E = NULL, LimitedExpr, NoIfExpr;
     tIndex i, j;
     int HighestTemp, repl;
     pExpr tempXi, tempVXi;
@@ -195,6 +195,9 @@ char PrintAll)
                     DISPOSE_EXPR(tempXi);        
                     DISPOSE_EXPR(tempVXi);
                 }
+            break;
+    
+        default:
             break;
     }
     DISPOSE_EXPR(UNUSE(X));
@@ -365,6 +368,9 @@ void CLEANVAR(FILE *F,
         case cMatrixVal:
         case cArray2dVal:
             CLEAN2d(F, V, PrintAll);
+            break;
+    
+        default:
             break;
     }
 }

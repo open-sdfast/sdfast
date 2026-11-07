@@ -98,7 +98,8 @@
  */
 void COMPUTE_lptemps(FILE *F)
 {
-    register Index_t j,inb,outb,ip,op;
+    register Index_t j,inb,outb,ip = 0,op = 0;
+    (void)op;
     JointKind_t jk;
     expr Coix;
     expr vt1x,vt6x,vt7x,vt10x,vt10cx,vt11x;
@@ -134,6 +135,9 @@ void COMPUTE_lptemps(FILE *F)
             case cBushingJoint:
               FLUSH_VEC(F,vt1,j,vt1x, MATMUL(VAL1(opin,j),Coix));
               break;
+        
+            default:
+                break;
         }
         /*vt6, vt7, vt10c, vt11*/
         switch(jk) {
@@ -160,6 +164,9 @@ void COMPUTE_lptemps(FILE *F)
               FLUSH_VEC(F,vt11,j,vt11x, 
                   SUB(VAL1(SysI.litj,j),INDX(vt10cx,j)));
               break;
+        
+            default:
+                break;
         }
         /*vt10*/
         switch(jk) {
@@ -170,6 +177,9 @@ void COMPUTE_lptemps(FILE *F)
             case cBushingJoint:
               FLUSH_VEC(F,vt10,j,vt10x, MATMUL(VAL1(oref,j),Coix));
               break;
+        
+            default:
+                break;
         }
         DISPOSE_EXPR(UNUSE(Coix));
     }
@@ -210,7 +220,7 @@ void COMPUTE_lptemps(FILE *F)
  */
 void COMPUTE_lvtemps(FILE *F)
 {
-    register Index_t j,inb,outb,ip,op;
+    register Index_t j,inb,outb,ip = 0,op = 0;
     JointKind_t jk;
     expr Coix;
     expr vt2x,vt2ax,vt3x,vt4x,vt5x,vt8x,vt9x,vt12x,
@@ -262,6 +272,9 @@ void COMPUTE_lvtemps(FILE *F)
                         VECTOR_ZERO() : CROSS(VAL1(wk,op),VAL1(operp,j)));
               FLUSH_VEC(F,vt4,j,vt4x, MATMUL(INDX(vt3x,j),Coix));
               break;
+        
+            default:
+                break;
         }
         /*vt2, vt5*/
         switch(jk) {
@@ -280,6 +293,9 @@ void COMPUTE_lvtemps(FILE *F)
                         rbod_is_gnd(inb) ?
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(iperp,j)));
               break;
+        
+            default:
+                break;
         }
         /* vt2a */
         switch(jk) {
@@ -290,6 +306,9 @@ void COMPUTE_lvtemps(FILE *F)
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(ipin2,j)));
               break;
 
+        
+            default:
+                break;
         }
         /*vt8, vt9, vt12*/
         switch(jk) {
@@ -318,6 +337,9 @@ void COMPUTE_lvtemps(FILE *F)
                           : CROSS(VAL1(wk,ip), VAL1(SysI.litj,j)),
                           MATMUL(INDX(vt8x,j),Coix))));
               break;
+        
+            default:
+                break;
         }
         /*vt10b*/
         switch(jk) {
@@ -325,6 +347,9 @@ void COMPUTE_lvtemps(FILE *F)
             case cWeldJoint:
               FLUSH_VEC(F,vt10b,j,vt10bx, MATMUL(INDX(vt10ax,j),Coix));
               break;
+        
+            default:
+                break;
         }
         /*vt13*/
         switch(jk) {
@@ -340,6 +365,9 @@ void COMPUTE_lvtemps(FILE *F)
                         rbod_is_gnd(inb) ?
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(ipin,j)));
               break;
+        
+            default:
+                break;
         }
         DISPOSE_EXPR(UNUSE(Coix));
     }
@@ -441,6 +469,9 @@ void COMPUTE_lperr(expr perrx)
                 SINDX(perrx,m, DOT(VAL1(iperp,j),VAL1(vt1,j)));
                 m++;
                 break;
+        
+            default:
+                break;
         }
 
         /* Finish off the orientation constraints. */
@@ -453,6 +484,9 @@ void COMPUTE_lperr(expr perrx)
             case cUjoint:
                 SINDX(perrx,m, DOT(VAL1(ipin,j),VAL1(vt1,j)));
                 m++;
+                break;
+        
+            default:
                 break;
         }
 
@@ -495,6 +529,9 @@ void COMPUTE_lperr(expr perrx)
                 SINDX(perrx,m, DOT(VAL1(ipin,j),VAL1(vt11,j)));
                 m++;
                 break;
+        
+            default:
+                break;
         }
     }
 }
@@ -505,7 +542,7 @@ void COMPUTE_lperr(expr perrx)
  */
 void COMPUTE_lverr(expr verrx)
 {
-    register Index_t i,j,inb,ip,m;
+    register Index_t i,j,inb,ip = 0,m;
     JointKind_t jk;
 
     for (j = 0; j < SysI.nl; j++) {
@@ -531,6 +568,9 @@ void COMPUTE_lverr(expr verrx)
                                    DOT(VAL1(iperp,j),VAL1(vt4,j))));
                 m++;
                 break;
+        
+            default:
+                break;
         }
 
         /* Finish off the orientation constraints. */
@@ -545,6 +585,9 @@ void COMPUTE_lverr(expr verrx)
                 SINDX(verrx,m, ADD(DOT(VAL1(vt13,j),VAL1(vt1,j)),
                                    DOT(VAL1(ipin,j),VAL1(vt4,j))));
                 m++;
+                break;
+        
+            default:
                 break;
         }
 
@@ -599,6 +642,9 @@ void COMPUTE_lverr(expr verrx)
                                    DOT(VAL1(ipin,j),VAL1(vt12,j))));
                 m++;
                 break;
+        
+            default:
+                break;
         }
     }
 }
@@ -640,7 +686,7 @@ void COMPUTE_lverr(expr verrx)
  */
 void COMPUTE_latemps(FILE *F)
 {
-    register Index_t j,inb,outb,ip,op;
+    register Index_t j,inb,outb,ip = 0,op = 0;
     JointKind_t jk;
     expr Coix;
     expr vt14x,vt15x,vt16x,vt17x,vt18x,vt19x,vt20x,vt21x,vt22x,vt23x,
@@ -684,6 +730,9 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? 
                         VECTOR_ZERO() : MATMUL(VAL1(vt1,j),VAL1(dyad,inb)));
               break;
+        
+            default:
+                break;
         }
         /*vt15, vt16*/
         switch(jk) {
@@ -699,6 +748,9 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt16,j,vt16x, 
                         MATMUL(INDX(vt15x,j),Coix));
               break;
+        
+            default:
+                break;
         }
         /*vt17, vt18, vt19*/
         switch(jk) {
@@ -726,6 +778,9 @@ void COMPUTE_latemps(FILE *F)
                               SUB(MATMUL(VAL1(dyad,inb),VAL1(SysI.litj,j)),
                                   MATMUL(INDX(vt18x,j),Coix))));
               break;
+        
+            default:
+                break;
         }
         /*vt20, vt21, vt22*/
         switch(jk) {
@@ -740,6 +795,9 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt22,j,vt22x, 
                         MATMUL(INDX(vt21x,j),Coix));
               break;
+        
+            default:
+                break;
         }
         /*vt23*/
         switch(jk) {
@@ -748,6 +806,9 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? 
                         VECTOR_ZERO() : MATMUL(VAL1(vt1,j),VAL1(dyad,inb)));
               break;
+        
+            default:
+                break;
         }
         /*vt24*/
         switch(jk) {
@@ -767,6 +828,9 @@ void COMPUTE_latemps(FILE *F)
                                                          VAL1(Cio,j)))
                        : SUB(VAL1(onk,op),MATMUL(VAL1(onk,ip),VAL1(Cio,j))));
               break;
+        
+            default:
+                break;
         }
         /*vt25, vt26, vt27*/
         switch(jk) {
@@ -786,6 +850,9 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? VECTOR_ZERO() 
                         : MATMUL(VAL1(dyad,inb),VAL1(iperp,j)));
               break;
+        
+            default:
+                break;
         }
         /*vt26*/
         switch(jk) {
@@ -794,6 +861,9 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt26a,j,vt26ax, 
                         rbod_is_gnd(inb) ? VECTOR_ZERO() 
                         : MATMUL(VAL1(dyad,inb),VAL1(ipin2,j)));
+        
+            default:
+                break;
         }
 
         DISPOSE_EXPR(UNUSE(Coix));
@@ -875,7 +945,7 @@ void COMPUTE_latemps(FILE *F)
  */
 void COMPUTE_laerr(expr aerrx)
 {
-    register Index_t i,j,inb,ip,m;
+    register Index_t i,j,inb,ip = 0,m;
     JointKind_t jk;
     expr temp;
 
@@ -906,6 +976,9 @@ void COMPUTE_laerr(expr aerrx)
                                    DOT(VAL1(iperp,j),VAL1(vt16,j)))));
                 m++;
                 break;
+        
+            default:
+                break;
         }
 
         /* Finish off the orientation constraints. */
@@ -924,6 +997,9 @@ void COMPUTE_laerr(expr aerrx)
                                        DOT(VAL1(vt13,j),VAL1(vt4,j))),
                                    DOT(VAL1(ipin,j),VAL1(vt16,j)))));
                 m++;
+                break;
+        
+            default:
                 break;
         }
 
@@ -986,6 +1062,9 @@ void COMPUTE_laerr(expr aerrx)
                                        DOT(VAL1(vt13,j),VAL1(vt12,j))),
                                    DOT(VAL1(ipin,j),VAL1(vt19,j)))));
                 m++;
+                break;
+        
+            default:
                 break;
         }
     }

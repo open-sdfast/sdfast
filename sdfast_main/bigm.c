@@ -309,6 +309,7 @@ ZAPEXPR_NC(expr Z,
 
 void ordern_mm_decls(FILE *F)
 {
+    (void)F;
 }
 
 #define DOF_PER_FILE        20

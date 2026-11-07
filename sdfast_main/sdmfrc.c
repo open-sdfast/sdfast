@@ -516,7 +516,7 @@ void COMPUTE_lmfrc(FILE *F,
 {
     int i,j,inb,outb,m;
     JointKind_t jk;
-    expr ltcix, ltcx, temp;
+    expr ltcix, ltcx, temp = NULL;
     expr lfcix, lfcx, Tinbx, Toutbx;
 
     lfcix  = INUSE(NEW_1dARRAY(cVectorVal,SysI.nl));
@@ -573,6 +573,9 @@ void COMPUTE_lmfrc(FILE *F,
             case c6dJoint:
             case cBushingJoint:
                 temp = VECTOR_ZERO();
+                break;
+        
+            default:
                 break;
         }
 

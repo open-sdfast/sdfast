@@ -216,7 +216,7 @@ void COMPUTE_tau(FILE *F)
  */
 void COMPUTE_ltau(FILE *F)
 {
-    int  i,m;
+    int  i,m = 0;
     expr ltauc_expr;
 
     ltauc_expr  = INUSE(NEW_1dARRAY(cScalarVal, SysI.sl));
@@ -942,6 +942,9 @@ void COMPUTE_ltauforces(FILE *F,
                 SINDX(tix, lj, VECTOR_ZERO());
                 SINDX(tox, lj, VECTOR_ZERO());
                 break;
+        
+            default:
+                break;
         }
         if (inb != cGroundBody) { 
             SINDX(fx, inb, ADD(INDX(fx,inb), INDX(fix,lj)));
@@ -1384,6 +1387,7 @@ void COMPUTE_weld_reaction(FILE *F, int b, sym frc, sym trq,
 {
     int  j,k,p;
     expr rx, fstarx, tstarx, f, t;
+    (void)F;
 
     /* First compute fstar and tstar.  These are the force and torque
      * at the body COM which must have been present to produce the observed

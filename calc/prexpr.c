@@ -152,8 +152,8 @@ static void PRINT_EP(FILE *F,
                 efprintf(F, "(");
             switch (E->UnOp) {
 
-                case cNegate:           efprintf(F, "%s", UnOpNames[E->UnOp]);
-                                   gUnOpCount[E->UnOp]++;
+                case cNegate:           efprintf(F, "%s", UnOpNames[(unsigned char)E->UnOp]);
+                                   gUnOpCount[(unsigned char)E->UnOp]++;
                                    break;
                 case cLogicalNot:  efprintf(F, "%s", Lang->not_op);
                                    break;
@@ -203,8 +203,8 @@ static void PRINT_EP(FILE *F,
                 case cDivide:
                 case cDot:
                 case cCross:
-                case cDeriv:           efprintf(F, "%s", BinOpNames[E->BinOp]);
-                                   gBinOpCount[E->BinOp]++;
+                case cDeriv:           efprintf(F, "%s", BinOpNames[(unsigned char)E->BinOp]);
+                                   gBinOpCount[(unsigned char)E->BinOp]++;
                                    break;
                 case cIsEqual:     efprintf(F, "%s", Lang->eq_op);
                                    break;
@@ -305,6 +305,9 @@ static void PRINT_EP(FILE *F,
                           "cb" : "c", E->FuncCallParm->Indices[0]);
                         efprintf(F, "%s", str);
                         return;
+                
+                    default:
+                        break;
                 }        /* switch */
             }
             switch (E->FuncVarRef->WhichFunction) {
@@ -335,6 +338,9 @@ static void PRINT_EP(FILE *F,
             efprintf(F, ",");
             PRINT_E(F, E->Func2CallParm2);
             efprintf(F, ")");
+            break;
+    
+        default:
             break;
     }        
 }

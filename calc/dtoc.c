@@ -38,7 +38,7 @@ int NiceDTOC(scalar r,
 
     /* If there's a decimal point, remove unnecessary trailing zeroes.
      */
-    if (dp = strchr(Out, '.')) {
+    if ((dp = strchr(Out, '.'))) {
          zp = &Out[strlen(Out)];           /* pts to zero at end */
         /* find last digit before exponent */
         if (!(ep = strchr(Out, expchar))) 
@@ -70,7 +70,7 @@ int NiceDTOC(scalar r,
             /* delete 0 before -0. */
             bcopy(Out + 2, Out + 1, strlen(Out + 2) + 1);
     }
-    if (sp = strchr(Out, expchar)) {
+    if ((sp = strchr(Out, expchar))) {
         if ((Lang == &Pascal_language || Lang == &Ada_language) &&
           !strchr(Out, '.')) {
             /* if no ., add .0 before exponent */
@@ -91,7 +91,7 @@ int NiceDTOC(scalar r,
         int len = (int)strlen(Out);
 
         if (gSinglePrecision ||
-          Lang != &FORTRAN_language && Lang != &ADSIM_language) {
+          (Lang != &FORTRAN_language && Lang != &ADSIM_language)) {
             if (!strchr(Out, '.')) {        /* if no '.', append one */
                 if (Lang == &Pascal_language || Lang == &Ada_language) {
                     /* brain-damaged languages need digits before and after . */

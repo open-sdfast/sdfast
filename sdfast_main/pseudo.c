@@ -260,7 +260,7 @@ void COMPUTE_Cibob(FILE *F)
  */
 void COMPUTE_Woiob(FILE *F)
 {
-    int inb,outb,i,k,ip,op;
+    int inb,outb,i,k,ip = 0,op = 0;
     expr Coobx, Woiox, Woiobx;
 
     Woiox  = INUSE(NEW_1dARRAY(cVectorVal, SysI.nl));
@@ -336,7 +336,7 @@ void COMPUTE_Woiob(FILE *F)
  */
 void COMPUTE_Ooiob(FILE *F)
 {
-    int k,outb,op;
+    int k,outb,op = 0;
     expr Ooiobx,temp;
 
     Ooiobx = INUSE(NEW_1dARRAY(cVectorVal, SysI.nl));

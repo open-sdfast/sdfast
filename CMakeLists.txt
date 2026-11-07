@@ -35,6 +35,24 @@ set_target_properties(calc libs sdfast PROPERTIES
     C_EXTENSIONS OFF
 )
 
+# -Wall -Wextra -Wpedantic is the strict set that is still practical:
+# -Wconversion and -Weverything are too noisy for this code, and -Wpedantic
+# did not add warnings beyond -Wall -Wextra once the sources were clean.
+# MSVC /W4 matches that level. /Wall warns inside system headers.
+# C4061 reports every unlisted enumerator even when a default arm handles
+# it; those defaults are the intentional "not this joint or node" path.
+function(sdfast_set_warnings target)
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /W4 /wd4061)
+    else()
+        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+    endif()
+endfunction()
+
+sdfast_set_warnings(calc)
+sdfast_set_warnings(libs)
+sdfast_set_warnings(sdfast)
+
 # Link libraries - libm is only needed on Unix-like systems
 if(UNIX)
     target_link_libraries(sdfast PRIVATE calc libs m)
@@ -60,6 +78,7 @@ endif()
 # Build and run tests
 enable_testing()
 add_subdirectory(tests)
+sdfast_set_warnings(sdfast_tests)
 
 target_compile_definitions(sdfast_tests
     PRIVATE 

@@ -67,6 +67,9 @@ int LOOKFORX_INX(pExpr X,
         case cFunction2CallNode:
             return LOOKFORX_INX(X, E->Func2CallParm1, id) ||
                    LOOKFORX_INX(X, E->Func2CallParm2, id);
+    
+        default:
+            break;
     }
     return 0;
 }        /*LOOKFORX_INX*/

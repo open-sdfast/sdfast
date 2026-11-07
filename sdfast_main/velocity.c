@@ -161,7 +161,7 @@ void COMPUTE_Vpk(FILE *F)
 void COMPUTE_ping(FILE *F)
 {
     Index_t k, i;
-    expr temp;
+    expr temp = NULL;
 
     for (k=0; k<SysI.s; k++) {
         switch (SysI.PseudoBodies[k].jnt.JointKind) {
@@ -171,6 +171,9 @@ void COMPUTE_ping(FILE *F)
                 break;
             case cSlidingJoint:
                 temp = INUSE(MATMUL(VAL1(Vkk,k),TRANSPOSE(VAL1(cnk,k))));
+                break;
+        
+            default:
                 break;
         }
         for (i = 0; i < 3; i++)
@@ -196,7 +199,7 @@ void COMPUTE_ping(FILE *F)
 void COMPUTE_hngpt(FILE *F)
 {
     register Index_t k, i;
-    expr temp;
+    expr temp = NULL;
 
     for (k=0; k<SysI.s; k++) {
         temp = INUSE(ADD(VAL1(rnk,k),MATMUL(VAL1(SysI.psrk,k),

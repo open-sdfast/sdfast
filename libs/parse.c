@@ -116,7 +116,7 @@ static int SKIP_BLANKS_ETC(FILE *System)
             return 0;
         if (feof(System))
             return EOF;
-        if (!isspace(ch))
+        if (!isspace(ch)) {
             if (ch == '#') {
                 do
                     if (sdfast_opt.verbose > 1)
@@ -126,6 +126,7 @@ static int SKIP_BLANKS_ETC(FILE *System)
                     return 0;
             } else
                 break;
+        }
         if (sdfast_opt.verbose > 1)
             putchar(ch);
     }
@@ -292,8 +293,12 @@ char GET_INT(FILE *System,
         return 0;
     }
     ungetc(ch, System);
-    int n = fscanf(System, "%ld", IntVal);
-    assert(n == 1);
+    {
+        /* assert() disappears under NDEBUG, so keep a use of n. */
+        int n = fscanf(System, "%ld", IntVal);
+        assert(n == 1);
+        (void)n;
+    }
     if (sdfast_opt.verbose > 1)
         printf("%ld", *IntVal);
     return 1;
@@ -316,8 +321,11 @@ char GET_REAL(FILE *System,
         return 0;
     }
     ungetc(ch, System);
-    int n = fscanf(System, "%lf", RealVal);
-    assert(n == 1);
+    {
+        int n = fscanf(System, "%lf", RealVal);
+        assert(n == 1);
+        (void)n;
+    }
 
     NiceDTOC(*RealVal, ostr);
     if (sdfast_opt.verbose > 1)

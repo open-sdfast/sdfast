@@ -74,7 +74,7 @@ ADD_EXT_TO_FILENAME(char *S,
 
     if (!strchr(slash, '.')) {
         /* should add the extension */
-        if (strlen(S)+strlen(Ext) > maxlen)
+        if (strlen(S)+strlen(Ext) > (size_t)maxlen)
             return 1;
         strcat(slash, Ext);
     } 
@@ -101,7 +101,7 @@ void GET_BASE_NAME(char *instr,
     /* cp points to the first char in the last segment */
 
     strcpy(outstr, cp);
-    if (cp = strrchr(outstr, '.'))
+    if ((cp = strrchr(outstr, '.')))
         *cp = '\0';
 }
 

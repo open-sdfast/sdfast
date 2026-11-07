@@ -192,11 +192,11 @@ PRINT_SDINIT(FILE *F)
     expr mtot_expr, Ikox, mkrkx, tmpx, tmpv;
     expr iperp_expr, operp_expr, pin_x, cond;
     expr ipin_x, ipin2_x, iref_x, opin_x, oref_x, ghand_x;
-    sym sumsq,norminv,whichsym;
+    sym sumsq,norminv,whichsym = NULL;
     JointDesc_t *jntp;
     BodyDesc_t  *w;
     char *what, *name, str_n[10], str_nl[10], str_s[10], str_s1[10], str_sl[10];
-    int pinno,errnum,firstdof,startdof;
+    int pinno = 0,errnum = 0,firstdof,startdof;
     extern int gProgramSerialNo;
 
     /* Print the initialization routine. */
@@ -775,6 +775,9 @@ PRINT_SDINIT(FILE *F)
                 FLUSH_VEC(F, iperp, b, iperp_expr, CROSS(VAL1(ipin,b),
                                                          VAL1(whichsym,b)));
                 break;
+        
+            default:
+                break;
         }
     }
     ASSIGN_CLN(F, iperp, UNUSE(iperp_expr));
@@ -845,6 +848,9 @@ PRINT_SDINIT(FILE *F)
                         case cBearingJoint:
                         case cBushingJoint:
                             SINDX(opin_x, b, VAL1(iref, b));
+                            break;
+                    
+                        default:
                             break;
                     }
                 } else {
@@ -1469,7 +1475,7 @@ void init_sdgtopo(FILE *F,
         declglob   = decl_flags & DECL_GLOBAL,
         decllocal  = !(decl_flags & (DECL_GLOBAL|DECL_EXTERN|DECL_STRUCT));
 
-    if (hascommon && !decllocal || !hascommon && !declglob)
+    if ((hascommon && !decllocal) || (!hascommon && !declglob))
         return;
 
     efprintf(F, Lang->initblk_b);
@@ -1577,7 +1583,7 @@ void init_sdginput(FILE *F,
         declglob   = decl_flags & DECL_GLOBAL,
         decllocal  = !(decl_flags & (DECL_GLOBAL|DECL_EXTERN|DECL_STRUCT));
 
-    if (hascommon && !decllocal || !hascommon && !declglob)
+    if ((hascommon && !decllocal) || (!hascommon && !declglob))
         return;
 
     efprintf(F, Lang->initblk_b);
@@ -1988,7 +1994,7 @@ void init_sdgerror(FILE *F,
         declglob   = decl_flags & DECL_GLOBAL,
         decllocal  = !(decl_flags & (DECL_GLOBAL|DECL_EXTERN|DECL_STRUCT));
 
-    if (hascommon && !decllocal || !hascommon && !declglob)
+    if ((hascommon && !decllocal) || (!hascommon && !declglob))
         return;
 
     efprintf(F, Lang->initblk_b);
