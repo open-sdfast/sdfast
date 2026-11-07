@@ -28,7 +28,7 @@ bool is_space(unsigned char c) {
 //   1  1.  1.5  .5  -9.8  0D0  -9.8D0  1.25e-10  1.D0
 // A sign is part of the literal only when it is not glued to an
 // identifier or a previous digit. Returns false without consuming.
-bool parse_number(const std::string &s, size_t i, size_t &end, double &value) {
+bool parse_number(const std::string& s, size_t i, size_t& end, double& value) {
   if (i > 0 && is_ident(static_cast<unsigned char>(s[i - 1])))
     return false;
 
@@ -84,12 +84,12 @@ bool parse_number(const std::string &s, size_t i, size_t &end, double &value) {
   }
 
   std::string token = s.substr(i, j - i);
-  for (char &c : token) {
+  for (char& c : token) {
     if (c == 'd' || c == 'D')
       c = 'e';
   }
 
-  char *stop = nullptr;
+  char* stop = nullptr;
   value = std::strtod(token.c_str(), &stop);
   if (stop != token.c_str() + token.size())
     return false;
@@ -105,7 +105,7 @@ struct Tok {
   int line = 1;
 };
 
-std::vector<Tok> tokenize(const std::string &text) {
+std::vector<Tok> tokenize(const std::string& text) {
   std::vector<Tok> out;
   int line = 1;
   size_t i = 0;
@@ -150,7 +150,7 @@ std::vector<Tok> tokenize(const std::string &text) {
   return out;
 }
 
-std::string snippet(const std::vector<Tok> &toks, size_t at) {
+std::string snippet(const std::vector<Tok>& toks, size_t at) {
   std::ostringstream os;
   size_t begin = at > 3 ? at - 3 : 0;
   size_t end = std::min(toks.size(), at + 4);
@@ -166,8 +166,8 @@ std::string snippet(const std::vector<Tok> &toks, size_t at) {
   return os.str();
 }
 
-void replace_all(std::string &text, const std::string &from,
-                 const std::string &to) {
+void replace_all(std::string& text, const std::string& from,
+                 const std::string& to) {
   if (from.empty())
     return;
   size_t pos = 0;
@@ -178,7 +178,7 @@ void replace_all(std::string &text, const std::string &from,
 }
 
 // "Generated <date time> by SD/FAST" -> "Generated TIMESTAMP by SD/FAST".
-void strip_generated_dates(std::string &text) {
+void strip_generated_dates(std::string& text) {
   const std::string key = "Generated";
   const std::string tail = "by SD/FAST";
   size_t pos = 0;
@@ -196,7 +196,7 @@ void strip_generated_dates(std::string &text) {
 }
 
 // sdgentime stores HHMMSS. It changes every second and is not physics.
-void strip_gentime(std::string &text) {
+void strip_gentime(std::string& text) {
   size_t pos = 0;
   while (pos < text.size()) {
     size_t found = std::string::npos;
@@ -242,13 +242,13 @@ void strip_gentime(std::string &text) {
 // analysis file can tell it was built in the same second as the
 // dynamics file. That integer changes every run. The serial check
 // (sdserialno / i != 10001) is stable and is left alone.
-void strip_gentime_checks(std::string &text) {
+void strip_gentime_checks(std::string& text) {
   size_t pos = 0;
   while (pos < text.size()) {
     size_t found = std::string::npos;
     for (size_t i = pos; i + 7 <= text.size(); ++i) {
       bool match = true;
-      const char *word = "gentime";
+      const char* word = "gentime";
       for (int k = 0; k < 7; ++k) {
         char c = text[i + k];
         if (c >= 'A' && c <= 'Z')
@@ -308,7 +308,7 @@ void strip_gentime_checks(std::string &text) {
 // malloc happened to grow the break during that routine, so the same run
 // can report 0 or 135168, and two machines swap which routine gets the
 // bump. The add/multiply counts that follow are the real lock and stay.
-void replace_number_before(std::string &text, const std::string &tail) {
+void replace_number_before(std::string& text, const std::string& tail) {
   size_t pos = 0;
   while ((pos = text.find(tail, pos)) != std::string::npos) {
     size_t j = pos;
@@ -325,7 +325,7 @@ void replace_number_before(std::string &text, const std::string &tail) {
   }
 }
 
-void strip_cpu_trailer(std::string &text) {
+void strip_cpu_trailer(std::string& text) {
   const std::string key = "CPU seconds used:";
   size_t pos = 0;
   while ((pos = text.find(key, pos)) != std::string::npos) {
@@ -350,7 +350,7 @@ bool numbers_close(double actual, double golden, double rel_tol,
   return diff <= rel_tol * scale;
 }
 
-std::string basename_any(const std::string &path) {
+std::string basename_any(const std::string& path) {
   auto slash = path.find_last_of("/\\");
   if (slash == std::string::npos || slash + 1 >= path.size())
     return path;
@@ -358,7 +358,7 @@ std::string basename_any(const std::string &path) {
 }
 
 std::string with_slashes(std::string path, char slash) {
-  for (char &c : path) {
+  for (char& c : path) {
     if (c == '/' || c == '\\')
       c = slash;
   }
@@ -366,7 +366,7 @@ std::string with_slashes(std::string path, char slash) {
 }
 
 std::string normalize_generated(std::string text,
-                                const std::vector<std::string> &abs_paths) {
+                                const std::vector<std::string>& abs_paths) {
   std::string nl;
   nl.reserve(text.size());
   for (size_t i = 0; i < text.size(); ++i) {
@@ -383,10 +383,10 @@ std::string normalize_generated(std::string text,
   // Replace longer paths first so a directory prefix cannot shadow a file.
   std::vector<std::string> paths = abs_paths;
   std::sort(paths.begin(), paths.end(),
-            [](const std::string &a, const std::string &b) {
+            [](const std::string& a, const std::string& b) {
               return a.size() > b.size();
             });
-  for (const auto &path : paths) {
+  for (const auto& path : paths) {
     if (path.empty())
       continue;
     std::string base = basename_any(path);
@@ -406,11 +406,11 @@ std::string normalize_generated(std::string text,
   return text;
 }
 
-bool compare_texts(const std::string &actual, const std::string &golden,
-                   const CompareOptions &opt, std::string &report) {
+bool compare_texts(const std::string& actual, const std::string& golden,
+                   const CompareOptions& opt, std::string& report) {
   // strtod honors LC_NUMERIC. Generated text always uses '.'.
   std::string previous = "C";
-  if (const char *cur = std::setlocale(LC_NUMERIC, nullptr))
+  if (const char* cur = std::setlocale(LC_NUMERIC, nullptr))
     previous = cur;
   std::setlocale(LC_NUMERIC, "C");
 
@@ -424,8 +424,8 @@ bool compare_texts(const std::string &actual, const std::string &golden,
   bool ok = true;
   size_t n = std::min(actual_toks.size(), golden_toks.size());
   for (size_t i = 0; i < n; ++i) {
-    const Tok &a = actual_toks[i];
-    const Tok &g = golden_toks[i];
+    const Tok& a = actual_toks[i];
+    const Tok& g = golden_toks[i];
     bool match = false;
     if (a.is_num && g.is_num)
       match = numbers_close(a.value, g.value, opt.rel_tol, opt.abs_tol);
@@ -464,13 +464,13 @@ bool compare_texts(const std::string &actual, const std::string &golden,
   return ok;
 }
 
-std::vector<double> extract_numbers(const std::string &text) {
+std::vector<double> extract_numbers(const std::string& text) {
   std::string previous = "C";
-  if (const char *cur = std::setlocale(LC_NUMERIC, nullptr))
+  if (const char* cur = std::setlocale(LC_NUMERIC, nullptr))
     previous = cur;
   std::setlocale(LC_NUMERIC, "C");
   std::vector<double> values;
-  for (const auto &t : tokenize(text)) {
+  for (const auto& t : tokenize(text)) {
     if (t.is_num)
       values.push_back(t.value);
   }
@@ -478,9 +478,9 @@ std::vector<double> extract_numbers(const std::string &text) {
   return values;
 }
 
-bool compare_number_lists(const std::vector<double> &actual,
-                          const std::vector<double> &golden,
-                          const CompareOptions &opt, std::string &report) {
+bool compare_number_lists(const std::vector<double>& actual,
+                          const std::vector<double>& golden,
+                          const CompareOptions& opt, std::string& report) {
   std::ostringstream out;
   bool ok = true;
   int reports = 0;
@@ -511,9 +511,9 @@ bool compare_number_lists(const std::vector<double> &actual,
 
 namespace {
 
-int expect_match(const std::string &name, const std::string &actual,
-                 const std::string &golden, bool should_pass,
-                 const CompareOptions &opt = {}) {
+int expect_match(const std::string& name, const std::string& actual,
+                 const std::string& golden, bool should_pass,
+                 const CompareOptions& opt = {}) {
   std::string report;
   bool pass = compare_texts(actual, golden, opt, report);
   if (pass == should_pass)
@@ -591,8 +591,8 @@ int comparator_self_check() {
   return rc == 0 ? 0 : 1;
 }
 
-int compare_path_files(const std::filesystem::path &actual,
-                       const std::filesystem::path &golden) {
+int compare_path_files(const std::filesystem::path& actual,
+                       const std::filesystem::path& golden) {
   std::ifstream ain(actual, std::ios::binary);
   std::ifstream gin(golden, std::ios::binary);
   if (!ain || !gin) {

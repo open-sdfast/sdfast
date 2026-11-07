@@ -27,8 +27,8 @@ struct SdOutputNames {
   std::string ext;
 };
 
-inline SdOutputNames sd_output_names(const std::string &lang,
-                                     const std::string &base) {
+inline SdOutputNames sd_output_names(const std::string& lang,
+                                     const std::string& base) {
 #ifdef _WIN32
   const bool win = true;
 #else
@@ -44,7 +44,7 @@ inline SdOutputNames sd_output_names(const std::string &lang,
   return n;
 }
 
-inline bool stem_ends_with(const std::string &stem, const std::string &suf) {
+inline bool stem_ends_with(const std::string& stem, const std::string& suf) {
   return stem.size() >= suf.size() &&
          stem.compare(stem.size() - suf.size(), suf.size(), suf) == 0;
 }
@@ -68,13 +68,13 @@ inline std::string canonical_output_name(std::string name) {
   return stem + ext;
 }
 
-inline bool compiler_is_msvc(const std::string &compiler) {
+inline bool compiler_is_msvc(const std::string& compiler) {
 #ifdef _MSC_VER
   (void)compiler;
   return true;
 #else
   std::string name = std::filesystem::path(compiler).stem().string();
-  for (char &c : name)
+  for (char& c : name)
     c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
   return name == "cl";
 #endif
@@ -82,10 +82,10 @@ inline bool compiler_is_msvc(const std::string &compiler) {
 
 // stdout_path, when non-empty, is a file that receives the child stdout.
 // The path is opened by the parent, so it is relative to the parent's cwd.
-int run_program(const std::string &executable,
-                const std::vector<std::string> &args,
-                const std::string &workdir = "",
-                const std::string &stdout_path = "");
+int run_program(const std::string& executable,
+                const std::vector<std::string>& args,
+                const std::string& workdir = "",
+                const std::string& stdout_path = "");
 
 int build_test();
 #endif // !SDFAST_BUILDTEST_H

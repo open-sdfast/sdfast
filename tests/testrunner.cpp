@@ -10,7 +10,7 @@
 namespace {
 
 bool update_requested() {
-  const char *env = std::getenv("SDFAST_UPDATE_GOLDEN");
+  const char* env = std::getenv("SDFAST_UPDATE_GOLDEN");
   return env != nullptr && env[0] != '\0' && env[0] != '0';
 }
 
@@ -37,7 +37,7 @@ void usage() {
 
 } // namespace
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   force_c_locale();
 
   std::string cmd = argc > 1 ? argv[1] : "all";

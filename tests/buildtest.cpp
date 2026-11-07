@@ -4,14 +4,14 @@
 // WINDOWS
 #include <windows.h>
 
-int run_program(const std::string &executable,
-                const std::vector<std::string> &args,
-                const std::string &workdir,
-                const std::string &stdout_path) {
+int run_program(const std::string& executable,
+                const std::vector<std::string>& args,
+                const std::string& workdir,
+                const std::string& stdout_path) {
   std::ostringstream cmd_stream;
   cmd_stream << "\"" << executable << "\"";
 
-  for (const auto &a : args)
+  for (const auto& a : args)
     cmd_stream << " \"" << a << "\""; // safer quoting
 
   std::string cmd = cmd_stream.str();
@@ -81,24 +81,24 @@ int run_program(const std::string &executable,
 #include <sys/wait.h>
 #include <unistd.h>
 
-int run_program(const std::string &executable,
-                const std::vector<std::string> &args,
-                const std::string &workdir,
-                const std::string &stdout_path) {
+int run_program(const std::string& executable,
+                const std::vector<std::string>& args,
+                const std::string& workdir,
+                const std::string& stdout_path) {
 
   // Build full command string (for logging)
   std::ostringstream cmd_stream;
   cmd_stream << executable;
-  for (const auto &a : args)
+  for (const auto& a : args)
     cmd_stream << " " << a;
 
   std::string full_cmd = cmd_stream.str();
 
-  std::vector<char *> argv;
-  argv.push_back(const_cast<char *>(executable.c_str()));
+  std::vector<char*> argv;
+  argv.push_back(const_cast<char*>(executable.c_str()));
 
-  for (const auto &arg : args)
-    argv.push_back(const_cast<char *>(arg.c_str()));
+  for (const auto& arg : args)
+    argv.push_back(const_cast<char*>(arg.c_str()));
 
   argv.push_back(nullptr);
 
@@ -169,9 +169,9 @@ int run_program(const std::string &executable,
 
 #endif
 
-int test_sdfast_example(const test_program &t,
-                        const std::filesystem::path &sdfast_examples,
-                        const std::filesystem::path &sdfast_bin) {
+int test_sdfast_example(const test_program& t,
+                        const std::filesystem::path& sdfast_examples,
+                        const std::filesystem::path& sdfast_bin) {
 
   std::filesystem::path src_path = sdfast_examples / t.lang;
 
@@ -309,7 +309,7 @@ int build_test() {
   };
 
   bool all_passed = true;
-  for (const auto &t : test_programs) {
+  for (const auto& t : test_programs) {
     if (test_sdfast_example(t, sdfast_examples, sdfast_bin) != EXIT_SUCCESS) {
       all_passed = false;
     }

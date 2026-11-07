@@ -32,30 +32,30 @@ struct CompareOptions {
 // become '\n'. This is applied to both sides before token compare, and
 // is what gets written into tests/golden.
 std::string normalize_generated(std::string text,
-                                const std::vector<std::string> &abs_paths);
+                                const std::vector<std::string>& abs_paths);
 
 // Whitespace separates tokens and is not compared, so a CRT that prints
 // a slightly wider literal (and therefore wraps a line differently) does
 // not fail unless it adds or drops a real token. Non-numeric tokens must
 // match exactly. Numeric literals compare by value.
-bool compare_texts(const std::string &actual, const std::string &golden,
-                   const CompareOptions &opt, std::string &report);
+bool compare_texts(const std::string& actual, const std::string& golden,
+                   const CompareOptions& opt, std::string& report);
 
 bool numbers_close(double actual, double golden, double rel_tol,
                    double abs_tol);
 
 // Extract numeric literals in order. Used for fbar stdout, where the C
 // and Fortran drivers format the same trajectory differently.
-std::vector<double> extract_numbers(const std::string &text);
+std::vector<double> extract_numbers(const std::string& text);
 
-bool compare_number_lists(const std::vector<double> &actual,
-                          const std::vector<double> &golden,
-                          const CompareOptions &opt, std::string &report);
+bool compare_number_lists(const std::vector<double>& actual,
+                          const std::vector<double>& golden,
+                          const CompareOptions& opt, std::string& report);
 
 int comparator_self_check();
 
 // Compare two already-normalized files. Exit status 0 on match.
-int compare_path_files(const std::filesystem::path &actual,
-                       const std::filesystem::path &golden);
+int compare_path_files(const std::filesystem::path& actual,
+                       const std::filesystem::path& golden);
 
 #endif
