@@ -35,13 +35,13 @@ set_target_properties(calc libs sdfast PROPERTIES
     C_EXTENSIONS OFF
 )
 
-# Off by default so a local compiler that warns on something the CI
-# compilers do not still produces a binary. CI passes
-# -DSDFAST_WARNINGS_AS_ERRORS=ON. Generated sdlib/dyn/sar files are
+# On by default for a local build and for CI. Pass
+# -DSDFAST_WARNINGS_AS_ERRORS=OFF to keep going on a compiler that warns
+# where the CI compilers do not. Generated sdlib/dyn/sar files are
 # compiled by the test driver, not by these targets, and are not clean
 # under -Wall (implicit declarations, unused parameters).
 option(SDFAST_WARNINGS_AS_ERRORS
-    "Treat warnings as errors for the generator and the test harness" OFF)
+    "Treat warnings as errors for the generator and the test harness" ON)
 
 # -Wall -Wextra -Wpedantic is the strict set that is still practical:
 # -Wconversion and -Weverything are too noisy for this code, and -Wpedantic

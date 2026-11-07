@@ -11,6 +11,8 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
+`SDFAST_WARNINGS_AS_ERRORS` defaults on, so that configure line builds the generator and `sdfast_tests` with `-Werror` or `/WX`. Generated `sdlib` and dynamics files are compiled by the tests and are not under that flag. Pass `-DSDFAST_WARNINGS_AS_ERRORS=OFF` to turn it off.
+
 `ctest` runs four tests:
 
 | Test | What it checks |
