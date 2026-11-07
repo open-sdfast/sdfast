@@ -28,7 +28,6 @@ options_t sdfast_optdef = {
     /*precision*/       OPT_DOUBLE,
     /*verbose*/         0,
     /*breakup*/         0,
-    /*magic_no*/        0,
     /*language*/        &FORTRAN_language,
     /*prefix*/          "sd",
     /*infile*/          OPT_STRDEFAULT, /* ask user */
@@ -92,7 +91,6 @@ void parse_cmdline(int argc,
     sdfast_opt.precision   =        OPT_DEFAULT;
     sdfast_opt.verbose     =        0;
     sdfast_opt.breakup     =        0;
-    sdfast_opt.magic_no    =        0;
     sdfast_opt.lang        =        OPT_LANGDEFAULT;
     sdfast_opt.prefix      =        OPT_STRDEFAULT;
     sdfast_opt.infile      =        OPT_STRDEFAULT;
@@ -138,25 +136,6 @@ void parse_cmdline(int argc,
                 case '2': /* secret */
                     sdfast_opt.formulation = OPT_EXP2;
                     break;
-
-                case 'm': /* secret */
-                    if (arg[1])
-                        namep = arg + 1;
-                    else {
-                      if (argc > 1 && **(argv+1) != OPT_CHAR) {
-                          --argc;
-                          namep = *++argv;
-                      } else {
-                          /* No number is treated the same as -m0, that is,
-                           * no security.
-                           */
-                              sdfast_opt.magic_no = 0;
-                          goto nextArg;
-                      }
-                    }
-                    sscanf(namep, "%d", &sdfast_opt.magic_no);
-                    goto nextArg;
-                    /* break; */
 
                 case 'v':
                     sdfast_opt.verbose++;        /* 1 and 2 are recognized */
@@ -382,8 +361,6 @@ dump_options(FILE *F,
     sprintf(tmp, "%d", opt->breakup);
     fprintf(F, "  breakup=%s\n",
       opt->breakup==OPT_DEFAULT?"use def":tmp);
-    if (opt->magic_no)
-        fprintf(F, "  magic=%d\n", opt->magic_no);
     fprintf(F, "  language=%s\n", 
       opt->lang==OPT_LANGDEFAULT?"use def":
       opt->lang==&FORTRAN_language?"fortran":

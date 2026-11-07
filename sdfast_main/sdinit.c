@@ -1827,7 +1827,6 @@ void init_sdginput(FILE *F,
     efprintf(F, "%@Lwwflg%@M0%@R");
     efprintf(F, "%@Lltauflg%@M0%@R");
     efprintf(F, "%@Lfs0flg%@M0%@R");
-    efprintf(F, "%@Lii%@M0%@R");
     if (SysI.s)
         for (i = 0; i < SysI.s; i++) {
             efprintf(F, "%@Lmmap%(%@d%)",i);
