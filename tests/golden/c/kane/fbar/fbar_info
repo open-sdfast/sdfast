@@ -1,0 +1,53 @@
+SD/FAST Information File: fbar.sd
+Generated TIMESTAMP by SD/FAST, Kane's formulation
+(sdfast 2.0 #10001)
+
+ROADMAP (fbar.sd)
+
+Bodies        Inb
+No  Name      body Joint type  Coords q         Multipliers
+--- --------- ---- ----------- ---------------- -----------------------
+ -1 $ground                                    |
+  0 crank      -1  Pin           0             |
+  1 rocker     -1  Pin           1             |
+  2 connect     1  Pin           2             |
+
+Loop Joints                    Pseudo Coords lq
+
+  3 connect     0  Pin           0             |  0   1   2   3   4 
+
+
+STATE INDEX TO JOINT/AXIS MAP (fbar.sd)
+
+ Index
+  q|u   Joint  Axis   Joint type    Axis type    Joint Name
+ -----  -----  ----   -----------   ----------   ----------
+  0|3       0     0   Pin           rotate       
+  1|4       1     0   Pin           rotate       
+  2|5       2     0   Pin           rotate       
+
+ lq|lu
+
+  0|1       0     0   Pin           rotate       
+
+
+SYSTEM PARAMETERS (fbar.sd)
+
+Parameter  Value  Description
+
+nbod           3  no. bodies (also, no. of tree joints)
+njnt           4  total number of joints (tree+loop)
+ndof           3  no. degrees of freedom allowed by tree joints
+nloop          1  no. loop joints
+nldof          1  no. degrees of freedom allowed by loop joints
+
+nq             3  no. position coordinates in state (tree joints)
+nu             3  no. rate coordinates in state (tree joints)
+nlq            1  no. position coordinates describing loop joints
+nlu            1  no. rate coordinates describing loop joints
+
+nc             5  total no. constraints defined
+nlc            5  no. loop joint constraints
+npresc         0  no. prescribed motion constraints
+nuserc         0  no. user constraints
+

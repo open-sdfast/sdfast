@@ -1,0 +1,54 @@
+SD/FAST Information File: sphere.sd
+Generated TIMESTAMP by SD/FAST, Kane's formulation
+(sdfast 2.0 #10001)
+
+ROADMAP (sphere.sd)
+
+Bodies           Inb
+No  Name         body Joint type  Coords q         Multipliers
+--- ------------ ---- ----------- ---------------- -----------------------
+  0 $ground                                       |
+  1 lat_and_long   0  U-joint       1   2         |
+  2 radius         1  Sliding       3?            |  1p
+  3 inner          2  Ball          4   5   6   7 |
+
+User Constraints
+
+  1 slipx                                         |  2
+  2 slipz                                         |  3
+
+
+STATE INDEX TO JOINT/AXIS MAP (sphere.sd)
+
+ Index
+  q|u   Joint  Axis   Joint type    Axis type    Joint Name
+ -----  -----  ----   -----------   ----------   ----------
+  1|8       1     1   U-joint       rotate       
+  2|9       .     2   .             rotate    
+  3|10      2     1?  Sliding       translate    
+  4|11      3     1   Ball          quaternion   
+  5|12      .     2   .             quaternion
+  6|13      .     3   .             quaternion
+  7|        3     4   Ball          4th quat  
+   
+
+SYSTEM PARAMETERS (sphere.sd)
+
+Parameter  Value  Description
+
+nbod           3  no. bodies (also, no. of tree joints)
+njnt           3  total number of joints (tree+loop)
+ndof           6  no. degrees of freedom allowed by tree joints
+nloop          0  no. loop joints
+nldof          0  no. degrees of freedom allowed by loop joints
+
+nq             7  no. position coordinates in state (tree joints)
+nu             6  no. rate coordinates in state (tree joints)
+nlq            0  no. position coordinates describing loop joints
+nlu            0  no. rate coordinates describing loop joints
+
+nc             3  total no. constraints defined
+nlc            0  no. loop joint constraints
+npresc         1  no. prescribed motion constraints
+nuserc         2  no. user constraints
+

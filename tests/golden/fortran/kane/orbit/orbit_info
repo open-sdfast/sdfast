@@ -1,0 +1,45 @@
+SD/FAST Information File: orbit.sd
+Generated TIMESTAMP by SD/FAST, Kane's formulation
+(sdfast 2.0 #10001)
+
+ROADMAP (orbit.sd)
+
+Bodies        Inb
+No  Name      body Joint type  Coords q         Multipliers
+--- --------- ---- ----------- ---------------- -----------------------
+  0 $ground                                    |
+  1 A           0  Pin           1p            |  1p
+  2 B           1  Planar        2   3   4     |
+
+
+STATE INDEX TO JOINT/AXIS MAP (orbit.sd)
+
+ Index
+  q|u   Joint  Axis   Joint type    Axis type    Joint Name
+ -----  -----  ----   -----------   ----------   ----------
+  1|5       1     1p  Pin           rotate       
+  2|6       2     1   Planar        translate    
+  3|7       .     2   .             translate 
+  4|8       .     3   .             rotate    
+
+
+SYSTEM PARAMETERS (orbit.sd)
+
+Parameter  Value  Description
+
+nbod           2  no. bodies (also, no. of tree joints)
+njnt           2  total number of joints (tree+loop)
+ndof           4  no. degrees of freedom allowed by tree joints
+nloop          0  no. loop joints
+nldof          0  no. degrees of freedom allowed by loop joints
+
+nq             4  no. position coordinates in state (tree joints)
+nu             4  no. rate coordinates in state (tree joints)
+nlq            0  no. position coordinates describing loop joints
+nlu            0  no. rate coordinates describing loop joints
+
+nc             1  total no. constraints defined
+nlc            0  no. loop joint constraints
+npresc         1  no. prescribed motion constraints
+nuserc         0  no. user constraints
+

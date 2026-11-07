@@ -1,0 +1,53 @@
+SD/FAST Information File: humpage.sd
+Generated TIMESTAMP by SD/FAST, Kane's formulation
+(sdfast 2.0 #10001)
+
+ROADMAP (humpage.sd)
+
+Bodies        Inb
+No  Name      body Joint type  Coords q         Multipliers
+--- --------- ---- ----------- ---------------- -----------------------
+ -1 $ground                                    |
+  0 b          -1  Pin           0             |
+  1 e          -1  Pin           1             |
+  2 f          -1  Pin           2             |
+  3 d           2  Pin           3             |
+
+User Constraints
+
+  0 user_0                                     |  0
+  1 user_1                                     |  1
+  2 user_2                                     |  2
+
+
+STATE INDEX TO JOINT/AXIS MAP (humpage.sd)
+
+ Index
+  q|u   Joint  Axis   Joint type    Axis type    Joint Name
+ -----  -----  ----   -----------   ----------   ----------
+  0|4       0     0   Pin           rotate       
+  1|5       1     0   Pin           rotate       
+  2|6       2     0   Pin           rotate       
+  3|7       3     0   Pin           rotate       
+
+
+SYSTEM PARAMETERS (humpage.sd)
+
+Parameter  Value  Description
+
+nbod           4  no. bodies (also, no. of tree joints)
+njnt           4  total number of joints (tree+loop)
+ndof           4  no. degrees of freedom allowed by tree joints
+nloop          0  no. loop joints
+nldof          0  no. degrees of freedom allowed by loop joints
+
+nq             4  no. position coordinates in state (tree joints)
+nu             4  no. rate coordinates in state (tree joints)
+nlq            0  no. position coordinates describing loop joints
+nlu            0  no. rate coordinates describing loop joints
+
+nc             3  total no. constraints defined
+nlc            0  no. loop joint constraints
+npresc         0  no. prescribed motion constraints
+nuserc         3  no. user constraints
+
