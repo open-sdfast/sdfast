@@ -23,8 +23,8 @@ int strcmp_ci(register char *s1,
     register int diff;
 
     while (*s1 || *s2) {
-        if (diff = (isupper(*s1) ? tolower(*s1) : *s1) -
-          (isupper(*s2) ? tolower(*s2) : *s2))
+        if ((diff = (isupper(*s1) ? tolower(*s1) : *s1) -
+          (isupper(*s2) ? tolower(*s2) : *s2)))
             return diff;
         s1++; s2++;
     }

@@ -216,7 +216,7 @@ void COMPUTE_tau(FILE *F)
  */
 void COMPUTE_ltau(FILE *F)
 {
-    int  i,m;
+    int  i,m = 0;
     expr ltauc_expr;
 
     ltauc_expr  = INUSE(NEW_1dARRAY(cScalarVal, SysI.sl));
@@ -264,7 +264,7 @@ void generic_kane_fs(FILE *F,
                 expr taux, 
                 expr fstx,
                 expr  tstx,
-                sym fs,
+                sym fssym,
                 expr  fsx)
 {
     int k,p;
@@ -282,9 +282,9 @@ void generic_kane_fs(FILE *F,
                                  DOT(VAL2(Wpk,p,k),INDX(tstx,k))));
         temp = SUB(INDX(taux,p), temp);
         if (printall || !IS_CONST(temp)) {
-            PRINT_ASSN1(F, PRINTNAME(fs), p, temp);
+            PRINT_ASSN1(F, PRINTNAME(fssym), p, temp);
             DISPOSE_EXPR(temp);
-            SINDX(fsx, p, VREF1(fs,p));
+            SINDX(fsx, p, VREF1(fssym,p));
         } else 
             SINDX(fsx, p, temp);
     }
@@ -321,7 +321,7 @@ void generic_ordern_fs(FILE *F,
                   expr taux, 
                   expr fstx, 
                   expr tstx, 
-                  sym fs,
+                  sym fssym,
                   expr fsx)
 {
     register Index_t i,k;
@@ -348,8 +348,8 @@ void generic_ordern_fs(FILE *F,
                            INDX(Fstarkx,k)),
                        DOT(VAL1(Wkk,k), INDX(Tstarkx,k))));
         if (printall || !IS_CONST(temp)) {
-            PRINT_ASSN1(F, PRINTNAME(fs), k, temp);
-            SINDX(fsx, k, VREF1(fs,k));
+            PRINT_ASSN1(F, PRINTNAME(fssym), k, temp);
+            SINDX(fsx, k, VREF1(fssym,k));
             DISPOSE_EXPR(temp);
         } else
             SINDX(fsx, k, temp);
@@ -942,6 +942,9 @@ void COMPUTE_ltauforces(FILE *F,
                 SINDX(tix, lj, VECTOR_ZERO());
                 SINDX(tox, lj, VECTOR_ZERO());
                 break;
+
+            default:
+                break;
         }
         if (inb != cGroundBody) { 
             SINDX(fx, inb, ADD(INDX(fx,inb), INDX(fix,lj)));
@@ -1384,6 +1387,7 @@ void COMPUTE_weld_reaction(FILE *F, int b, sym frc, sym trq,
 {
     int  j,k,p;
     expr rx, fstarx, tstarx, f, t;
+    (void)F;
 
     /* First compute fstar and tstar.  These are the force and torque
      * at the body COM which must have been present to produce the observed

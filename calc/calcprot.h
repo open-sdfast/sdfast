@@ -106,7 +106,7 @@ extern CC_C void SINDX2(register pExpr E, tIndex I, tIndex J, pExpr Val);
 extern CC_C void INIT_CALC(int MaxExprLen, int MaxTemps);
 extern CC_C void SET_PRECISION(int SinglePrecision);
 extern CC_C void SET_PREFIX(char* Prefix);
-extern CC_C void fatal(char* s);
+extern CC_C _Noreturn void fatal(char* s);
 extern CC_C pExpr REMOVE_QUES(FILE* F, pExpr E, int NextTemp, int* HighestTemp);
 extern CC_C pExpr AND(register pExpr E1, register pExpr E2);
 extern CC_C pExpr OR(register pExpr E1, register pExpr E2);

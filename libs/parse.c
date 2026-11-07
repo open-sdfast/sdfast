@@ -116,7 +116,7 @@ static int SKIP_BLANKS_ETC(FILE *System)
             return 0;
         if (feof(System))
             return EOF;
-        if (!isspace(ch))
+        if (!isspace(ch)) {
             if (ch == '#') {
                 do
                     if (sdfast_opt.verbose > 1)
@@ -126,6 +126,7 @@ static int SKIP_BLANKS_ETC(FILE *System)
                     return 0;
             } else
                 break;
+        }
         if (sdfast_opt.verbose > 1)
             putchar(ch);
     }
@@ -142,7 +143,7 @@ char WHATS_NEXT(FILE *System,
     /* skips blanks, tells what's coming up in the input */
     char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System))
         *Next = cEndOfFileNext;
@@ -236,7 +237,7 @@ char READ_ID(FILE *System,
         if (sdfast_opt.verbose > 1)
             putchar(ch);
         if ((int)(cp - Ident) < 32)
-            *cp++ = ch;
+            *cp++ = (char)ch;
         if (ILLEGAL_CHAR(ch = GETCH(System)))
             goto done;
     }
@@ -245,7 +246,7 @@ char READ_ID(FILE *System,
 
   done:
     *cp = '\0';
-    return err;
+    return (char)err;
 }
 
 /*============*/
@@ -257,7 +258,7 @@ char FIND_EQUAL(FILE *System)
     /* read whitespace from System until we see an equal sign. */
     register char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();
@@ -284,7 +285,7 @@ char GET_INT(FILE *System,
 {
     char ch;
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();
@@ -292,8 +293,12 @@ char GET_INT(FILE *System,
         return 0;
     }
     ungetc(ch, System);
-    int n = fscanf(System, "%ld", IntVal);
-    assert(n == 1);
+    {
+        /* assert() disappears under NDEBUG, so keep a use of n. */
+        int n = fscanf(System, "%ld", IntVal);
+        assert(n == 1);
+        (void)n;
+    }
     if (sdfast_opt.verbose > 1)
         printf("%ld", *IntVal);
     return 1;
@@ -308,7 +313,7 @@ char GET_REAL(FILE *System,
 {
     char ch, ostr[50];
 
-    if (!(ch = SKIP_BLANKS_ETC(System)))
+    if (!(ch = (char)SKIP_BLANKS_ETC(System)))
         return 0;
     if (feof(System)) {
         USER_ERR();
@@ -316,8 +321,11 @@ char GET_REAL(FILE *System,
         return 0;
     }
     ungetc(ch, System);
-    int n = fscanf(System, "%lf", RealVal);
-    assert(n == 1);
+    {
+        int n = fscanf(System, "%lf", RealVal);
+        assert(n == 1);
+        (void)n;
+    }
 
     NiceDTOC(*RealVal, ostr);
     if (sdfast_opt.verbose > 1)

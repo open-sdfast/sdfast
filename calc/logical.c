@@ -556,7 +556,7 @@ REMOVE_QUES(FILE *F,
             int *HighestTemp)
 {
     register tIndex i, tempno;
-    register pExpr NoIfExpr;
+    register pExpr NoIfExpr = NULL;
     int      elsetoo,thentoo;
     pExpr    e1,e2,e3;
 
@@ -662,6 +662,9 @@ REMOVE_QUES(FILE *F,
             e1 = REMOVE_QUES(F, E->Func2CallParm1, *HighestTemp+1, HighestTemp);
             e2 = REMOVE_QUES(F, E->Func2CallParm2, *HighestTemp+1, HighestTemp);
             NoIfExpr = CALL_FUNC2(E->Func2VarRef->WhichFunction, e1, e2);
+            break;
+
+        default:
             break;
     }
 

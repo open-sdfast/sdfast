@@ -18,7 +18,7 @@ updates.
 
 ### Build
 
-CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`.
+CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`. A local build treats generator and test-harness warnings as errors (`SDFAST_WARNINGS_AS_ERRORS` defaults on). Pass `-DSDFAST_WARNINGS_AS_ERRORS=OFF` to disable that. Generated sources are not under that flag.
 
 ### Note from Sherm 20260412
 

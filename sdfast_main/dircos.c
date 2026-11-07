@@ -46,7 +46,7 @@ void COMPUTE_JOINT_CONSTS(FILE *F)
  */
 void COMPUTE_Wkk(FILE *F)
 {
-    expr e, Wkk_expr;
+    expr e = NULL, Wkk_expr;
     register Index_t i,w;
 
     Wkk_expr = INUSE(NEW_1dARRAY(cVectorVal, SysI.s));
@@ -62,6 +62,9 @@ void COMPUTE_Wkk(FILE *F)
                 break;
             case cSlidingJoint:
                 e = VECTOR_ZERO();
+                break;
+
+            default:
                 break;
         }
         SINDX(Wkk_expr, i, e);
@@ -80,7 +83,7 @@ void COMPUTE_Wkk(FILE *F)
  */
 void COMPUTE_Vkk(FILE *F)
 {
-    expr e, Vkk_expr;
+    expr e = NULL, Vkk_expr;
     register Index_t i;
 
     Vkk_expr = INUSE(NEW_1dARRAY(cVectorVal, SysI.s));
@@ -93,6 +96,9 @@ void COMPUTE_Vkk(FILE *F)
                 break;
             case cSlidingJoint:
                 e = VAL1(SysI.pin,i);
+                break;
+
+            default:
                 break;
         }
         SINDX(Vkk_expr, i, e);
@@ -155,7 +161,7 @@ void COMPUTE_dik(FILE *F)
  */
 void COMPUTE_Cik(FILE *F)
 {
-    expr e, Cik_expr;
+    expr e = NULL, Cik_expr;
     register Index_t i,ballnum;
 
     if (SysI.s == 0)
@@ -177,6 +183,9 @@ void COMPUTE_Cik(FILE *F)
                 break;
             case cSlidingJoint:
                 e = MATRIX_IDENT();
+                break;
+
+            default:
                 break;
         }
         SINDX(Cik_expr, i, e);

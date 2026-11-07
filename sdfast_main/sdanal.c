@@ -584,12 +584,11 @@ PRINT_SDANAL(FILE *F)
         nfnv  = nfunc+nvar,
         ndes;
 
-    int s1, nq1;
+    int s1;
 
     char numq[10],numu[10],numc[10],callstr[200],str_flt0[10];
 
     s1 = SysI.s ? SysI.s : 1;
-    nq1 = SysI.nq ? SysI.nq : 1;
 
     esprintf(numq, "%d", SysI.nq);
     esprintf(numu, "%d", SysI.s);

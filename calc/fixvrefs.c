@@ -54,5 +54,8 @@ void FIXUP_VREFS(register pExpr E,
                 for (j = 0; j < E->NodeValueType.Dim2; j++)
                     FIXUP_VREFS(G2d(E, i, j), S, NewCnt);
             break;
+
+        default:
+            break;
     }
 }

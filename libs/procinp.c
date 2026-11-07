@@ -42,8 +42,8 @@ static void
 PROCESS_QUESTION_MARKS(register SystemInfo_t *SystemInfo)
 {
     register Index_t b, i, j;
-    expr temp_x,temp_nom,mk_x,ik_x,rk_x,ri_x,pres_x;
-    expr lbtj_x,litj_x,lpres_x;
+    expr temp_x,temp_nom,mk_x,ik_x,rk_x,ri_x,pres_x = NULL;
+    expr lbtj_x,litj_x,lpres_x = NULL;
     expr conspt_x[MAXCONSPTS], consvec_x[MAXCONSVECS], conssc_x[MAXCONSSCS];
 
     /* gravity */
@@ -536,6 +536,9 @@ static void INIT_PSEUDO_BODY(register BodyDesc_t *UserBody,
                     PseudoBody->jnt.whichaxis = whichaxis-3;
                 else 
                     PseudoBody->jnt.whichaxis = whichaxis;
+                break;
+
+            default:
                 break;
         }
     }

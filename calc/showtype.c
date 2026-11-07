@@ -41,21 +41,21 @@ void SHOW_TYPE(register pExpr E)
     extern char BinOpNames[][6];
     extern char UnOpNames[][2];
 
-    fprintf(stderr, "**SHOW_TYPE** (E=%p)\n", E);
+    fprintf(stderr, "**SHOW_TYPE** (E=%p)\n", (void*)E);
     if (!E) {
         fputs("Nil expression\n", stderr);
         return;
     }
     switch (E->NodeKind) {
         case cUnaryOperatorNode:
-            fprintf(stderr, "Unary op: %s\n", UnOpNames[E->UnOp]);
+            fprintf(stderr, "Unary op: %s\n", UnOpNames[(unsigned char)E->UnOp]);
             SHOW_STUFF(E);
             fputs("Operand:\n", stderr);
             SHOW_TYPE(E->Opnd);
             fputs("*** end Unary op\n", stderr);
             break;
         case cBinaryOperatorNode:
-            fprintf(stderr, "Binary op: %s\n", BinOpNames[E->BinOp]);
+            fprintf(stderr, "Binary op: %s\n", BinOpNames[(unsigned char)E->BinOp]);
             SHOW_STUFF(E);
             fputs("Left:\n", stderr);
             SHOW_TYPE(E->LeftOpnd);
@@ -115,6 +115,9 @@ void SHOW_TYPE(register pExpr E)
         case cFunction2CallNode:
             fprintf(stderr, "Two-arg func call to %s\n", E->Func2VarRef->PrintName);
             SHOW_STUFF(E);
+            break;
+
+        default:
             break;
     }
 }        /*SHOW_TYPE*/

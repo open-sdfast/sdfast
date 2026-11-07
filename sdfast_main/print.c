@@ -595,6 +595,7 @@ void PRINTERR(int errnum,
          char *name)
 {
     char *errmsg;
+    (void)jointno;
 
     /* Prepare to issue user error. */
     fflush(stdout);

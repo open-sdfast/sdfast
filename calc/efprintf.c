@@ -124,7 +124,7 @@ do_eprintf(
     static char macros['W' - 'H' + 1][200];
 
     while (*fmt) {
-        if (percent_pos = strchr(fmt, '%')) {
+        if ((percent_pos = strchr(fmt, '%'))) {
             int nindir, otype, subs_offset = 0, leave_lc = 1, begin_line = 0;
             register char *ofmtp, *cp;
 
@@ -227,6 +227,7 @@ do_eprintf(
                     case 'c':
                     case 'x':
                         leave_lc = 0;
+                        /* fall through */
                     case 'd':
                     case 'o':
                     case 'u':
@@ -238,6 +239,7 @@ do_eprintf(
                     case 'e':
                     case 'g':
                         leave_lc = 0;
+                        /* fall through */
                     case 'E':
                     case 'f':
                     case 'G':
@@ -246,6 +248,7 @@ do_eprintf(
 
                     case 's':
                         leave_lc--;        /* 0 only if no @ seen */
+                        /* fall through */
                     case 'p':
                     case 'n':
                         otype = 5;        /* pointer types */
@@ -266,6 +269,9 @@ do_eprintf(
                         ofmtp--;        /* don't send to sprintf() */
                         deststr = macros[*fmt++ - 'H'];
                         break;
+
+                        default:
+                            break;
                     }
                 }
                 *ofmtp = '\0';
@@ -289,6 +295,9 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, ""); // dummy arg to kill warning
                         break;
+
+                        default:
+                            break;
                     }
                 } else if (nindir == 1) {
                     int width = va_arg(argptr, int);
@@ -310,6 +319,9 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, width);
                         break;
+
+                        default:
+                            break;
                     }
                 } else {        /* indir must (better) be == 2 */
                     int width = va_arg(argptr, int);
@@ -332,14 +344,17 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, width, prec);
                         break;
+
+                        default:
+                            break;
                     }
                 }
             }        /* switch first char after % */
             if (!leave_lc && outstr == outtmp &&
               Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
                 for (cp = deststr; *cp; cp++)
-                    if (islower(*cp))
-                        *cp = toupper(*cp);
+                    if (islower((unsigned char)*cp))
+                        *cp = (char)toupper((unsigned char)*cp);
             }
             if (deststr == outtmp)        /* not a macro definition */
                 (*out_func)(outstr, (int)strlen(outstr),
@@ -373,7 +388,7 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
         if (*s == '\n') {
             s++;
             len--;
-            if (!linepos)
+            if (!linepos) {
                 if (cmtmode == 2 && !(Lang->flags & LANG_LINE_COMMENTS)) {
                     char *cp;
 
@@ -383,6 +398,7 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
                     cmtmode = 1;
                 } else
                     fputs(Lang->spacer, stream);
+            }
             putc('\n', stream);
             linepos = 0;
         }
@@ -393,7 +409,7 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
         if (!(sublen = nlpos - s))
             continue;
         if (cmtmode == 0 && linepos && Lang->max_line &&
-          linepos + sublen > Lang->max_line) {
+          linepos + sublen > (uintptr_t)Lang->max_line) {
             fputs(Lang->cont_stmt, stream);
             putc('\n', stream);
             linepos = fprintfcnt(stream, "%s%*s", Lang->next_stmt, indent, "");
@@ -411,7 +427,8 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {
-                register char ch = islower(*s) ? toupper(*s) : *s;
+                register char ch = (char)(islower((unsigned char)*s)
+                    ? toupper((unsigned char)*s) : *s);
                 putc(ch, stream);
                 s++;
             }
@@ -425,6 +442,7 @@ foutput_str(char *s, int len, int leave_lc, int begin_line)
 static void
 soutput_str(char *s, int len, int leave_lc, int begin_line)
 {
+    (void)begin_line;
     while (len) {
         register char *nlpos;
         uintptr_t sublen;
@@ -444,7 +462,8 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
         if (!leave_lc &&
           Lang->flags & (cmtmode < 1 ? LANG_STMT_UPPER : LANG_CMT_UPPER)) {
             while (sublen--) {
-                *output_str++ = islower(*s) ? toupper(*s) : *s;
+                *output_str++ = (char)(islower((unsigned char)*s)
+                    ? toupper((unsigned char)*s) : *s);
                 s++;
             }
         } else {
@@ -466,12 +485,12 @@ soutput_str(char *s, int len, int leave_lc, int begin_line)
  */
 /*VARARGS*/
 int 
-fprintfcnt(FILE *stream, char *fmt, ...)
+fprintfcnt(FILE *out, char *fmt, ...)
 {
     va_list argptr;
 
     va_start(argptr, fmt);
-    return vfprintf(stream, fmt, argptr);
+    return vfprintf(out, fmt, argptr);
 }
 
 /*VARARGS*/

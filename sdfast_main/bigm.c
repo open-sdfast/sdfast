@@ -309,6 +309,7 @@ ZAPEXPR_NC(expr Z,
 
 void ordern_mm_decls(FILE *F)
 {
+    (void)F;
 }
 
 #define DOF_PER_FILE        20
@@ -660,17 +661,17 @@ void SDLDU(
       expr *D1xx,
       expr *D2xx)
 {
-    expr L11,L21,L22,D1,D2,D1INV,D2INV,L11D1,D1L21,L22D2;
+    expr lduL11,lduL21,lduL22,D1,D2,D1INV,D2INV,L11D1,D1L21,L22D2;
     register tIndex i, j;
 
-    L11 = MAKE_ZERO(cMatrixVal);
-    L22 = MAKE_ZERO(cMatrixVal);
+    lduL11 = MAKE_ZERO(cMatrixVal);
+    lduL22 = MAKE_ZERO(cMatrixVal);
     for (i = 0; i < 3; i++) {
-        SINDX2(L11, i, i, SCALAR_ONE());
-        SINDX2(L22, i, i, SCALAR_ONE());
+        SINDX2(lduL11, i, i, SCALAR_ONE());
+        SINDX2(lduL22, i, i, SCALAR_ONE());
     }
-    ASSIGN(sL11, L11);
-    ASSIGN(sL22, L22);
+    ASSIGN(sL11, lduL11);
+    ASSIGN(sL22, lduL22);
 
     ASSIGN(sL21, MAKE_ZERO(cMatrixVal));
     ASSIGN(sD1, MAKE_ZERO(cMatrixVal));
@@ -694,16 +695,16 @@ void SDLDU(
     ASSIGN(sL22D2, L22D2);
     ASSIGN(sD1L21, D1L21);
 
-    L11   = INUSE(VAL(sL11));
-    L22   = INUSE(VAL(sL22));
-    L21   = INUSE(VAL(sL21));
+    lduL11   = INUSE(VAL(sL11));
+    lduL22   = INUSE(VAL(sL22));
+    lduL21   = INUSE(VAL(sL21));
     D1    = INUSE(VAL(sD1));
     D2    = INUSE(VAL(sD2));
     L11D1 = INUSE(VAL(sL11D1));
     L22D2 = INUSE(VAL(sL22D2));
     D1L21 = INUSE(VAL(sD1L21));
 
-    /* create D1 and L11 using L11D1 */
+    /* create D1 and lduL11 using L11D1 */
 
     /*
      * Whenever we are going to divide by a diagonal element,
@@ -717,17 +718,17 @@ void SDLDU(
     D1 = INUSE(VAL(sD1));
     D1INV = INUSE(VAL(sD1INV));
 
-    SINDX2(L11, 1, 0, MUL(INDX2(L11D1, 1, 0), INDX2(D1INV, 0, 0)));
-    SINDX2(L11, 2, 0, MUL(INDX2(L11D1, 2, 0), INDX2(D1INV, 0, 0)));
-    ASSIGN_CLN(F, sL11, UNUSE(L11));
-    L11 = INUSE(VAL(sL11));
+    SINDX2(lduL11, 1, 0, MUL(INDX2(L11D1, 1, 0), INDX2(D1INV, 0, 0)));
+    SINDX2(lduL11, 2, 0, MUL(INDX2(L11D1, 2, 0), INDX2(D1INV, 0, 0)));
+    ASSIGN_CLN(F, sL11, UNUSE(lduL11));
+    lduL11 = INUSE(VAL(sL11));
 
     SINDX2(L11D1, 1, 1, SUB(INDX2(L11D1, 1, 1),
-                            MUL(INDX2(L11D1, 1, 0), INDX2(L11, 1, 0))));
+                            MUL(INDX2(L11D1, 1, 0), INDX2(lduL11, 1, 0))));
     SINDX2(L11D1, 2, 1, SUB(INDX2(L11D1, 2, 1),
-                            MUL(INDX2(L11D1, 2, 0), INDX2(L11, 1, 0))));
+                            MUL(INDX2(L11D1, 2, 0), INDX2(lduL11, 1, 0))));
     SINDX2(L11D1, 2, 2, SUB(INDX2(L11D1, 2, 2),
-                            MUL(INDX2(L11D1, 2, 0), INDX2(L11, 2, 0))));
+                            MUL(INDX2(L11D1, 2, 0), INDX2(lduL11, 2, 0))));
     ASSIGN_CLN(F, sL11D1, UNUSE(L11D1));
     L11D1 = INUSE(VAL(sL11D1));
 
@@ -736,12 +737,12 @@ void SDLDU(
     D1 = INUSE(VAL(sD1));
     D1INV = INUSE(VAL(sD1INV));
 
-    SINDX2(L11, 2, 1, MUL(INDX2(L11D1, 2, 1), INDX2(D1INV, 1, 1)));
-    ASSIGN_CLN(F, sL11, UNUSE(L11));
-    L11 = INUSE(VAL(sL11));
+    SINDX2(lduL11, 2, 1, MUL(INDX2(L11D1, 2, 1), INDX2(D1INV, 1, 1)));
+    ASSIGN_CLN(F, sL11, UNUSE(lduL11));
+    lduL11 = INUSE(VAL(sL11));
 
     SINDX2(L11D1, 2, 2, SUB(INDX2(L11D1, 2, 2),
-                            MUL(INDX2(L11D1, 2, 1), INDX2(L11, 2, 1))));
+                            MUL(INDX2(L11D1, 2, 1), INDX2(lduL11, 2, 1))));
     ASSIGN_CLN(F, sL11D1, UNUSE(L11D1));
     L11D1 = INUSE(VAL(sL11D1));
 
@@ -750,27 +751,27 @@ void SDLDU(
     D1 = INUSE(VAL(sD1));
     D1INV = INUSE(VAL(sD1INV));
 
-    /* create L21 using D1L21 */
+    /* create lduL21 using D1L21 */
 
     for (i = 0; i < 3; i++)
         SINDX2(D1L21, 1, i, SUB(INDX2(D1L21, 1, i),
-                                MUL(INDX2(L11, 1, 0), INDX2(D1L21, 0, i))));
+                                MUL(INDX2(lduL11, 1, 0), INDX2(D1L21, 0, i))));
     ASSIGN_CLN(F, sD1L21, UNUSE(D1L21));
     D1L21 = INUSE(VAL(sD1L21));
 
     for (i = 0; i < 3; i++)
         SINDX2(D1L21, 2, i, SUB(INDX2(D1L21, 2, i),
-                                ADD(MUL(INDX2(L11, 2, 0), INDX2(D1L21, 0, i)),
-                                    MUL(INDX2(L11, 2, 1), INDX2(D1L21, 1, i)))));
+                                ADD(MUL(INDX2(lduL11, 2, 0), INDX2(D1L21, 0, i)),
+                                    MUL(INDX2(lduL11, 2, 1), INDX2(D1L21, 1, i)))));
     ASSIGN_CLN(F, sD1L21, UNUSE(D1L21));
     D1L21 = INUSE(VAL(sD1L21));
 
     ASSIGN_CLN(F, sL21, TRANSPOSE(MATMUL(D1INV, D1L21)));
-    L21 = INUSE(VAL(sL21));
+    lduL21 = INUSE(VAL(sL21));
 
-    /* compute D2 and L22 using L22D2 */
+    /* compute D2 and lduL22 using L22D2 */
 
-    L22D2 = SUB(VAL(sL22D2), MATMUL(L21, D1L21));
+    L22D2 = SUB(VAL(sL22D2), MATMUL(lduL21, D1L21));
     SINDX2(L22D2, 0, 1, SCALAR_ZERO());
     SINDX2(L22D2, 0, 2, SCALAR_ZERO());
     SINDX2(L22D2, 1, 2, SCALAR_ZERO());
@@ -782,17 +783,17 @@ void SDLDU(
     D2 = INUSE(VAL(sD2));
     D2INV = INUSE(VAL(sD2INV));
 
-    SINDX2(L22, 1, 0, MUL(INDX2(L22D2, 1, 0), INDX2(D2INV, 0, 0)));
-    SINDX2(L22, 2, 0, MUL(INDX2(L22D2, 2, 0), INDX2(D2INV, 0, 0)));
-    ASSIGN_CLN(F, sL22, UNUSE(L22));
-    L22 = INUSE(VAL(sL22));
+    SINDX2(lduL22, 1, 0, MUL(INDX2(L22D2, 1, 0), INDX2(D2INV, 0, 0)));
+    SINDX2(lduL22, 2, 0, MUL(INDX2(L22D2, 2, 0), INDX2(D2INV, 0, 0)));
+    ASSIGN_CLN(F, sL22, UNUSE(lduL22));
+    lduL22 = INUSE(VAL(sL22));
 
     SINDX2(L22D2, 1, 1, SUB(INDX2(L22D2, 1, 1),
-                            MUL(INDX2(L22D2, 1, 0), INDX2(L22, 1, 0))));
+                            MUL(INDX2(L22D2, 1, 0), INDX2(lduL22, 1, 0))));
     SINDX2(L22D2, 2, 1, SUB(INDX2(L22D2, 2, 1),
-                            MUL(INDX2(L22D2, 2, 0), INDX2(L22, 1, 0))));
+                            MUL(INDX2(L22D2, 2, 0), INDX2(lduL22, 1, 0))));
     SINDX2(L22D2, 2, 2, SUB(INDX2(L22D2, 2, 2),
-                            MUL(INDX2(L22D2, 2, 0), INDX2(L22, 2, 0))));
+                            MUL(INDX2(L22D2, 2, 0), INDX2(lduL22, 2, 0))));
     ASSIGN_CLN(F, sL22D2, UNUSE(L22D2));
     L22D2 = INUSE(VAL(sL22D2));
 
@@ -801,12 +802,12 @@ void SDLDU(
     D2 = INUSE(VAL(sD2));
     D2INV = INUSE(VAL(sD2INV));
 
-    SINDX2(L22, 2, 1, MUL(INDX2(L22D2, 2, 1), INDX2(D2INV, 1, 1)));
-    ASSIGN_CLN(F, sL22, UNUSE(L22));
-    L22 = INUSE(VAL(sL22));
+    SINDX2(lduL22, 2, 1, MUL(INDX2(L22D2, 2, 1), INDX2(D2INV, 1, 1)));
+    ASSIGN_CLN(F, sL22, UNUSE(lduL22));
+    lduL22 = INUSE(VAL(sL22));
 
     SINDX2(L22D2, 2, 2, SUB(INDX2(L22D2, 2, 2),
-                            MUL(INDX2(L22D2, 2, 1), INDX2(L22, 2, 1))));
+                            MUL(INDX2(L22D2, 2, 1), INDX2(lduL22, 2, 1))));
     ASSIGN_CLN(F, sL22D2, UNUSE(L22D2));
     L22D2 = INUSE(VAL(sL22D2));
 
@@ -818,9 +819,9 @@ void SDLDU(
     DISPOSE_EXPR(UNUSE(L22D2));
     DISPOSE_EXPR(UNUSE(D1L21));
 
-    *L11xx = UNUSE(L11);
-    *L21xx = UNUSE(L21);
-    *L22xx = UNUSE(L22);
+    *L11xx = UNUSE(lduL11);
+    *L21xx = UNUSE(lduL21);
+    *L22xx = UNUSE(lduL22);
     *D1xx  = UNUSE(D1);
     *D2xx  = UNUSE(D2);
 }

@@ -25,7 +25,7 @@ pExpr
 DERIV(register pExpr E,
       register pExpr V)
 {
-    pExpr D, X;
+    pExpr D = NULL, X;
     register tIndex i;
 
     CHECKX(E);
@@ -142,6 +142,9 @@ DERIV(register pExpr E,
 
         case cFunction2CallNode:
             fatal("DERIV: no two-arg functions allowed");
+            break;
+
+        default:
             break;
     }
 

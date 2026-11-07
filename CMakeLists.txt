@@ -35,6 +35,38 @@ set_target_properties(calc libs sdfast PROPERTIES
     C_EXTENSIONS OFF
 )
 
+# On by default for a local build and for CI. Pass
+# -DSDFAST_WARNINGS_AS_ERRORS=OFF to keep going on a compiler that warns
+# where the CI compilers do not. Generated sdlib/dyn/sar files are
+# compiled by the test driver, not by these targets, and are not clean
+# under -Wall (implicit declarations, unused parameters).
+option(SDFAST_WARNINGS_AS_ERRORS
+    "Treat warnings as errors for the generator and the test harness" ON)
+
+# -Wall -Wextra -Wpedantic is the strict set that is still practical:
+# -Wconversion and -Weverything are too noisy for this code, and -Wpedantic
+# did not add warnings beyond -Wall -Wextra once the sources were clean.
+# MSVC /W4 matches that level. /Wall warns inside system headers.
+# C4061 reports every unlisted enumerator even when a default arm handles
+# it; those defaults are the intentional "not this joint or node" path.
+function(sdfast_set_warnings target)
+    if(MSVC)
+        target_compile_options(${target} PRIVATE /W4 /wd4061)
+        if(SDFAST_WARNINGS_AS_ERRORS)
+            target_compile_options(${target} PRIVATE /WX)
+        endif()
+    else()
+        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+        if(SDFAST_WARNINGS_AS_ERRORS)
+            target_compile_options(${target} PRIVATE -Werror)
+        endif()
+    endif()
+endfunction()
+
+sdfast_set_warnings(calc)
+sdfast_set_warnings(libs)
+sdfast_set_warnings(sdfast)
+
 # Link libraries - libm is only needed on Unix-like systems
 if(UNIX)
     target_link_libraries(sdfast PRIVATE calc libs m)
@@ -60,6 +92,7 @@ endif()
 # Build and run tests
 enable_testing()
 add_subdirectory(tests)
+sdfast_set_warnings(sdfast_tests)
 
 target_compile_definitions(sdfast_tests
     PRIVATE 

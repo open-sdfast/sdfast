@@ -43,8 +43,16 @@ pExpr NEW_1dARRAY(NodeValueType_t baseType,
         fatal("NEW_1dARRAY: illegal base type.");
     E = NEWX(cArray1dNode, Len, 0);
     ARRAY1d_TYPE(baseType, Len, &E->NodeValueType);
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+    /* See NEWX: the [1] tail is a placeholder for Len pointers. */
     for (i = 0; i < Len; i++)
         E->Array1dValue[i] = NULL;
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     return E;
 }
 
@@ -207,6 +215,9 @@ void count_temp_nodes(pExpr E)
             count_temp_nodes(E->Func2CallParm1);
             count_temp_nodes(E->Func2CallParm2);
             break;
+
+        default:
+            break;
     }
 
     E->Protection--;
@@ -272,6 +283,9 @@ void dispose_temp_nodes(pExpr E)
             dispose_temp_nodes(E->Func2CallParm1);
             dispose_temp_nodes(E->Func2CallParm2);
             break;
+
+        default:
+            break;
     }
 
     if (++E->Protection == 0)
@@ -300,6 +314,9 @@ pExpr MAKE_EXPR_LIKE(pExpr E)
             return NEW_1dARRAY(E->NodeValueType.BaseType, LEN1d(E));
         case cArray2dVal:
             return NEW_2dARRAY(E->NodeValueType.BaseType, LEN1d(E), LEN2d(E));
+
+        default:
+            break;
     }
     return NULL; /*NOTREACHED*/
 }
@@ -329,7 +346,6 @@ pExpr MAKE_ZERO(NodeValueType_t T)
             return X;
         default:
             fatal("MAKE_ZERO: only works for scalar,vec,mat");
-            return NULL; /*NOTREACHED*/
     }
 } /* MAKE_ZERO */
 
@@ -379,7 +395,7 @@ pExpr NEWX(enum tNodeKind Kind,
 {
     /* Allocates a new temporary expression of the indicated kind.        */
 
-    uintptr_t size;
+    uintptr_t size = 0;
     register pExpr X;
 
     C_ASSERT(dim1 >= 0, 1, "NEWX");
@@ -417,7 +433,18 @@ pExpr NEWX(enum tNodeKind Kind,
         case cFunction2CallNode:
             size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.Function2CallNode;
             break;
+
+        default:
+            fatal("NEWX: bad node kind.");
     }
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+    /* The node is sized for its kind, which can be smaller than the
+     * full union. The [1] array tails are allocated past that size.
+     * Both are intentional; -Warray-bounds cannot see the real length.
+     */
     if (!(X = (pExpr)malloc(size))) {
         perror("fatal");
         exit(2);
@@ -427,6 +454,9 @@ pExpr NEWX(enum tNodeKind Kind,
     X->Protection = cTemporary;
     gNewCount++;
     gNewSize += size;
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     return X;
 }
 

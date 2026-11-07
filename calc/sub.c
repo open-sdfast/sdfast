@@ -23,7 +23,7 @@ pExpr DO_SUB(register pExpr E1,
              register pExpr E2)
 {
     /* This is the function that actually does a SUB. */
-    register pExpr E;
+    register pExpr E = NULL;
     register tIndex I;
 
     C_ASSERT(E1 && E2, 1, "SUB");
@@ -57,6 +57,9 @@ pExpr DO_SUB(register pExpr E1,
                 DISPOSE_EXPR(E1);
                 DISPOSE_EXPR(E2);
                 return E;
+
+            default:
+                break;
         }        /* case */
     } else if (IS_NEG(E2)) {
         E1 = INUSE(E1);

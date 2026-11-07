@@ -699,7 +699,7 @@ void GIMBAL_DOT(FILE *F,
            expr *e2d,
            expr *e3d)
 {
-    int inb,outb,ip,op;
+    int inb,outb,ip = 0,op = 0;
 
     inb = SysI.LoopConst[lj].jnt.InbBody;
     outb = SysI.LoopConst[lj].jnt.OutbBody;
@@ -782,7 +782,7 @@ void GIMBAL_DOTDOT(FILE *F,
               expr *e2dd,
               expr *e3dd)
 {
-    int inb,outb,ip,op;
+    int inb,outb,ip = 0,op = 0;
 
     inb = SysI.LoopConst[lj].jnt.InbBody;
     outb = SysI.LoopConst[lj].jnt.OutbBody;
@@ -934,6 +934,7 @@ void DECOMPOSE_QUAT(FILE *F,
     dcx = INUSE(dcx);
     one = SCALAR_ONE();
     zero = SCALAR_ZERO();
+    (void)zero;
 
     ASSIGN_CLN(F, tmp, ADD(INDX2(dcx, 0, 0),                /* tmp = trace(dcx) */
                        ADD(INDX2(dcx, 1, 1),

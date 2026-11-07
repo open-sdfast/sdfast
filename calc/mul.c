@@ -116,6 +116,9 @@ static pExpr DUMBMUL(pExpr E1,
                     DISPOSE_EXPR(E1);
                     DISPOSE_EXPR(UNUSE(E2));
                     return E;
+
+                default:
+                    break;
             }
             return NULL; /*NOTREACHED*/
         } else {        /* can't actually multiply. */
@@ -292,7 +295,7 @@ pExpr MUL(pExpr E1,
     end;
 *****/
 
-    if (!IS_MUL(F) || !HASREM(E) && !HASREM(F->LeftOpnd))
+    if (!IS_MUL(F) || (!HASREM(E) && !HASREM(F->LeftOpnd)))
         return APPLYBIN_OP(cMultiply, E, F);
 
     F = INUSE(F);

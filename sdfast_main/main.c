@@ -18,12 +18,14 @@
 #include "sdfaprot.h"
 #include "sderror.h"
 #include <locale.h>
+#include <stdarg.h>
 #include <string.h>
 
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
  */
 static void adj_stats(opstats_t opstats[],  int which);
+static void forward_fprintf(FILE* fp, char* fmt, ...);
 
 /* Location of opcount stats for each routine. */
 #define SDSTATE      0
@@ -433,7 +435,7 @@ Equation complexity:\n\
         if (!sdfast_opt.verbose)
             break;
         F = stdout;
-        prfunc = (void(*)(FILE *, char *, ...))fprintf;
+        prfunc = forward_fprintf;
     }
 
     CLOSE_FILE(dynF);
@@ -511,7 +513,16 @@ Equation complexity:\n\
   error_return:
     FREE_SYSTEM(&SysI);
     exit(exitstat);
-    return 0;
+}
+
+/* fprintf returns int; the stats printer is void. */
+static void forward_fprintf(FILE* fp, char* fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    vfprintf(fp, fmt, ap);
+    va_end(ap);
 }
 
 /* auxnoname
@@ -548,7 +559,7 @@ void auxnoname(int auxno,
     } else
         p = &auxname[oldlen];
     sprintf(num, "%02d", auxno);
-    strncpy(p, num, 2);
+    memcpy(p, num, 2);
     auxname[oldlen+2] = '\0';
 }
 
@@ -571,7 +582,7 @@ openaux(FILE **dynbF,
 
     auxnoname(auxno, dynname, 200, numnm);
 
-    if (st = openw(dynbF, numnm))
+    if ((st = openw(dynbF, numnm)))
         return st;
 
     if (Lang->flags & LANG_C_FAMILY) {

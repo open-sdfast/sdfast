@@ -97,6 +97,9 @@ static void DO_PROTECT(register pExpr E)
             DO_PROTECT(E->Func2CallParm1);
             DO_PROTECT(E->Func2CallParm2);
             break;
+
+        default:
+            break;
     }
 }
 
@@ -172,6 +175,9 @@ static void DO_UNPROTECT(register pExpr E)
         case cFunction2CallNode:
             DO_UNPROTECT(E->Func2CallParm1);
             DO_UNPROTECT(E->Func2CallParm2);
+            break;
+
+        default:
             break;
     }
 }

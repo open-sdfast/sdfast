@@ -191,7 +191,7 @@ void PRINT_SDMFRC(FILE *F,
     Index_t i;
     long lasg;
     expr mfk_expr,mtk_expr,mtau_expr,multx;
-    sym imult,umult;
+    sym imult, umult = NULL;
     char str_0[10], str_2[10], str_n1[10], str_s1[10], str_nc1[10];
     char str_lab[10];
     mfrcsym_t syms;
@@ -516,7 +516,7 @@ void COMPUTE_lmfrc(FILE *F,
 {
     int i,j,inb,outb,m;
     JointKind_t jk;
-    expr ltcix, ltcx, temp;
+    expr ltcix, ltcx, temp = NULL;
     expr lfcix, lfcx, Tinbx, Toutbx;
 
     lfcix  = INUSE(NEW_1dARRAY(cVectorVal,SysI.nl));
@@ -573,6 +573,9 @@ void COMPUTE_lmfrc(FILE *F,
             case c6dJoint:
             case cBushingJoint:
                 temp = VECTOR_ZERO();
+                break;
+
+            default:
                 break;
         }
 

@@ -1009,6 +1009,7 @@ void PRINT_SDGETPIN(FILE *F)
     ax[3] = "inbref";  axq[3] = "inbrefq";
     ax[4] = "bodypin"; axq[4] = "bodypinq";
     ax[5] = "bodyref"; axq[5] = "bodyrefq";
+    (void)axq;
 
     /* Print the sdgetpin(joint,axis,pinout) routine. */
     declare_proc(F, 0, "getpin",

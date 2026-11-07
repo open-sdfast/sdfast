@@ -47,13 +47,13 @@ void SINDX(register pExpr E,
     CHECKX(Val);
     if (E->NodeValueType.ValueType == cScalarVal)
         fatal("SINDX: can't index a scalar.");
-    if (E->NodeValueType.ValueType == cMatrixVal &&
-      Val->NodeValueType.ValueType != cVectorVal ||
-      E->NodeValueType.ValueType == cArray2dVal &&
-      Val->NodeValueType.ValueType != cArray1dVal ||
-      E->NodeValueType.ValueType != cMatrixVal &&
+    if ((E->NodeValueType.ValueType == cMatrixVal &&
+      Val->NodeValueType.ValueType != cVectorVal) ||
+      (E->NodeValueType.ValueType == cArray2dVal &&
+      Val->NodeValueType.ValueType != cArray1dVal) ||
+      (E->NodeValueType.ValueType != cMatrixVal &&
       E->NodeValueType.ValueType != cArray2dVal &&
-      E->NodeValueType.BaseType != Val->NodeValueType.ValueType)
+      E->NodeValueType.BaseType != Val->NodeValueType.ValueType))
         fatal("SINDX: incompatible types.");
     switch (E->NodeKind) {
         case cArray1dNode:
@@ -142,7 +142,7 @@ pExpr INDX(
     /* Returns the expression E[I] of type baseType(E). */
     /* Disposes E, so WATCH OUT!!!                      */
     register tIndex J;
-    register pExpr X,temp;
+    register pExpr X = NULL, temp;
 
     CHECKX(E);
     if (E->NodeValueType.ValueType == cScalarVal)
@@ -180,6 +180,9 @@ pExpr INDX(
             X->Indices[X->NumIndices++] = I;
             DIMTYPE(X->VarRef, X->NumIndices, &X->NodeValueType);
             break;
+
+        default:
+            break;
     }        /* case */
     DISPOSE_EXPR(UNUSE(E));
     return UNUSE(X);
@@ -194,7 +197,7 @@ pExpr INDX2(register pExpr E,
             tIndex Col)
 {
     /* Doubly index a 2-d array valued expression. */
-    register pExpr X, temp;
+    register pExpr X = NULL, temp;
 
     CHECKX(E);
     if (E->NodeValueType.ValueType != cMatrixVal &&
@@ -229,6 +232,9 @@ pExpr INDX2(register pExpr E,
             X->Indices[X->NumIndices++] = Row;
             X->Indices[X->NumIndices++] = Col;
             DIMTYPE(X->VarRef, X->NumIndices, &X->NodeValueType);
+            break;
+
+        default:
             break;
     }
     DISPOSE_EXPR(UNUSE(E));
