@@ -15,6 +15,8 @@
 #include "calc.h"
 #include "calcprot.h"
 
+#include <stddef.h>
+
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
  */
@@ -43,16 +45,8 @@ pExpr NEW_1dARRAY(NodeValueType_t baseType,
         fatal("NEW_1dARRAY: illegal base type.");
     E = NEWX(cArray1dNode, Len, 0);
     ARRAY1d_TYPE(baseType, Len, &E->NodeValueType);
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#endif
-    /* See NEWX: the [1] tail is a placeholder for Len pointers. */
     for (i = 0; i < Len; i++)
         E->Array1dValue[i] = NULL;
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
     return E;
 }
 
@@ -395,56 +389,61 @@ pExpr NEWX(enum tNodeKind Kind,
 {
     /* Allocates a new temporary expression of the indicated kind.        */
 
-    uintptr_t size = 0;
+    size_t size = 0;
     register pExpr X;
+
+    /* The flexible array is aligned for a pointer. Non-array nodes stop
+     * at the end of their union member, which is before that tail.
+     */
+    _Static_assert(
+        offsetof(struct tExprNode, uArrayValue) % _Alignof(struct tExprNode*) == 0,
+        "expression array tail must be aligned for a pointer");
 
     C_ASSERT(dim1 >= 0, 1, "NEWX");
     C_ASSERT(dim2 >= 0, 2, "NEWX");
 
     switch (Kind) {
         case cUnaryOperatorNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.UnaryOperatorNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.UnaryOperatorNode;
             break;
         case cBinaryOperatorNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.BinaryOperatorNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.BinaryOperatorNode;
             break;
         case cTernaryOperatorNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.TernaryOperatorNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.TernaryOperatorNode;
             break;
         case cScalarConstNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.ScalarConstNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.ScalarConstNode;
             break;
         case cArray1dNode:
             if (dim1 == 0)
                 fatal("NEWX: Array1d can't have zero dimension.");
-            size = (uintptr_t)&((pExpr)0)->un + dim1 * sizeof(pExpr);
+            /* offsetof is the start of the tail, not sizeof the struct:
+             * sizeof omits the flexible array and may add padding past it.
+             * dim1 elements, not dim1+1.
+             */
+            size = offsetof(struct tExprNode, uArrayValue)
+                + (size_t)dim1 * sizeof(struct tExprNode*);
             break;
         case cArray2dNode:
             if (dim1 == 0 || dim2 == 0)
                 fatal("NEWX: Array2d can't have zero dimension.");
-            size = (uintptr_t)&((pExpr)0)->un + dim1 * dim2 * sizeof(pExpr);
+            size = offsetof(struct tExprNode, uArrayValue)
+                + (size_t)dim1 * (size_t)dim2 * sizeof(struct tExprNode*);
             break;
         case cVarRefNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.VarRefNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.VarRefNode;
             break;
         case cFunctionCallNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.FunctionCallNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.FunctionCallNode;
             break;
         case cFunction2CallNode:
-            size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.Function2CallNode;
+            size = offsetof(struct tExprNode, un) + sizeof X->un.Function2CallNode;
             break;
 
         default:
             fatal("NEWX: bad node kind.");
     }
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#endif
-    /* The node is sized for its kind, which can be smaller than the
-     * full union. The [1] array tails are allocated past that size.
-     * Both are intentional; -Warray-bounds cannot see the real length.
-     */
     if (!(X = (pExpr)malloc(size))) {
         perror("fatal");
         exit(2);
@@ -453,10 +452,7 @@ pExpr NEWX(enum tNodeKind Kind,
     X->NodeKind = Kind;
     X->Protection = cTemporary;
     gNewCount++;
-    gNewSize += size;
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
+    gNewSize += (int64_t)size;
     return X;
 }
 
