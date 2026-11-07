@@ -361,7 +361,7 @@ PRINT_SDDOMM(FILE           *F,
                 case OPT_EXP2:         if (COMPUTE_ordern_mm(F,"routine",
                                         maxaux,dynname,nxtaux))    return 1;
                                     break;
-            
+
                 default:
                     break;
             }
@@ -1081,7 +1081,7 @@ void PRINT_SDFSROUTINE(FILE *F,
                       break;
         case cFSgenFull: declare_proc(F, 0, "fsgenfull", 0);
                       break;
-    
+
         default:
             break;
     }
@@ -1181,7 +1181,7 @@ void PRINT_SDFSROUTINE(FILE *F,
                 PRINT_ASSN1(F, PRINTNAME(fs), i,
                     ADD(VREF1(fs,i), VAL1(fs0,i)));
             break;
-    
+
         default:
             break;
     }
@@ -1293,7 +1293,7 @@ void PRINT_SDREAC(FILE *F,
                 fexpr = VECTOR_ZERO();
                 texpr = VECTOR_ZERO();
                 break;
-            
+
                 default:
                     break;
             }

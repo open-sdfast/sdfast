@@ -942,7 +942,7 @@ void COMPUTE_ltauforces(FILE *F,
                 SINDX(tix, lj, VECTOR_ZERO());
                 SINDX(tox, lj, VECTOR_ZERO());
                 break;
-        
+
             default:
                 break;
         }

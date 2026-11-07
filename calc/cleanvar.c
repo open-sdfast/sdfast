@@ -196,7 +196,7 @@ char PrintAll)
                     DISPOSE_EXPR(tempVXi);
                 }
             break;
-    
+
         default:
             break;
     }
@@ -369,7 +369,7 @@ void CLEANVAR(FILE *F,
         case cArray2dVal:
             CLEAN2d(F, V, PrintAll);
             break;
-    
+
         default:
             break;
     }

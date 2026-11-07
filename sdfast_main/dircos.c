@@ -63,7 +63,7 @@ void COMPUTE_Wkk(FILE *F)
             case cSlidingJoint:
                 e = VECTOR_ZERO();
                 break;
-        
+
             default:
                 break;
         }
@@ -97,7 +97,7 @@ void COMPUTE_Vkk(FILE *F)
             case cSlidingJoint:
                 e = VAL1(SysI.pin,i);
                 break;
-        
+
             default:
                 break;
         }
@@ -184,7 +184,7 @@ void COMPUTE_Cik(FILE *F)
             case cSlidingJoint:
                 e = MATRIX_IDENT();
                 break;
-        
+
             default:
                 break;
         }

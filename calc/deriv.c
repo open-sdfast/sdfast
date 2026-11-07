@@ -143,7 +143,7 @@ DERIV(register pExpr E,
         case cFunction2CallNode:
             fatal("DERIV: no two-arg functions allowed");
             break;
-    
+
         default:
             break;
     }

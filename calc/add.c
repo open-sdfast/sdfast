@@ -29,7 +29,7 @@ static char IS_SINORCOSSQ(pExpr E,
         E->RtOpnd->NodeKind != cFunctionCallNode)
         return 0;
     Func = E->LeftOpnd->FuncVarRef->WhichFunction;
-    if ((Func != cSine && Func != cCosine) || 
+    if ((Func != cSine && Func != cCosine) ||
         E->RtOpnd->FuncVarRef->WhichFunction != Func ||
         !SAME_EXPR(E->LeftOpnd->FuncCallParm, E->RtOpnd->FuncCallParm))
         return 0;

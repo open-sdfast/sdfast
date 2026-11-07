@@ -57,7 +57,7 @@ static long EXPR_LEN(pExpr E)
                 return 1;
             case cFunction2CallNode:
                 return 1 + EXPR_LEN(E->Func2CallParm1) + EXPR_LEN(E->Func2CallParm2);
-        
+
             default:
                 break;
         }

@@ -1003,9 +1003,9 @@ void do_defines(FILE *F,
            char *condvnames[])
 {
     char *nm;
-    while ((nm = *vnames++)) 
+    while ((nm = *vnames++))
         efprintf(F,"#define %s (%@A%s.%s_)\n", nm, sname, nm);
     if (cond)
-        while ((nm = *condvnames++)) 
+        while ((nm = *condvnames++))
             efprintf(F,"#define %s (%@A%s.%s_)\n", nm, sname, nm);
 }

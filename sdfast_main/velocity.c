@@ -172,7 +172,7 @@ void COMPUTE_ping(FILE *F)
             case cSlidingJoint:
                 temp = INUSE(MATMUL(VAL1(Vkk,k),TRANSPOSE(VAL1(cnk,k))));
                 break;
-        
+
             default:
                 break;
         }

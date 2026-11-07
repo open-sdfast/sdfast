@@ -57,7 +57,7 @@ pExpr DO_SUB(register pExpr E1,
                 DISPOSE_EXPR(E1);
                 DISPOSE_EXPR(E2);
                 return E;
-        
+
             default:
                 break;
         }        /* case */

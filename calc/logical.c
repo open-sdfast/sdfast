@@ -663,7 +663,7 @@ REMOVE_QUES(FILE *F,
             e2 = REMOVE_QUES(F, E->Func2CallParm2, *HighestTemp+1, HighestTemp);
             NoIfExpr = CALL_FUNC2(E->Func2VarRef->WhichFunction, e1, e2);
             break;
-    
+
         default:
             break;
     }

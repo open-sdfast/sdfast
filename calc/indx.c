@@ -180,7 +180,7 @@ pExpr INDX(
             X->Indices[X->NumIndices++] = I;
             DIMTYPE(X->VarRef, X->NumIndices, &X->NodeValueType);
             break;
-    
+
         default:
             break;
     }        /* case */
@@ -233,7 +233,7 @@ pExpr INDX2(register pExpr E,
             X->Indices[X->NumIndices++] = Col;
             DIMTYPE(X->VarRef, X->NumIndices, &X->NodeValueType);
             break;
-    
+
         default:
             break;
     }

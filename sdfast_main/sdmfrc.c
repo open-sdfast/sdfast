@@ -574,7 +574,7 @@ void COMPUTE_lmfrc(FILE *F,
             case cBushingJoint:
                 temp = VECTOR_ZERO();
                 break;
-        
+
             default:
                 break;
         }

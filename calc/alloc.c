@@ -215,7 +215,7 @@ void count_temp_nodes(pExpr E)
             count_temp_nodes(E->Func2CallParm1);
             count_temp_nodes(E->Func2CallParm2);
             break;
-    
+
         default:
             break;
     }
@@ -283,7 +283,7 @@ void dispose_temp_nodes(pExpr E)
             dispose_temp_nodes(E->Func2CallParm1);
             dispose_temp_nodes(E->Func2CallParm2);
             break;
-    
+
         default:
             break;
     }
@@ -314,7 +314,7 @@ pExpr MAKE_EXPR_LIKE(pExpr E)
             return NEW_1dARRAY(E->NodeValueType.BaseType, LEN1d(E));
         case cArray2dVal:
             return NEW_2dARRAY(E->NodeValueType.BaseType, LEN1d(E), LEN2d(E));
-    
+
         default:
             break;
     }
@@ -433,7 +433,7 @@ pExpr NEWX(enum tNodeKind Kind,
         case cFunction2CallNode:
             size = (uintptr_t)&((pExpr)0)->un + sizeof X->un.Function2CallNode;
             break;
-    
+
         default:
             fatal("NEWX: bad node kind.");
     }

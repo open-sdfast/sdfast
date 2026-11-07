@@ -269,7 +269,7 @@ do_eprintf(
                         ofmtp--;        /* don't send to sprintf() */
                         deststr = macros[*fmt++ - 'H'];
                         break;
-                    
+
                         default:
                             break;
                     }
@@ -295,7 +295,7 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, ""); // dummy arg to kill warning
                         break;
-                    
+
                         default:
                             break;
                     }
@@ -319,7 +319,7 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, width);
                         break;
-                    
+
                         default:
                             break;
                     }
@@ -344,7 +344,7 @@ do_eprintf(
                     case 6:
                         sprintf(deststr, ofmt, width, prec);
                         break;
-                    
+
                         default:
                             break;
                     }

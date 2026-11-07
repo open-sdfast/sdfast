@@ -537,7 +537,7 @@ static void INIT_PSEUDO_BODY(register BodyDesc_t *UserBody,
                 else 
                     PseudoBody->jnt.whichaxis = whichaxis;
                 break;
-        
+
             default:
                 break;
         }

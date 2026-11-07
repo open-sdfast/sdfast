@@ -135,7 +135,7 @@ void COMPUTE_lptemps(FILE *F)
             case cBushingJoint:
               FLUSH_VEC(F,vt1,j,vt1x, MATMUL(VAL1(opin,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -164,7 +164,7 @@ void COMPUTE_lptemps(FILE *F)
               FLUSH_VEC(F,vt11,j,vt11x, 
                   SUB(VAL1(SysI.litj,j),INDX(vt10cx,j)));
               break;
-        
+
             default:
                 break;
         }
@@ -177,7 +177,7 @@ void COMPUTE_lptemps(FILE *F)
             case cBushingJoint:
               FLUSH_VEC(F,vt10,j,vt10x, MATMUL(VAL1(oref,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -272,7 +272,7 @@ void COMPUTE_lvtemps(FILE *F)
                         VECTOR_ZERO() : CROSS(VAL1(wk,op),VAL1(operp,j)));
               FLUSH_VEC(F,vt4,j,vt4x, MATMUL(INDX(vt3x,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -293,7 +293,7 @@ void COMPUTE_lvtemps(FILE *F)
                         rbod_is_gnd(inb) ?
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(iperp,j)));
               break;
-        
+
             default:
                 break;
         }
@@ -306,7 +306,7 @@ void COMPUTE_lvtemps(FILE *F)
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(ipin2,j)));
               break;
 
-        
+
             default:
                 break;
         }
@@ -337,7 +337,7 @@ void COMPUTE_lvtemps(FILE *F)
                           : CROSS(VAL1(wk,ip), VAL1(SysI.litj,j)),
                           MATMUL(INDX(vt8x,j),Coix))));
               break;
-        
+
             default:
                 break;
         }
@@ -347,7 +347,7 @@ void COMPUTE_lvtemps(FILE *F)
             case cWeldJoint:
               FLUSH_VEC(F,vt10b,j,vt10bx, MATMUL(INDX(vt10ax,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -365,7 +365,7 @@ void COMPUTE_lvtemps(FILE *F)
                         rbod_is_gnd(inb) ?
                         VECTOR_ZERO() : CROSS(VAL1(wk,ip),VAL1(ipin,j)));
               break;
-        
+
             default:
                 break;
         }
@@ -469,7 +469,7 @@ void COMPUTE_lperr(expr perrx)
                 SINDX(perrx,m, DOT(VAL1(iperp,j),VAL1(vt1,j)));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -485,7 +485,7 @@ void COMPUTE_lperr(expr perrx)
                 SINDX(perrx,m, DOT(VAL1(ipin,j),VAL1(vt1,j)));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -529,7 +529,7 @@ void COMPUTE_lperr(expr perrx)
                 SINDX(perrx,m, DOT(VAL1(ipin,j),VAL1(vt11,j)));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -568,7 +568,7 @@ void COMPUTE_lverr(expr verrx)
                                    DOT(VAL1(iperp,j),VAL1(vt4,j))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -586,7 +586,7 @@ void COMPUTE_lverr(expr verrx)
                                    DOT(VAL1(ipin,j),VAL1(vt4,j))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -642,7 +642,7 @@ void COMPUTE_lverr(expr verrx)
                                    DOT(VAL1(ipin,j),VAL1(vt12,j))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -730,7 +730,7 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? 
                         VECTOR_ZERO() : MATMUL(VAL1(vt1,j),VAL1(dyad,inb)));
               break;
-        
+
             default:
                 break;
         }
@@ -748,7 +748,7 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt16,j,vt16x, 
                         MATMUL(INDX(vt15x,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -778,7 +778,7 @@ void COMPUTE_latemps(FILE *F)
                               SUB(MATMUL(VAL1(dyad,inb),VAL1(SysI.litj,j)),
                                   MATMUL(INDX(vt18x,j),Coix))));
               break;
-        
+
             default:
                 break;
         }
@@ -795,7 +795,7 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt22,j,vt22x, 
                         MATMUL(INDX(vt21x,j),Coix));
               break;
-        
+
             default:
                 break;
         }
@@ -806,7 +806,7 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? 
                         VECTOR_ZERO() : MATMUL(VAL1(vt1,j),VAL1(dyad,inb)));
               break;
-        
+
             default:
                 break;
         }
@@ -828,7 +828,7 @@ void COMPUTE_latemps(FILE *F)
                                                          VAL1(Cio,j)))
                        : SUB(VAL1(onk,op),MATMUL(VAL1(onk,ip),VAL1(Cio,j))));
               break;
-        
+
             default:
                 break;
         }
@@ -850,7 +850,7 @@ void COMPUTE_latemps(FILE *F)
                         rbod_is_gnd(inb) ? VECTOR_ZERO() 
                         : MATMUL(VAL1(dyad,inb),VAL1(iperp,j)));
               break;
-        
+
             default:
                 break;
         }
@@ -861,7 +861,7 @@ void COMPUTE_latemps(FILE *F)
               FLUSH_VEC(F,vt26a,j,vt26ax, 
                         rbod_is_gnd(inb) ? VECTOR_ZERO() 
                         : MATMUL(VAL1(dyad,inb),VAL1(ipin2,j)));
-        
+
             default:
                 break;
         }
@@ -976,7 +976,7 @@ void COMPUTE_laerr(expr aerrx)
                                    DOT(VAL1(iperp,j),VAL1(vt16,j)))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -998,7 +998,7 @@ void COMPUTE_laerr(expr aerrx)
                                    DOT(VAL1(ipin,j),VAL1(vt16,j)))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }
@@ -1063,7 +1063,7 @@ void COMPUTE_laerr(expr aerrx)
                                    DOT(VAL1(ipin,j),VAL1(vt19,j)))));
                 m++;
                 break;
-        
+
             default:
                 break;
         }

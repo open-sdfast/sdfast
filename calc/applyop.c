@@ -236,7 +236,7 @@ long EXPR_COST(pExpr E)
             case cFunction2CallNode:
                 Cnt = 10;
                 break;
-        
+
             default:
                 break;
         }

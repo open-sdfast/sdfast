@@ -116,7 +116,7 @@ static pExpr DUMBMUL(pExpr E1,
                     DISPOSE_EXPR(E1);
                     DISPOSE_EXPR(UNUSE(E2));
                     return E;
-            
+
                 default:
                     break;
             }

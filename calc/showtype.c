@@ -116,7 +116,7 @@ void SHOW_TYPE(register pExpr E)
             fprintf(stderr, "Two-arg func call to %s\n", E->Func2VarRef->PrintName);
             SHOW_STUFF(E);
             break;
-    
+
         default:
             break;
     }

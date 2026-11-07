@@ -305,7 +305,7 @@ static void PRINT_EP(FILE *F,
                           "cb" : "c", E->FuncCallParm->Indices[0]);
                         efprintf(F, "%s", str);
                         return;
-                
+
                     default:
                         break;
                 }        /* switch */
@@ -339,7 +339,7 @@ static void PRINT_EP(FILE *F,
             PRINT_E(F, E->Func2CallParm2);
             efprintf(F, ")");
             break;
-    
+
         default:
             break;
     }        

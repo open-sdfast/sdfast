@@ -775,7 +775,7 @@ PRINT_SDINIT(FILE *F)
                 FLUSH_VEC(F, iperp, b, iperp_expr, CROSS(VAL1(ipin,b),
                                                          VAL1(whichsym,b)));
                 break;
-        
+
             default:
                 break;
         }
@@ -849,7 +849,7 @@ PRINT_SDINIT(FILE *F)
                         case cBushingJoint:
                             SINDX(opin_x, b, VAL1(iref, b));
                             break;
-                    
+
                         default:
                             break;
                     }

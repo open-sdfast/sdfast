@@ -128,7 +128,7 @@ pExpr EVAL(register pExpr E)
             X = CALL_FUNC2(E->Func2VarRef->WhichFunction,
                            EVAL(E->Func2CallParm1), EVAL(E->Func2CallParm2));
             break;
-    
+
         default:
             break;
     }        /* case */

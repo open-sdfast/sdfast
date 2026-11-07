@@ -73,7 +73,7 @@ pExpr USEXIF(register pExpr X,
             DISPOSE_EXPR(UNUSE(X));
             DISPOSE_EXPR(UNUSE(VX));
             return UNUSE(E);
-    
+
         default:
             break;
     }
