@@ -9,24 +9,17 @@ namespace {
 
 struct Model {
   const char* id;
-  const char* sd_rel;
   bool order_n;
 };
 
-// Unique example systems. examples/c/fbar.sd and examples/fortran/fbar.sd
-// are the same model. Kane is the generator default (no -k). One Order(N)
-// case locks -n as well.
+// Three models, each with its .sd stored next to the golden output so a
+// later edit under examples/ does not move the baseline. Kane is the
+// generator default. Order(N) fbar locks -n as well.
 const Model kModels[] = {
-    {"fbar", "examples/c/fbar.sd", false},
-    {"sphere", "examples/c/sphere.sd", false},
-    {"cpp_pend", "examples/cpp/pend.sd", false},
-    {"pend", "examples/fortran/pend.sd", false},
-    {"humpage", "examples/fortran/humpage.sd", false},
-    {"orbit", "examples/fortran/orbit.sd", false},
-    {"orbitc", "examples/fortran/orbitc.sd", false},
-    {"quickret", "examples/fortran/quickret.sd", false},
-    {"slew", "examples/fortran/slew.sd", false},
-    {"fbar", "examples/c/fbar.sd", true},
+    {"fbar", false},
+    {"pend", false},
+    {"humpage", false},
+    {"fbar", true},
 };
 
 std::string read_file(const std::filesystem::path& path) {
@@ -69,11 +62,7 @@ int run_sdfast(const std::filesystem::path& bin, const std::string& lang,
                bool order_n, const std::filesystem::path& sd,
                const std::string& base, const std::filesystem::path& workdir) {
   std::vector<std::string> args;
-  // Fortran is the generator default. Leaving -l off locks that default.
-  // C is requested explicitly.
-  // -lc is explicit. -lfortran matches the generator default and also
-  // overrides an input file that names another language (cpp/pend.sd
-  // says "language = c"), so the Fortran tree is actually Fortran.
+  // -lc is explicit. -lfortran is the generator's default language.
   if (lang == "c")
     args.push_back("-lc");
   else if (lang == "fortran")
@@ -91,9 +80,12 @@ int run_sdfast(const std::filesystem::path& bin, const std::string& lang,
 int check_one(bool update, const std::filesystem::path& source,
               const std::filesystem::path& sdfast, const std::string& lang,
               const Model& model) {
-  std::filesystem::path sd = source / model.sd_rel;
-  std::string base = sd.stem().string();
   const char* formulation = model.order_n ? "ordern" : "kane";
+  std::filesystem::path golden_dir =
+      source / "tests" / "golden" / lang / formulation / model.id;
+  // The input that produced this directory lives beside the outputs.
+  std::filesystem::path sd = golden_dir / (std::string(model.id) + ".sd");
+  std::string base = sd.stem().string();
   std::filesystem::path work =
       std::filesystem::path("generated/golden") / lang / formulation / model.id;
   std::filesystem::remove_all(work);
@@ -113,8 +105,6 @@ int check_one(bool update, const std::filesystem::path& source,
   std::vector<std::string> produced = {names.dyn, names.sar, names.info,
                                        names.lib};
   auto spellings = path_spellings(sd);
-  std::filesystem::path golden_dir =
-      source / "tests" / "golden" / lang / formulation / model.id;
 
   int rc = 0;
   for (const auto& filename : produced) {
@@ -160,7 +150,9 @@ bool compile_and_run_fbar(const std::string& lang, const std::filesystem::path& 
                           const std::filesystem::path& sdfast,
                           const std::filesystem::path& work,
                           const std::filesystem::path& stdout_path) {
-  std::filesystem::path sd = source / "examples/c/fbar.sd";
+  // Same locked input as the fbar golden, not examples/c/fbar.sd.
+  std::filesystem::path sd =
+      source / "tests" / "golden" / "c" / "kane" / "fbar" / "fbar.sd";
   std::filesystem::remove_all(work);
   std::filesystem::create_directories(work);
   if (run_sdfast(sdfast, lang, false, sd, "fbar", work) != 0)

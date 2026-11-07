@@ -14,15 +14,17 @@ ctest --test-dir build --output-on-failure
 | Test | What it checks |
 | --- | --- |
 | `sdfast_selfcheck` | The comparator itself (last-digit pass, 1e-6 fail, token fail) |
-| `sdfast_golden` | Generated C (`-lc`) and Fortran (`-lfortran`, the default language), Kane for every example `.sd`, plus Order(N) fbar |
+| `sdfast_golden` | C (`-lc`) and Fortran (`-lfortran`) for pend, fbar, and humpage, plus Order(N) fbar |
 | `sdfast_numeric` | Build and run fbar, C and Fortran, and compare the trajectory |
 | `sdfast_build` | The older compile-the-examples driver |
 
-`examples/c/fbar.sd` and `examples/fortran/fbar.sd` are the same model, so only one is generated. Sphere is not executed: its driver reads stdin.
+The example-compile test still builds every driver under `examples/`. Sphere is not executed: its driver reads stdin. The golden and numeric tests do not read those `.sd` files.
 
 ## Golden comparison
 
-`sdfast` is run in a clean directory. C uses `-lc`. Fortran uses `-lfortran`, which is the generator's default language and also overrides an input file that names another language (`examples/cpp/pend.sd` says `language = c`). The files it writes (`_dyn`, `_sar`, `_info`, `sdlib`, or the Windows `_d` / `_s` / `_i` / `.for` names) are compared with `tests/golden/<lang>/<kane|ordern>/<model>/`. Windows names are mapped onto the Unix names before the lookup, so one golden tree serves every OS. The generator's suffixes are unchanged.
+Each baseline directory holds the `.sd` that produced it (`fbar.sd`, `pend.sd`, or `humpage.sd`). `sdfast` is run on that copy, not on `examples/`, so a later edit of the examples does not move the baseline. C uses `-lc`. Fortran uses `-lfortran`, the generator's default language. The files it writes (`_dyn`, `_sar`, `_info`, `sdlib`, or the Windows `_d` / `_s` / `_i` / `.for` names) are compared with `tests/golden/<lang>/<kane|ordern>/<model>/`. Windows names are mapped onto the Unix names before the lookup, so one golden tree serves every OS. The generator's suffixes are unchanged.
+
+Models: Kane pend, fbar, and humpage, plus Order(N) fbar. The fbar numeric reference is `tests/golden/numeric/fbar_c_stdout.txt`.
 
 Before compare, both sides are normalized:
 
@@ -43,7 +45,7 @@ The test forces `LC_ALL=C` so a comma decimal locale cannot rewrite constants.
 
 ## Numeric fbar run
 
-`examples/c/fbarc.c` and `examples/fortran/fbar.f` are built against a fresh generate and run with no stdin. Fortran is skipped when no Fortran compiler was found (MSVC). The C stdout is stored at `tests/golden/numeric/fbar_c_stdout.txt`. C, Fortran, and that reference are compared as sequences of numbers:
+`examples/c/fbarc.c` and `examples/fortran/fbar.f` are built against a fresh generate of the stored `tests/golden/c/kane/fbar/fbar.sd` and run with no stdin. Fortran is skipped when no Fortran compiler was found (MSVC). The C stdout is stored at `tests/golden/numeric/fbar_c_stdout.txt`. C, Fortran, and that reference are compared as sequences of numbers:
 
 - relative tolerance `1e-3`
 - absolute floor `1e-4`
@@ -52,7 +54,7 @@ The drivers only print about five or six digits (`%g` and `f12.5`). On Linux the
 
 ## Regenerating the baselines
 
-Do this on Linux with glibc and commit the result. Other platforms should match within the tolerances, not rewrite the files.
+Do this on Linux with glibc and commit the result. It reruns `sdfast` on the `.sd` files already stored under `tests/golden/` and rewrites the outputs. It does not copy a new input from `examples/`. Other platforms should match within the tolerances, not rewrite the files.
 
 ```
 cmake --build build --target update-golden
