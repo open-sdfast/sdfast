@@ -18,7 +18,7 @@ updates.
 
 ### Build
 
-CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`.
+CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`. CI builds the generator and the test harness with warnings as errors (`-DSDFAST_WARNINGS_AS_ERRORS=ON`); that option defaults off for a local build.
 
 ### Note from Sherm 20260412
 
