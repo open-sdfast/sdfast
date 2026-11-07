@@ -78,3 +78,30 @@ jobs:
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
+
+  # Visual Studio toolset, separate from the MinGW job above.
+  # Fortran is not installed; golden Fortran is text-only, and the
+  # numeric Fortran run skips. continue-on-error stays off so a real
+  # MSVC failure is visible. cl must be on PATH at test time because
+  # the fbar numeric test compiles generated C itself.
+  msvc:
+    name: MSVC
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        shell: cmd
+        run: cmake -S . -B build -A x64
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        shell: cmd
+        run: ctest --test-dir build -C Release --output-on-failure
