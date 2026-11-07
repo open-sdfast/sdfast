@@ -17,6 +17,7 @@
 #include "sdfast.h"
 #include "sdfaprot.h"
 #include "sderror.h"
+#include <locale.h>
 #include <string.h>
 
 /* These declarations are for the fussy SGI compiler which
@@ -60,6 +61,12 @@ static void adj_stats(opstats_t opstats[],  int which);
 
 int main(int argc, char *argv[])
 {
+    /* Numeric literals in generated files must use '.' even when the
+     * process locale uses a comma. Only LC_NUMERIC is pinned; ctime
+     * stamps are unchanged.
+     */
+    setlocale(LC_NUMERIC, "C");
+
     string32 DateTime;
     opstats_t opstats[NUM_OP_COUNTS];
     FILE *dynF, *infoF, *libF, *sarF, *F;

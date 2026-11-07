@@ -32,7 +32,7 @@ Before compare, both sides are normalized:
 - the absolute input path becomes the file name
 - `Generated <date time> by SD/FAST` becomes `Generated TIMESTAMP by SD/FAST`
 - the `sdgentime` value, and the `if (i != HHMMSS)` / `IF (I .NE. HHMMSS)` checks that compare the analysis file to that clock, become `TIMESTAMP`. The serial check (`sdserialno`, currently `10001`) is not a clock and is compared exactly
-- the trailer `CPU seconds used` / `Memory used`, and each routine footer `Used N seconds CPU time` / `N additional bytes of memory`. Those byte counts are `sbrk` deltas: the same allocation can land on a different routine, or be 0 on another allocator. The add/multiply/divide/assignment counts in that footer stay exact
+- the trailer `CPU seconds used` / `Memory used`, and each routine footer `Used N seconds CPU time` / `N additional bytes of memory`. Those byte counts are a host statistic (`BYTES_USED`, now always 0; it used to be an `sbrk` delta). The add/multiply/divide/assignment counts in that footer stay exact
 
 The comparator then tokenizes the text. Whitespace only separates tokens, so a line wrap caused by a slightly wider literal does not fail by itself. Every other token must match exactly. Numeric literals (`1.5`, `.5`, `0D0`, `-9.8D0`, `1.25e-10`) compare by value:
 

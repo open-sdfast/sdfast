@@ -22,24 +22,19 @@ extern long gNewSize;        /* # bytes allocated for expr nodes */
 extern long gDispCount;        /*counts # expresson nodes disposed. */
 extern long gDispSize;        /* # bytes disposed for expr nodes */
 
-#ifndef _WIN32
-#include <unistd.h>
-#include <stdint.h>
-static char *start_brk;
-#endif
-
 /*===========*/
 /* BYTES_USED*/
 /*===========*/
 
 int64_t BYTES_USED(void)
 {
-    /* Return number of bytes allocated so far. */
-#ifdef _WIN32
+    /* Printed in verbose progress lines and in the generated routine
+     * footer ("N additional bytes of memory"). It is not an equation.
+     * sbrk() is not ISO C and is missing on Windows, which already
+     * reported 0. Report 0 on every host. The golden comparator masks
+     * this number.
+     */
     return 0;
-#else
-    return (int64_t)((char *)sbrk(0) - start_brk);
-#endif
 }
 
 /*==============*/
@@ -123,7 +118,4 @@ void RESET_COUNTS(void)
     /* Set Node allocation counts to zero. */
 
     gNewCount = gNewSize = gDispCount = gDispSize = 0;
-#ifndef _WIN32
-    start_brk = sbrk(0);
-#endif
 }

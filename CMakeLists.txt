@@ -16,6 +16,16 @@ file(GLOB SDFAST_SOURCES sdfast_main/*.c)
 add_executable(sdfast ${SDFAST_SOURCES})
 target_include_directories(sdfast PRIVATE sdfast_main)
 
+# Generator sources are ISO C11. C17 is a bugfix of C11 and would also
+# be fine, but CMake's C_STANDARD 17 needs CMake >= 3.21 and this
+# project still accepts 3.10. Extensions stay off so a GNU-mode `unix`
+# macro cannot sneak back in.
+set_target_properties(calc libs sdfast PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF
+)
+
 # Link libraries - libm is only needed on Unix-like systems
 if(UNIX)
     target_link_libraries(sdfast PRIVATE calc libs m)

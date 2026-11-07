@@ -304,10 +304,9 @@ void strip_gentime_checks(std::string& text) {
 }
 
 // END_COMPSUB prints "Used N seconds CPU time" and "N additional bytes
-// of memory" from CPU_SECONDS() and sbrk(). The byte count is whichever
-// malloc happened to grow the break during that routine, so the same run
-// can report 0 or 135168, and two machines swap which routine gets the
-// bump. The add/multiply counts that follow are the real lock and stay.
+// of memory" from CPU_SECONDS() and BYTES_USED(). BYTES_USED is a host
+// statistic (now always 0) and is not part of the equations. The
+// add/multiply counts that follow are the real lock and stay.
 void replace_number_before(std::string& text, const std::string& tail) {
   size_t pos = 0;
   while ((pos = text.find(tail, pos)) != std::string::npos) {

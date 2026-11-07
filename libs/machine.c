@@ -12,6 +12,13 @@
  * limitations under the License.
  */
 
+#ifndef _WIN32
+/* getrusage is POSIX. -std=c11 does not expose it otherwise. */
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200112L
+#endif
+#endif
+
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
 #endif
