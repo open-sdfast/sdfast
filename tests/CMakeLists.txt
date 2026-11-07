@@ -7,6 +7,12 @@ add_executable(sdfast_tests
 
 target_compile_features(sdfast_tests PRIVATE cxx_std_17)
 
+# getenv and _putenv are the portable way to pin LC_ALL. MSVC marks
+# them deprecated under /W4; the replacement is not portable.
+if(MSVC)
+    target_compile_definitions(sdfast_tests PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
 target_link_libraries(sdfast_tests
     PRIVATE
         calc

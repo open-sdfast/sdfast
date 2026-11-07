@@ -560,7 +560,7 @@ void PRINT_SDUDOT0(FILE *F, opstats_t *opcnt)
     int k;
     char str_0[10], str_s1[10];
     long ladd,lmul,ldiv,lasg;
-    sym eps,Z1,Z2,A1,A2,K1,K2;
+    sym eps = NULL, Z1 = NULL, Z2 = NULL, A1 = NULL, A2 = NULL, K1 = NULL, K2 = NULL;
 
     esprintf(str_0, "%@d", 0);
     esprintf(str_s1, "%@d", SysI.s-1);
@@ -736,7 +736,7 @@ void PRINT_SDUDOTM(FILE *F, opstats_t *opcnt)
     int k;
     char str_0[10], str_s1[10];
     long ladd,lmul,ldiv,lasg;
-    sym eps,Z1,Z2,A1,A2,K1,K2;
+    sym eps = NULL, Z1 = NULL, Z2 = NULL, A1 = NULL, A2 = NULL, K1 = NULL, K2 = NULL;
 
     esprintf(str_0, "%@d", 0);
     esprintf(str_s1, "%@d", SysI.s-1);
@@ -953,7 +953,7 @@ void PRINT_SDDERIV(FILE *F,
     char str_0[10], str_flt0[10], str_s1[10], str_nq1[10], str_nc1[10];
     char str_nindepc1[10];
     long ladd,lmul,ldiv,lasg;
-    sym eps,Z1,Z2,A1,A2,K1,K2;
+    sym eps = NULL, Z1 = NULL, Z2 = NULL, A1 = NULL, A2 = NULL, K1 = NULL, K2 = NULL;
 
     esprintf(str_0, "%@d", 0);
     esprintf(str_flt0, "%r", 0.0);

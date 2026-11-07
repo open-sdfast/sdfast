@@ -513,7 +513,6 @@ Equation complexity:\n\
   error_return:
     FREE_SYSTEM(&SysI);
     exit(exitstat);
-    return 0;
 }
 
 /* fprintf returns int; the stats printer is void. */

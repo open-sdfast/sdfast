@@ -1060,7 +1060,7 @@ void PRINT_SDFSROUTINE(FILE *F,
 {
     Index_t i;
     expr fs_expr;
-    sym lmfk,lmtk,lmtau;
+    sym lmfk = NULL, lmtk = NULL, lmtau = NULL;
     long lasg;
     char str_s[10];
 
@@ -1207,7 +1207,7 @@ void PRINT_SDREAC(FILE *F,
 {
     Index_t i,j,rbod;
     sym            frc, trq;
-    expr    fexpr, texpr;
+    expr    fexpr = NULL, texpr = NULL;
 
     START_COMPSUB(opcnt);
 

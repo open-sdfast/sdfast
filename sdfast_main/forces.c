@@ -264,7 +264,7 @@ void generic_kane_fs(FILE *F,
                 expr taux, 
                 expr fstx,
                 expr  tstx,
-                sym fs,
+                sym fssym,
                 expr  fsx)
 {
     int k,p;
@@ -282,9 +282,9 @@ void generic_kane_fs(FILE *F,
                                  DOT(VAL2(Wpk,p,k),INDX(tstx,k))));
         temp = SUB(INDX(taux,p), temp);
         if (printall || !IS_CONST(temp)) {
-            PRINT_ASSN1(F, PRINTNAME(fs), p, temp);
+            PRINT_ASSN1(F, PRINTNAME(fssym), p, temp);
             DISPOSE_EXPR(temp);
-            SINDX(fsx, p, VREF1(fs,p));
+            SINDX(fsx, p, VREF1(fssym,p));
         } else 
             SINDX(fsx, p, temp);
     }
@@ -321,7 +321,7 @@ void generic_ordern_fs(FILE *F,
                   expr taux, 
                   expr fstx, 
                   expr tstx, 
-                  sym fs,
+                  sym fssym,
                   expr fsx)
 {
     register Index_t i,k;
@@ -348,8 +348,8 @@ void generic_ordern_fs(FILE *F,
                            INDX(Fstarkx,k)),
                        DOT(VAL1(Wkk,k), INDX(Tstarkx,k))));
         if (printall || !IS_CONST(temp)) {
-            PRINT_ASSN1(F, PRINTNAME(fs), k, temp);
-            SINDX(fsx, k, VREF1(fs,k));
+            PRINT_ASSN1(F, PRINTNAME(fssym), k, temp);
+            SINDX(fsx, k, VREF1(fssym,k));
             DISPOSE_EXPR(temp);
         } else
             SINDX(fsx, k, temp);
