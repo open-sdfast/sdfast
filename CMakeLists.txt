@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 project(SDFAST C CXX)
 
+# Single-config generators (Makefiles, Ninja, MinGW) otherwise leave
+# CMAKE_BUILD_TYPE empty. Multi-config generators (Visual Studio, Xcode)
+# set CMAKE_CONFIGURATION_TYPES and pick the config at build time, so
+# they are left alone. An explicit -DCMAKE_BUILD_TYPE= still wins.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+               "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 # Collect sources for calc library
 file(GLOB CALC_SOURCES calc/*.c)
 add_library(calc STATIC ${CALC_SOURCES})
