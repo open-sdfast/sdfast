@@ -51,8 +51,8 @@ usage: %s [-sdknvb] [-l language] [-p prefix] [-g disle] [infile [basename]]\n\
     -k -n  Use Kane's or Order(N) formulation\n\
        -v  Verbose: output roadmap, stats, etc.; -vv echos input file also\n\
        -b  Break up Dynamics file into multiple smaller files\n",
-#if defined(vms) || defined(_WIN32)
-    "sdfast"        /* the returned name is too ugly under VMS or WIN32 */
+#if defined(_WIN32)
+    "sdfast"        /* argv[0] is a full path under Windows */
 #else
     sdfast_opt.progname
 #endif
@@ -337,65 +337,6 @@ void parse_cmdline(int argc,
 /*XXX dump_options(stderr, "command line", &sdfast_opt); */
 }
 
-#ifdef notdef
-dump_options(FILE *F,
-             char *str,
-             options_t *opt)
-{
-    char tmp[100];
-
-    fprintf(F, "%s options:\n",str);
-    fprintf(F, "  progname=%s\n", opt->progname);
-    fprintf(F, "  formulation=%s\n", 
-      opt->formulation==OPT_DEFAULT?"use def":
-      opt->formulation==OPT_KANE?"kane":
-      opt->formulation==OPT_EXP?"experimental":
-      opt->formulation==OPT_ORDERN?"ordern": "???");
-    fprintf(F, "  precision=%s\n", 
-      opt->precision==OPT_DEFAULT?"use def":
-      opt->precision==OPT_SINGLE?"single":
-      opt->precision==OPT_DOUBLE?"double": "???");
-    sprintf(tmp, "%d", opt->verbose);
-    fprintf(F, "  verbose=%s\n",
-      opt->verbose==OPT_DEFAULT?"use def":tmp);
-    sprintf(tmp, "%d", opt->breakup);
-    fprintf(F, "  breakup=%s\n",
-      opt->breakup==OPT_DEFAULT?"use def":tmp);
-    fprintf(F, "  language=%s\n", 
-      opt->lang==OPT_LANGDEFAULT?"use def":
-      opt->lang==&FORTRAN_language?"fortran":
-      opt->lang==&KRC_language?"k&r c":
-      opt->lang==&ANSIC_language?"ansi c":
-      opt->lang==&Cpp_language?"c++": "???");
-    fprintf(F, "  prefix=%s\n", 
-      opt->prefix==OPT_STRDEFAULT?"use def": opt->prefix);
-    fprintf(F, "  infile=%s\n", 
-      opt->infile==OPT_STRDEFAULT?"use def": opt->infile);
-    fprintf(F, "  basename=%s\n", 
-      opt->infile==OPT_STRDEFAULT?"use def": opt->basename);
-    sprintf(tmp, "%d", opt->gendyn);
-    fprintf(F, "  gendyn=%s\n",
-      opt->gendyn==OPT_DEFAULT?"use def":tmp);
-    sprintf(tmp, "%d", opt->geninfo);
-    fprintf(F, "  geninfo=%s\n",
-      opt->geninfo==OPT_DEFAULT?"use def":tmp);
-    sprintf(tmp, "%d", opt->gensar);
-    fprintf(F, "  gensar=%s\n",
-      opt->gensar==OPT_DEFAULT?"use def":tmp);
-    sprintf(tmp, "%d", opt->genlib);
-    fprintf(F, "  genlib=%s\n",
-      opt->genlib==OPT_DEFAULT?"use def":tmp);
-    fprintf(F, "  dynname=%s\n", 
-      opt->dynname==OPT_STRDEFAULT?"use def": opt->dynname);
-    fprintf(F, "  infoname=%s\n", 
-      opt->infoname==OPT_STRDEFAULT?"use def": opt->infoname);
-    fprintf(F, "  sarname=%s\n", 
-      opt->sarname==OPT_STRDEFAULT?"use def": opt->sarname);
-    fprintf(F, "  libname=%s\n", 
-      opt->libname==OPT_STRDEFAULT?"use def": opt->libname);
-}
-#endif
-
 /* GET_INPUTS
  *
  * Reads the Input File, returns 0 if it's OK, else 1.
@@ -495,11 +436,7 @@ GET_INPUTS(SystemInfo_t *sys)
         if (sdfast_opt.geninfo && sdfast_opt.infoname == OPT_STRDEFAULT) {
             genname(prompting,"Information","",sdfast_opt.basename, 
                     INFOSUF,
-#ifdef vms
-                    ".txt",
-#else
                     "",
-#endif
                     InfoFname);
             sdfast_opt.infoname = InfoFname;
         }

@@ -17,18 +17,10 @@
 struct language FORTRAN_language = {
         0,
         "FORTRAN",
-#ifdef apollo
-        ".ftn",
-#else
-#ifdef vms
-        ".for",
-#else
 #ifdef _WIN32
         ".for",
 #else
         ".f",
-#endif
-#endif
 #endif
         1, 72, 2, -1,
         "(", ",", ")", "*", "      ", "", "     & ", "",
@@ -165,15 +157,7 @@ struct language FORTRAN_language = {
     Pascal_language = {
         &Cpp_language,
         "Pascal",
-#ifdef apollo
-        ".pas",
-#else
-#ifdef vms
-        ".pas",
-#else
         ".p",
-#endif
-#endif
         1, 80, 4, 0,
         "[", ",", "]", "", "", "", "  ", ";",
         "{ ", -2, " }\n", "", " := ",

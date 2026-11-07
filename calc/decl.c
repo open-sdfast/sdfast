@@ -12,9 +12,6 @@
  * limitations under the License.
  */
 
-#ifdef THINK_C
-#include <Storage.h>
-#endif
 #include "calc.h"
 #include "language.h"
 #include "decl.h"
@@ -297,16 +294,6 @@ GETPVAR(va_list      *argptr,
 /* These functions either return a field from the already-loaded packed
  * variable pvar, or they use the next vararg as the field.
  */
-#ifdef NOTDEF
-static unsigned
-VARTYPE(va_list     *argptr,
-        unsigned    decl_flags,
-        packedvar_t *pvar)
-{
-    return decl_flags & DECL_PACKED ? pvar->pv_flags
-                                    : va_arg(*argptr, unsigned);
-}
-#endif
 
 static char*
 VARNAME(va_list     *argptr,

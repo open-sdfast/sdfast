@@ -686,18 +686,20 @@ typedef struct {
 
 /* Command line option stuff. */
 
-#if defined(unix) || defined(__APPLE__) || defined(vms)
-#define DYNSUF          "_dyn"
-#define INFOSUF         "_info"
-#define SARSUF          "_sar"
-#define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
-#endif
-
-#ifdef _WIN32
+/* _WIN32 is checked first so MinGW, which can also define __unix__,
+ * keeps the Windows suffixes. The strings themselves are unchanged. */
+#if defined(_WIN32)
 #define DYNSUF          "_d"
 #define INFOSUF         "_i"
 #define SARSUF          "_s"
 #define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
+#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+#define DYNSUF          "_dyn"
+#define INFOSUF         "_info"
+#define SARSUF          "_sar"
+#define LIBNAME         "lib"  /* must add prefix (e.g. sdlib) */
+#else
+#error "Unsupported platform for output file suffixes"
 #endif
 
 #define OPT_DEFAULT     -1     /* means `use default for this option' */

@@ -457,29 +457,6 @@ MAKE_PSEUDO_BODIES(register SystemInfo_t *SystemInfo)
             }
     }
 
-/*XXX this has to go */
-#ifdef NOTDEF
-    /* Generate body-oriented input file parameters renumbered to
-       match pseudobody numbering. */
-
-    /* mass */
-    SystemInfo->psMk = PERM(NEW_1dARRAY(cScalarVal, SystemInfo->s));
-    for (i = 0; i < SystemInfo->s; i++)
-        SINDX(SystemInfo->psMk, i, SystemInfo->PseudoBodies[i].Mass);
-
-    /* inertia */
-    SystemInfo->psIk = PERM(NEW_1dARRAY(cMatrixVal, SystemInfo->s));
-    for (i = 0; i < SystemInfo->s; i++)
-        SINDX(SystemInfo->psIk, i, SystemInfo->PseudoBodies[i].Inertia);
-
-    /* rk and ri */
-    SystemInfo->psRk = PERM(NEW_1dARRAY(cVectorVal, SystemInfo->s));
-    SystemInfo->psRi = PERM(NEW_1dARRAY(cVectorVal, SystemInfo->s));
-    for (i = 0; i < SystemInfo->s; i++) {
-        SINDX(SystemInfo->psRk, i, SystemInfo->PseudoBodies[i].jnt.BodyToJoint);
-        SINDX(SystemInfo->psRi, i, SystemInfo->PseudoBodies[i].jnt.InbToJoint);
-    }
-#endif
 }
 
 /* INIT_PSEUDO_BODY
