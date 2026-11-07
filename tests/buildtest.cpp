@@ -6,7 +6,8 @@
 
 int run_program(const std::string &executable,
                 const std::vector<std::string> &args,
-                const std::string &workdir = "") {
+                const std::string &workdir,
+                const std::string &stdout_path) {
   std::ostringstream cmd_stream;
   cmd_stream << "\"" << executable << "\"";
 
@@ -19,12 +20,31 @@ int run_program(const std::string &executable,
   PROCESS_INFORMATION pi{};
   si.cb = sizeof(si);
 
+  HANDLE hOut = INVALID_HANDLE_VALUE;
+  if (!stdout_path.empty()) {
+    SECURITY_ATTRIBUTES sa{};
+    sa.nLength = sizeof(sa);
+    sa.bInheritHandle = TRUE;
+    hOut = CreateFileA(stdout_path.c_str(), GENERIC_WRITE, FILE_SHARE_READ, &sa,
+                       CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hOut == INVALID_HANDLE_VALUE) {
+      std::cerr << "[ERROR] cannot open stdout file " << stdout_path << "\n";
+      return EXIT_FAILURE;
+    }
+    si.dwFlags |= STARTF_USESTDHANDLES;
+    si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+    si.hStdOutput = hOut;
+    si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+  }
+
   std::vector<char> buffer(cmd.begin(), cmd.end());
   buffer.push_back('\0');
 
   BOOL success = CreateProcessA(
-      nullptr, buffer.data(), nullptr, nullptr, FALSE, 0, nullptr,
-      workdir.empty() ? nullptr : workdir.c_str(), &si, &pi);
+      nullptr, buffer.data(), nullptr, nullptr, hOut != INVALID_HANDLE_VALUE,
+      0, nullptr, workdir.empty() ? nullptr : workdir.c_str(), &si, &pi);
+  if (hOut != INVALID_HANDLE_VALUE)
+    CloseHandle(hOut);
 
   if (!success) {
     DWORD err = GetLastError();
@@ -56,13 +76,15 @@ int run_program(const std::string &executable,
 
 #else
 // POSIX
+#include <fcntl.h>
 #include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 int run_program(const std::string &executable,
                 const std::vector<std::string> &args,
-                const std::string &workdir = "") {
+                const std::string &workdir,
+                const std::string &stdout_path) {
 
   // Build full command string (for logging)
   std::ostringstream cmd_stream;
@@ -90,6 +112,21 @@ int run_program(const std::string &executable,
 
   if (pid == 0) {
     // Child
+
+    if (!stdout_path.empty()) {
+      // Open before chdir so a relative path is the parent's cwd, matching
+      // the Windows CreateFile path. Callers pass an absolute path.
+      int fd = open(stdout_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+      if (fd < 0) {
+        perror(stdout_path.c_str());
+        _exit(EXIT_FAILURE);
+      }
+      if (dup2(fd, STDOUT_FILENO) < 0) {
+        perror("dup2");
+        _exit(EXIT_FAILURE);
+      }
+      close(fd);
+    }
 
     if (!workdir.empty()) {
       if (chdir(workdir.c_str()) != 0) {
@@ -146,11 +183,10 @@ int test_sdfast_example(const test_program &t,
       std::filesystem::path("generated/" + t.lang + "/" + base);
   std::filesystem::path driver_path = src_path / t.driver;
 
-  std::string dyn =
-      (t.lang == "fortran") ? base + "_dyn.f" : base + "_dyn." + t.lang;
-  std::string sar =
-      (t.lang == "fortran") ? base + "_sar.f" : base + "_sar." + t.lang;
-  std::string sdlib = (t.lang == "fortran") ? "sdlib.f" : "sdlib." + t.lang;
+  SdOutputNames names = sd_output_names(t.lang, base);
+  std::string dyn = names.dyn;
+  std::string sar = names.sar;
+  std::string sdlib = names.lib;
 
   std::filesystem::create_directories(build_dir);
 
@@ -222,8 +258,9 @@ int test_sdfast_example(const test_program &t,
       args.push_back(sar);
     args.push_back(sdlib);
 
-    if (std::filesystem::exists(build_dir / "sd2lib.f"))
-      args.push_back("sd2lib.f");
+    std::string sd2lib = "sd2lib" + names.ext;
+    if (std::filesystem::exists(build_dir / sd2lib))
+      args.push_back(sd2lib);
 
     args.push_back("-o");
     args.push_back(base);
@@ -238,6 +275,15 @@ int test_sdfast_example(const test_program &t,
 }
 
 int build_test() {
+
+  // cl.exe does not accept the gcc/gfortran flags this driver uses.
+  // Golden comparison still runs on MSVC; the fbar numeric test invokes cl
+  // with its own command line.
+  if (compiler_is_msvc(SDFAST_C_COMPILER)) {
+    std::cout << "[SKIP] example compile test on MSVC "
+                 "(gcc-style flags). Golden and fbar numeric tests still run.\n";
+    return EXIT_SUCCESS;
+  }
 
   std::filesystem::path project_root = SDFAST_SOURCE_DIR;
 
