@@ -37,9 +37,12 @@
  *                                  
  * The first massless frame, called LATLONG, is attached to the 
  * point at the center of the outer sphere by a U-joint (two perpendicular
- * rotational degrees of freedom).  The first coordinate is a rotation 
- * about y (corresponding to longitude), the second is a rotation about x
- * (corresponding to latitude).  
+ * rotational degrees of freedom).  The first coordinate (index 0) is a
+ * rotation about x, the second (index 1) is a rotation about z.  Neither
+ * axis is the vertical y axis.  A U-joint whose first axis is parallel to
+ * the slider is singular on that axis: at the bottom, where a drop from
+ * the center lands, one horizontal direction then has no velocity, so a
+ * spin about z is killed on impact while a spin about x is not.
  *
  * The other massless frame, called RADIUS, is attached to LATLONG by
  * a sliding joint in the RADIUS local y direction.  This coordinate
@@ -51,9 +54,9 @@
  * are zero, the inner sphere is in the center of the outer sphere.
  * If the RADIUS coordinate is set to (R_OUTER-R_INNER) while all
  * other coordinates are left zero, the inner sphere touches the
- * outer sphere at the top.  Note that this means the latitude is
- * considered zero at the top, 90 degrees at the equator, contrary to
- * common practice on maps where the equator is at zero latitude.
+ * outer sphere at the top.  A 90 degree rotation about z puts the
+ * center on the equator (the -x axis).  Zero angles are the top,
+ * not the equator.
  *
  * Three constraints are used in the model to (1) prevent the inner
  * sphere from penetrating the outer sphere, and (2) while the inner
@@ -129,9 +132,9 @@
 
 /* frames (bodies) */
 #define GROUND    -1
-#define LATLONG    0  /* frame giving latitude and longitude of inner */
-#  define LONGITUDE 0 /*    these are the meanings of the two axes    */
-#  define LATITUDE  1
+#define LATLONG    0  /* frame aiming the radius arm */
+#  define LONGITUDE 0 /* rotation about x (index 0) */
+#  define LATITUDE  1 /* rotation about z (index 1) */
 #define RADIUS      1 /* frame giving radial distance of inner com 
                          from outer com */
 #define INNER    2    /* the body (frame) number of the inner sphere */
@@ -230,9 +233,9 @@ main()
     fprintf(stderr,"coefficient of restitution  : "); scanf("%lf", &coef_rest);
     fprintf(stderr,"initial radial pos (m) and vel (m/s): ");
     scanf("%lf %lf", &rad, &radv);
-    fprintf(stderr,"latitude pos (deg) and rate (rad/s): ");
+    fprintf(stderr,"rotation about z (deg) and rate (rad/s): ");
     scanf("%lf %lf", &lat, &latv);
-    fprintf(stderr,"longitude pos (deg) and rate (rad/s): ");
+    fprintf(stderr,"rotation about x (deg) and rate (rad/s): ");
     scanf("%lf %lf", &lng, &lngv);
     fprintf(stderr,"ball ang. vel. vector in INNER frame (rad/s): ");
     scanf("%lf %lf %lf", &angvel[0], &angvel[1], &angvel[2]);
@@ -241,8 +244,8 @@ main()
     printf("coef: static=%g dynamic=%g restitution=%g\n",
            mu_static,mu_dynamic,coef_rest);
     printf("ic's: radial=%g radv=%g\n",rad,radv);
-    printf("    : latitude=%g latv=%g\n",lat,latv);
-    printf("    : longitude=%g longv=%g\n",lng,lngv);
+    printf("    : about z=%g rate=%g\n",lat,latv);
+    printf("    : about x=%g rate=%g\n",lng,lngv);
     printf("    : sphere angvel=%g %g %g\n\n", angvel[0],angvel[1],angvel[2]);
 
     sdinit();

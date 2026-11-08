@@ -7,8 +7,11 @@ body=lat_and_long inb=$ground joint=ujoint
   inertia = 0 0 0
   itj = 0 0 0
   btj = 0 0 0
-  pin = 0 1 0
+  # Axes are x then z, not the vertical y. A U-joint whose first axis is
+  # parallel to the slider is singular on that axis: at the bottom, a
+  # vertical drop from the center, one horizontal direction has no velocity.
   pin = 1 0 0
+  pin = 0 0 1
 
 body=radius inb=lat_and_long joint=slider
   mass = 0

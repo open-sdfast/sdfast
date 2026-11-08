@@ -46,9 +46,14 @@ produce spherical coordinates directly, and let SD/FAST write the equations.
                                  
 The first massless frame, called LATLONG, is attached to the 
 point at the center of the outer sphere by a U-joint (two perpendicular
-rotational degrees of freedom).  The first coordinate is a rotation 
-about y (corresponding to longitude), the second is a rotation about x
-(corresponding to latitude).  
+rotational degrees of freedom).  The first coordinate is a rotation
+about x, the second a rotation about z.  Neither axis is vertical.
+If the first U-joint axis were parallel to the slider (the y axis),
+the chart would be singular on that axis.  A drop from the center
+lands on that singularity, and friction from a spin about z would
+then have no horizontal velocity to push against, so the impact
+would stop the spin instead of starting a sideways bounce.  Spins
+about x and about z are symmetric with the axes chosen here.
 
 The other massless frame, called RADIUS, is attached to LATLONG by
 a sliding joint in the RADIUS local y direction.  This coordinate
@@ -60,9 +65,9 @@ In the chosen reference configuration, where all the coordinates
 are zero, the inner sphere is in the center of the outer sphere.
 If the RADIUS coordinate is set to (R_OUTER-R_INNER) while all
 other coordinates are left zero, the inner sphere touches the
-outer sphere at the top.  Note that this means the latitude is
-considered zero at the top, 90 degrees at the equator, contrary to
-common practice on maps where the equator is at zero latitude.
+outer sphere at the top.  A 90 degree rotation about z puts the
+center on the equator (the -x axis).  Zero angles are the top,
+not the equator.
 
 Three constraints are used in the model to (1) prevent the inner
 sphere from penetrating the outer sphere, and (2) while the inner
@@ -133,9 +138,11 @@ Now type `sphere' to run the example.  The program will prompt for
    (1) the static and dynamic coefficients of friction, 
    (2) the coefficient of restitution for impacts, 
    (3) the initial radial position and radial velocity of the inner sphere, 
-   (4) the initial  "latitude" and latitudinal velocity, 
-   (5) the initial "longitude" and longitudinal velocity, and
-   (6) the initial angular velocity of the inner sphere.
+   (4) the initial rotation about z and its rate,
+   (5) the initial rotation about x and its rate, and
+   (6) the initial angular velocity of the inner sphere, in the
+       INNER frame (same as ground when the ball orientation is
+       the identity).
 
 The sphere example program does not check any of these inputs for 
 legitimacy.  Make sure your inputs meet the following conditions:
@@ -144,8 +151,8 @@ legitimacy.  Make sure your inputs meet the following conditions:
      0 <= dynamic friction coef <= static coef
      0 <= coef of restitiution  <= 1
     -1 <= radial position       <= 1     meters
-     0 <= latitude              <= 180   degrees
-  -180 <= longitude             <= 180   degrees
+     0 <= rotation about z       <= 180   degrees
+  -180 <= rotation about x      <= 180   degrees
 
 Also, if the initial radial position is 1, the radial velocity must be <= 0.
 If the initial radial position is -1, the radial velocity must be >= 0.
@@ -161,32 +168,32 @@ Here are some examples you might want to try:
   dynamic = 1 (doesn't matter)
   restitution = .8
   radial pos and vel: 1 0
-  latitude and lat vel: 0 0
-  longitude and long vel: 0 0
+  rotation about z and its rate: 0 0
+  rotation about x and its rate: 0 0
   angular vel: 0 0 0
 
-* Start the inner sphere at 45 degrees latitude (that is, 45 degrees
-  down from the north pole to the equator), touching the outer sphere
-  and with no initial velocity.  The sphere falls through the interior
-  until it contacts again at 135 degrees latitude.  It then bounces
-  down the inner surface (losing energy on each bounce) until it
-  begins to roll.  From then it just rolls back and forth near the
-  bottom of the outer sphere.  No further energy loss occurs since
-  we did not model rolling friction.
+* Start the inner sphere 45 degrees down from the top, toward -x
+  (a 45 degree rotation about z), touching the outer sphere and with
+  no initial velocity.  The sphere falls through the interior until
+  it contacts again on the far side.  It then bounces down the inner
+  surface (losing energy on each bounce) until it begins to roll.
+  From then it just rolls back and forth near the bottom of the outer
+  sphere.  No further energy loss occurs since we did not model
+  rolling friction.
 
   static  = .9
   dynamic = .8
   restitution = .8
   radial pos and vel: 1 0
-  latitude and lat vel: 45 0
-  longitude and long vel: 0 0
+  rotation about z and its rate: 45 0
+  rotation about x and its rate: 0 0
   angular vel: 0 0 0
 
-* Start the sphere at the equator, with a downward (latitudinal)
-  velocity of 2 m/s and no inertial angular velocity.  Note that
-  the inner sphere frame has an angular velocity which must be 
-  cancelled to produce zero angular velocity in the outer sphere
-  (inertial) frame.  The sphere slips for a while, building up
+* Start the sphere at the equator (90 degrees about z, which puts
+  the center on the -x axis), with an angular rate of 2 rad/s about
+  that axis and no inertial angular velocity of the ball.  The arm
+  rate is a spin about z and has to be cancelled by the ball's own
+  angular velocity.  The sphere slips for a while, building up
   angular velocity, and then begins to roll.  After it rolls high
   enough, it begins to slip again, and then it falls back into
   the interior.  It continues to bounce, roll, and slip for the
@@ -199,6 +206,6 @@ Here are some examples you might want to try:
   dynamic = .8
   restitution = .8
   radial pos and vel: 1 0
-  latitude and lat vel: 90 2
-  longitude and long vel: 0 0
-  angular vel: -2 0 0
+  rotation about z and its rate: 90 2
+  rotation about x and its rate: 0 0
+  angular vel: 0 0 -2
