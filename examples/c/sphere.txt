@@ -15,27 +15,27 @@ Introduction
 ------------
 
 This is a problem in which a smaller inner sphere moves in the interior
-or on the inside surface of a larger outer sphere.  In this example, the 
+or on the inside surface of a larger outer sphere.  In this example, the
 hollow outer sphere is fixed to ground.  The inner sphere may be
         1) free in the interior,
         2) rolling along the inside surface, or
         3) slipping along the inside surface.
 
-Most of the code in the accompanying sphere.c program deals with recognizing 
-and implementing the transitions among these three conditions.  Collisions 
+Most of the code in the accompanying sphere.c program deals with recognizing
+and implementing the transitions among these three conditions.  Collisions
 between the spheres are modeled as impacts, with a coefficient of restitution.
 A static and dynamic coefficient of friction are used to model
-the behavior of the spheres when slipping, whether along the 
+the behavior of the spheres when slipping, whether along the
 surface or at a point during an impact.  No attempt is made to
 model rolling resistance, although that could easily be added.  It would
 also be straightforward to allow the outer sphere to move relative to
 ground, but that has not been done here.
 
-The simplest way to model this system with SD/FAST would be to "attach" the 
+The simplest way to model this system with SD/FAST would be to "attach" the
 inner sphere to ground with a six degree-of-freedom joint.  However, this
 would require us to write some equations to convert the resulting
 coordinates into more appropriate spherical coordinates.  Instead, we
-compose several joints (using two intermediate massless frames) to 
+compose several joints (using two intermediate massless frames) to
 produce spherical coordinates directly, and let SD/FAST write the equations.
 
                  .---.              y
@@ -43,8 +43,8 @@ produce spherical coordinates directly, and let SD/FAST write the equations.
                |   O   |            |____x          | gravity -9.8y
                \       /           /                V
          OUTER   `---'            z
-                                 
-The first massless frame, called LATLONG, is attached to the 
+
+The first massless frame, called LATLONG, is attached to the
 point at the center of the outer sphere by a U-joint (two perpendicular
 rotational degrees of freedom).  The first coordinate is a rotation
 about x, the second a rotation about z.  Neither axis is vertical.
@@ -86,7 +86,7 @@ multiplier is monitored, and the prescribed motion constraint is turned
 off if it would prevent the inner sphere from moving into the interior.
 
 The "no-slip" constraints are implemented using SD/FAST's "user constraint"
-facility.  These constraints are enabled only when the spheres are 
+facility.  These constraints are enabled only when the spheres are
 supposed to be in rolling contact.  When on, the resulting force (found
 in the multipliers) is monitored and if its magnitude exceeds the
 static coefficient of friction times the normal force, the constraints
@@ -103,7 +103,7 @@ used in the transition from slipping to rolling to eliminate any
 residual slipping velocity when the decision is made to roll.
 
 Fixed-point iteration is used to solve for the friction forces during
-sliding.  
+sliding.
 
 Running the Example
 -------------------
@@ -117,7 +117,7 @@ This example is composed of three files:
 To generate, compile and link this example into an executable `sphere',
 execute the following commands:
 
-   1. sdfast -lc -ge sphere.sd  
+   1. sdfast -lc -ge sphere.sd
 
       The -ge flag says `generate everything', and -lc says `language C',
       so you get:
@@ -125,26 +125,26 @@ execute the following commands:
 
    2. cc -o sphere sphere.c sphere_dyn.c sphere_sar.c sdlib.c
 
-      Compile, link and put the executable in `sphere'.  If you will be 
-      changing sphere.c (a good idea for familiarizing yourself with the 
-      SD/FAST capabilities) you will want to avoid recompilation of the 
+      Compile, link and put the executable in `sphere'.  If you will be
+      changing sphere.c (a good idea for familiarizing yourself with the
+      SD/FAST capabilities) you will want to avoid recompilation of the
       other files.  That can be done using the -c flag:
           cc -c sphere_dyn.c sphere_sar.c sdlib.c
       and then linking with the appropriate object files:
           cc -o sphere sphere.c sphere_dyn.o sphere_sar.o sdlib.o
 
-Now type `sphere' to run the example.  The program will prompt for 
+Now type `sphere' to run the example.  The program will prompt for
 
-   (1) the static and dynamic coefficients of friction, 
-   (2) the coefficient of restitution for impacts, 
-   (3) the initial radial position and radial velocity of the inner sphere, 
+   (1) the static and dynamic coefficients of friction,
+   (2) the coefficient of restitution for impacts,
+   (3) the initial radial position and radial velocity of the inner sphere,
    (4) the initial rotation about z and its rate,
    (5) the initial rotation about x and its rate, and
    (6) the initial angular velocity of the inner sphere, in the
        INNER frame (same as ground when the ball orientation is
        the identity).
 
-The sphere example program does not check any of these inputs for 
+The sphere example program does not check any of these inputs for
 legitimacy.  Make sure your inputs meet the following conditions:
 
      0 <= static friction coef  <= 1
@@ -160,7 +160,7 @@ If the initial radial position is -1, the radial velocity must be >= 0.
 Here are some examples you might want to try:
 
 * Start inner sphere at top of outer sphere with no velocity, drop
-  straight down.  Inner sphere bounces up and down through the 
+  straight down.  Inner sphere bounces up and down through the
   center of the outer sphere, losing energy with each bounce.
   It comes to rest at the bottom in a little less than six seconds.
 
