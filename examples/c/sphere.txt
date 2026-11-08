@@ -133,6 +133,19 @@ execute the following commands:
       and then linking with the appropriate object files:
           cc -o sphere sphere.c sphere_dyn.o sphere_sar.o sdlib.o
 
+Each run also writes sphere_anim.dat in the current directory.  The
+screen table is unchanged.  sphere_anim.dat is one sample per line:
+time, a mark that is 1 on the sample after a condition change, the
+condition name, the inner-sphere center in ground, and the body-to-ground
+direction cosine from sdorient (row-major).  examples/c/animate_sphere.py
+reads that file.  It builds this example with the sdfast from a CMake
+build (including MSVC's Release/sdfast.exe), feeds a canned case on
+stdin, and draws an MP4 when ffmpeg is installed or a GIF otherwise:
+
+    python3 examples/c/animate_sphere.py --case xspin --build-dir build
+
+Python is not required to build or test SD/FAST.
+
 Now type `sphere' to run the example.  The program will prompt for
 
    (1) the static and dynamic coefficients of friction,

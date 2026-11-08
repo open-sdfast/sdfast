@@ -126,6 +126,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Generated with the model. Rows of dircos map body vectors into ground. */
+void sdorient(int body, double dircos[3][3]);
+
 /* Sphere radii. */
 #define R_INNER   1.
 #define R_OUTER   2.
@@ -224,6 +227,7 @@ main()
     double    t,y[NEQ],dy[NEQ],param[1],step,tout,tfinal;
     double    imp[3],com[3],work[6*NEQ],dtr,a;
     double    rad,radv,lat,latv,lng,lngv,angvel[3];
+    FILE*     anim = NULL;
 
     dtr = acos(-1.)/180.;
     com[0] = com[1] = com[2] = 0.;
@@ -284,6 +288,16 @@ main()
     printf(" cond     time%6s%8s%6s%6s%6s%8s%8s%8s%9s\n", "rad", "radv",
            "com x", "com y", "com z", "angv 1", "angv 2", "angv 3", "energy");
 
+    /* Machine-readable samples for examples/c/animate_sphere.py.
+     * The human table above is unchanged. dircos is body-to-ground.
+     */
+    anim = fopen("sphere_anim.dat", "w");
+    if (anim)
+        fprintf(anim, "t mark cond cx cy cz "
+                      "r00 r01 r02 r10 r11 r12 r20 r21 r22\n");
+    else
+        fprintf(stderr, "sphere: cannot write sphere_anim.dat\n");
+
     tfinal = t + NSTEP*DT;
     step = DT;
     for (i=0; i<NSTEP+1; i++) {
@@ -291,9 +305,11 @@ main()
     tout = t + DT;
     while (t < tout) {
         double comg[3], junk[3], ke, pe, mass, grav[3];
+        double dc[3][3];
 
         /* calculate quantities to display */
         sdpos(INNER,com,comg);
+        sdorient(INNER, dc);
         sdangvel(INNER,angvel);
         sdtrans(INNER,angvel,GROUND,angvel);
         sdmom(junk,junk,&ke);
@@ -307,6 +323,15 @@ main()
         y[sdindx(RADIUS,0)], y[NQ+sdindx(RADIUS,0)],
         comg[0], comg[1], comg[2],
         angvel[0], angvel[1], angvel[2], ke+pe);
+        if (anim)
+            fprintf(anim,
+                "%.5f %d %s %.6f %.6f %.6f "
+                "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n",
+                t, condchg ? 1 : 0, condnames[syscond],
+                comg[0], comg[1], comg[2],
+                dc[0][0], dc[0][1], dc[0][2],
+                dc[1][0], dc[1][1], dc[1][2],
+                dc[2][0], dc[2][1], dc[2][2]);
 
         if (t >= tfinal)
         break;
@@ -341,7 +366,10 @@ main()
     }
     }
 
+    if (anim)
+        fclose(anim);
     sdprinterr(stdout);
+    return 0;
 }
 
 /* This routine computes system derivatives, given the time and state

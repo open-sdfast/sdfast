@@ -82,6 +82,22 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
 
+      # Optional. Python is not required to configure or compile SD/FAST.
+      # --self-test checks the build-tree search (including Release/sdfast.exe).
+      # --no-render generates sphere_anim.dat and does not import matplotlib.
+      - name: Sphere animation smoke
+        run: |
+          if command -v python3 >/dev/null 2>&1; then
+            PY=python3
+          elif command -v python >/dev/null 2>&1; then
+            PY=python
+          else
+            echo "Python not on PATH; skipping sphere animation smoke"
+            exit 0
+          fi
+          "$PY" examples/c/animate_sphere.py --self-test
+          "$PY" examples/c/animate_sphere.py --no-render --case xspin --build-dir build
+
   # Visual Studio toolset, separate from the MinGW job above.
   # Fortran is not installed; golden Fortran is text-only, and the
   # numeric Fortran run skips. continue-on-error stays off so a real
@@ -108,3 +124,18 @@ jobs:
       - name: Test
         shell: cmd
         run: ctest --test-dir build -C Release --output-on-failure
+
+      # sphere.c is gnu89, so this job does not compile it with cl.
+      # The path search still runs here: multi-config Release/sdfast.exe.
+      - name: Sphere animation path check
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null 2>&1; then
+            PY=python3
+          elif command -v python >/dev/null 2>&1; then
+            PY=python
+          else
+            echo "Python not on PATH; skipping sphere animation path check"
+            exit 0
+          fi
+          "$PY" examples/c/animate_sphere.py --self-test
