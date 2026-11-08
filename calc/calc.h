@@ -205,12 +205,6 @@ struct tExprNode {
             scalar uScalarValue;
         } ScalarConstNode;
         struct {
-            struct tExprNode *uArray1dValue[1];
-        } Array1dNode;
-        struct {
-            struct tExprNode *uArray2dValue[1];
-        } Array2dNode;
-        struct {
             pSym uVarRef;
             long uAssignCountE;  /* should match in symbol */
             Index_t uNumIndices;
@@ -226,6 +220,15 @@ struct tExprNode {
             pExpr uFunc2CallParm2;
         } Function2CallNode;
     } un;
+    /* Element storage for cArray1dNode and cArray2dNode. A C17 flexible
+     * array member has to be the last member of a structure, and a union
+     * that contains one cannot itself be a member of a structure, so this
+     * cannot live in un. Both shapes already share one pointer tail
+     * (a matrix is walked through Array1dValue), and the tail is allocated
+     * only for array nodes. Other kinds are allocated through the end of
+     * their own union member and do not touch this array.
+     */
+    struct tExprNode* uArrayValue[];
 };
 #define UnOp un.UnaryOperatorNode.uUnOp
 #define Opnd un.UnaryOperatorNode.uOpnd
@@ -237,8 +240,8 @@ struct tExprNode {
 #define SecondOpnd un.TernaryOperatorNode.uSecondOpnd
 #define ThirdOpnd un.TernaryOperatorNode.uThirdOpnd
 #define ScalarValue un.ScalarConstNode.uScalarValue
-#define Array1dValue un.Array1dNode.uArray1dValue
-#define Array2dValue un.Array2dNode.uArray2dValue
+#define Array1dValue uArrayValue
+#define Array2dValue uArrayValue
 #define VarRef un.VarRefNode.uVarRef
 #define AssignCountE un.VarRefNode.uAssignCountE
 #define NumIndices un.VarRefNode.uNumIndices
