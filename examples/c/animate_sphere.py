@@ -4,8 +4,12 @@
 Finds sdfast from a CMake build directory (single-config build/sdfast or
 build/sdfast.exe, or multi-config build/Release/sdfast.exe and the other
 config names), generates the C model, compiles sphere, and feeds one canned
-case on stdin. Samples come from sphere_anim.dat: center position and the
-body-to-ground direction cosine. Angular velocity is not integrated.
+case on stdin. The sdfast path is made absolute before the run, because
+generation uses a temporary working directory. A Windows build of sdfast
+(MinGW included) writes sphere_d.c and sphere_s.c; a Unix build writes
+sphere_dyn.c and sphere_sar.c. Samples come from sphere_anim.dat: center
+position and the body-to-ground direction cosine. Angular velocity is not
+integrated.
 
     python3 examples/c/animate_sphere.py --case xspin --build-dir build
     python3 examples/c/animate_sphere.py --no-render --case xspin --sdfast ./sdfast
@@ -58,14 +62,16 @@ def search_build_tree(root):
 
 
 def find_sdfast(build_dir, explicit):
+    # Always absolute. The generator is run with cwd set to a temp
+    # directory, and a relative build/sdfast is then looked up there.
     if explicit:
         path = Path(explicit)
         if not path.is_file():
             raise SystemExit("sdfast not found: %s" % path)
-        return path
+        return path.resolve()
     env = os.environ.get("SDFAST")
     if env and Path(env).is_file():
-        return Path(env)
+        return Path(env).resolve()
     roots = []
     if build_dir:
         roots.append(Path(build_dir))
@@ -75,10 +81,10 @@ def find_sdfast(build_dir, explicit):
     for root in roots:
         found = search_build_tree(root)
         if found:
-            return found
+            return found.resolve()
     which = shutil.which("sdfast")
     if which:
-        return Path(which)
+        return Path(which).resolve()
     raise SystemExit(
         "sdfast not found. Pass --sdfast, set SDFAST, or --build-dir "
         "(build/sdfast, build/sdfast.exe, or build/Release/sdfast.exe)."
@@ -106,8 +112,38 @@ def sphere_binary_name():
     return "sphere.exe" if os.name == "nt" else "sphere"
 
 
-def compile_command(cc, exe):
-    sources = ["sphere.c", "sphere_dyn.c", "sphere_sar.c", "sdlib.c"]
+def _first_present(work, names):
+    for name in names:
+        if (work / name).is_file():
+            return name
+    return None
+
+
+def model_sources(work):
+    """Unix sdfast writes sphere_dyn.c / sphere_sar.c. _WIN32, including
+    MinGW and MSVC, writes the short names sphere_d.c / sphere_s.c.
+    """
+    work = Path(work)
+    dyn = _first_present(work, ("sphere_dyn.c", "sphere_d.c"))
+    sar = _first_present(work, ("sphere_sar.c", "sphere_s.c"))
+    lib = _first_present(work, ("sdlib.c",))
+    missing = []
+    if dyn is None:
+        missing.append("sphere_dyn.c or sphere_d.c")
+    if sar is None:
+        missing.append("sphere_sar.c or sphere_s.c")
+    if lib is None:
+        missing.append("sdlib.c")
+    if missing:
+        present = sorted(p.name for p in work.iterdir())
+        raise SystemExit(
+            "sdfast did not write %s (directory has: %s)"
+            % (", ".join(missing), " ".join(present))
+        )
+    return ["sphere.c", dyn, sar, lib]
+
+
+def compile_command(cc, exe, sources):
     if _is_cl(cc):
         return [cc, "/nologo", "/Fe:" + str(exe), *sources]
     return [
@@ -137,14 +173,28 @@ def generate_and_run(sdfast, case, work):
     work.mkdir(parents=True, exist_ok=True)
     for name in ("sphere.c", "sphere.sd"):
         shutil.copyfile(HERE / name, work / name)
-    subprocess.run(
+    sdfast = Path(sdfast).resolve()
+    generated = subprocess.run(
         [str(sdfast), "-lc", "-ge", "sphere.sd"],
         cwd=str(work),
-        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
     )
+    try:
+        sources = model_sources(work)
+    except SystemExit:
+        sys.stderr.write(generated.stderr)
+        sys.stderr.write(generated.stdout)
+        raise
+    if generated.returncode != 0:
+        sys.stderr.write(generated.stderr)
+        sys.stderr.write(generated.stdout)
+        raise SystemExit("sdfast exited %s" % generated.returncode)
     cc = c_compiler()
     exe = work / sphere_binary_name()
-    subprocess.run(compile_command(cc, exe), cwd=str(work), check=True)
+    subprocess.run(compile_command(cc, exe, sources), cwd=str(work), check=True)
     completed = subprocess.run(
         [str(exe)],
         input=case_stdin(case),
@@ -348,6 +398,30 @@ def self_test():
         exe = spaced / "RelWithDebInfo" / "sdfast.exe"
         exe.write_text("x", encoding="ascii")
         assert search_build_tree(spaced) == exe
+        unix = root / "unix-names"
+        win = root / "win-names"
+        for directory, names in (
+            (unix, ("sphere_dyn.c", "sphere_sar.c", "sdlib.c")),
+            (win, ("sphere_d.c", "sphere_s.c", "sdlib.c")),
+        ):
+            directory.mkdir()
+            for name in names:
+                (directory / name).write_text("x", encoding="ascii")
+        assert model_sources(unix) == [
+            "sphere.c", "sphere_dyn.c", "sphere_sar.c", "sdlib.c"]
+        assert model_sources(win) == [
+            "sphere.c", "sphere_d.c", "sphere_s.c", "sdlib.c"]
+        saved = os.environ.pop("SDFAST", None)
+        cwd = Path.cwd()
+        try:
+            os.chdir(root)
+            found = find_sdfast("single", None)
+            assert found.is_absolute(), found
+            assert found == (single / "sdfast").resolve()
+        finally:
+            os.chdir(cwd)
+            if saved is not None:
+                os.environ["SDFAST"] = saved
     print("self-test ok")
 
 

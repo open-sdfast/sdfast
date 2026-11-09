@@ -140,7 +140,10 @@ condition name, the inner-sphere center in ground, and the body-to-ground
 direction cosine from sdorient (row-major).  examples/c/animate_sphere.py
 reads that file.  It builds this example with the sdfast from a CMake
 build (including MSVC's Release/sdfast.exe), feeds a canned case on
-stdin, and draws an MP4 when ffmpeg is installed or a GIF otherwise:
+stdin, and draws an MP4 when ffmpeg is installed or a GIF otherwise.
+A Windows build of sdfast, MinGW included, writes sphere_d.c and
+sphere_s.c instead of sphere_dyn.c and sphere_sar.c; the script
+compiles whichever pair was written:
 
     python3 examples/c/animate_sphere.py --case xspin --build-dir build
 
