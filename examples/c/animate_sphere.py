@@ -111,9 +111,9 @@ def c_compiler():
     cc = os.environ.get("CC")
     if cc:
         return cc
-    # macOS /usr/bin/gcc is Apple clang, which rejects this example's
-    # implicit declarations. Prefer a real GNU gcc, including brew's
-    # gcc-N, which is what the macOS CI build uses.
+    # macOS /usr/bin/gcc is Apple clang, which rejects the generated
+    # files' implicit declarations. Prefer a real GNU gcc, including
+    # brew's gcc-N, which is what the macOS CI build uses.
     for major in range(20, 10, -1):
         found = shutil.which("gcc-%d" % major)
         if found and not _compiler_is_clang(found):
@@ -171,19 +171,39 @@ def model_sources(work):
     return ["sphere.c", dyn, sar, lib]
 
 
-def compile_command(cc, exe, sources):
+def compile_commands(cc, exe, sources):
+    """sphere.c is C17. Generated files stay gnu89: they still call
+    each other without prototypes.
+    """
+    driver, generated = sources[0], sources[1:]
     if _is_cl(cc):
-        return [cc, "/nologo", "/Fe:" + str(exe), *sources]
-    # Apple clang promotes implicit declarations to errors. This driver
-    # and the generated files are gnu89 and call each other that way.
-    return [
-        cc, "-std=gnu89",
-        "-Wno-return-type",
-        "-Wno-deprecated-non-prototype",
-        "-Wno-error=implicit-function-declaration",
-        "-Wno-error=implicit-int",
-        "-o", str(exe), *sources, "-lm",
-    ]
+        objs = ["sphere.obj"]
+        commands = [[
+            cc, "/nologo", "/std:c17", "/W4", "/WX", "/TC", "/c",
+            "/Fosphere.obj", driver,
+        ]]
+        for src in generated:
+            obj = Path(src).stem + ".obj"
+            objs.append(obj)
+            commands.append([cc, "/nologo", "/TC", "/c", src])
+        commands.append([cc, "/nologo", "/Fe:" + str(exe), *objs])
+        return commands
+    commands = [[
+        cc, "-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror",
+        "-c", driver, "-o", "sphere.o",
+    ]]
+    objs = ["sphere.o"]
+    for src in generated:
+        obj = Path(src).stem + ".o"
+        objs.append(obj)
+        commands.append([
+            cc, "-std=gnu89",
+            "-Wno-error=implicit-function-declaration",
+            "-Wno-error=implicit-int",
+            "-c", src, "-o", obj,
+        ])
+    commands.append([cc, "-o", str(exe), *objs, "-lm"])
+    return commands
 
 
 def case_stdin(name):
@@ -228,7 +248,8 @@ def generate_and_run(sdfast, case, work):
         raise SystemExit("sdfast exited %s" % generated.returncode)
     cc = c_compiler()
     exe = work / sphere_binary_name()
-    subprocess.run(compile_command(cc, exe, sources), cwd=str(work), check=True)
+    for command in compile_commands(cc, exe, sources):
+        subprocess.run(command, cwd=str(work), check=True)
     completed = subprocess.run(
         [str(exe)],
         input=case_stdin(case),

@@ -122,12 +122,13 @@
  *                             and is decreasing.
  */
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-/* Generated with the model. Rows of dircos map body vectors into ground. */
-void sdorient(int body, double dircos[3][3]);
 
 /* Sphere radii. */
 #define R_INNER   1.
@@ -165,13 +166,13 @@ void sdorient(int body, double dircos[3][3]);
 #define COND_ROLLING     2    /* rolling along the inner surface */
 #define COND_SLIPPING     3    /* slipping along the inner surface */
 
-char *condnames[] = {
+static const char* const condnames[] = {
     "UNKNOWN",
     "FREE",
     "ROLLING",
     "SLIPPING",
 };
-
+
 /* Condition change threshholds. */
 #define EPS_MINSLIPVEL    1e-3    /* start rolling when relative velocity
                                      is this low if previously slipping */
@@ -207,42 +208,121 @@ char *condnames[] = {
 
 #define SIGN(x) ((x)<0.?-1.:1.)
 #define SQR(x)    ((x)*(x))
+#define UNUSED(x) (void)(x)
+
+/* Where things go in the param[] array passed to the impact residual. */
+#define TIME    0
+#define COEF    1    /* coefficient of restitution */
+#define QS    2
+#define US    (QS+NQ)
+#define NEWUS    (US+NU)
+#define PARAMLEN (2+NQ+NU+NU)
+
+/* root finder stuff */
+#define NV    3        /* number of variables */
+#define NF    3        /* number of functions */
+#define SOLNTOL    EPS_FORCE     /* required solution tol */
+#define MAXEVAL    500        /* maximum allowable number of resid calls */
 
 /* Coefficients of friction and restitution. */
-double mu_static, mu_dynamic, coef_rest;
+static double mu_static, mu_dynamic, coef_rest;
 
 /* The current condition (free, slipping, or rolling) is maintained
    as a global to be accessible throughout the program. */
-int syscond = COND_UNKNOWN;
+static int syscond = COND_UNKNOWN;
 
 /* Just at the point of transition from ROLLING to SLIPPING, the apparent
  * slip direction is recorded here.  This can be used to orient the
  * friction force until sufficient slipping velocity has been built up.
  */
-double slipdir[3];
+static double slipdir[3];
 
-main()
+/* Prototypes from the generated model and sdlib. Rows of dircos map
+ * body vectors into ground.
+ */
+void sdinit(void);
+void sdstab(double velin, double posin);
+int sdindx(int joint, int axis);
+void sdang2st(double stang[], double st[]);
+void sdstate(double timein, double qin[], double uin[]);
+void sderror(int* routine, int* errnum);
+void sdclearerr(void);
+void sdpres(int joint, int axis, int presin);
+void sdprespos(int joint, int axis, double prval);
+void sdpresvel(int joint, int axis, double prval);
+void sdpresacc(int joint, int axis, double prval);
+void sdpos(int body, double pt[], double loc[]);
+void sdvel(int body, double pt[], double velo[]);
+void sdacc(int body, double pt[], double accel[]);
+void sdorient(int body, double dircos[3][3]);
+void sdangvel(int body, double avel[]);
+void sdtrans(int frbod, double ivec[], int tobod, double ovec[]);
+void sdmom(double lm[], double am[], double* ke);
+void sdgetgrav(double gravout[]);
+void sdgetmass(int body, double* massout);
+void sdprinterr(FILE* fnum);
+void sdperr(double errs[]);
+void sdverr(double errs[]);
+void sdderiv(double oqdot[], double oudot[]);
+void sdmult(double omults[], int* owrnk, int omultmap[]);
+void sdpointf(int body, double point[], double force[]);
+void sdvinteg(int (*func)(double, double[], double[], double[], int*),
+    double* time, double st[], double dst[], double param[],
+    double dt, double* step, int neqin, double tol, double work[],
+    int* err, int* which);
+void sdroot(int (*func)(double[], double[], double[]),
+    double vars[], double param[], int nfunc, int nvar, int ndesin,
+    int lock[], double rtol, double dtol, int maxeval,
+    double jw[], double dw[], double rw[], int iw[],
+    double fret[], int* fcnt, int* err);
+
+/* User routines the generated model calls. */
+void sduperr(double t, double q[], double errs[]);
+void sduverr(double t, double q[], double u[], double errs[]);
+void sduaerr(double t, double q[], double u[], double udot[], double errs[]);
+void sduconsfrc(double t, double q[], double u[], double mults[]);
+void sduforce(double t, double q[], double u[]);
+void sdumotion(double t, double q[], double u[]);
+
+static int read_doubles(const char* prompt, double* out, int n);
+static int deriv(double t, double y[], double dy[], double param[], int* status);
+static void impact(double t, double y[], double imp[]);
+static int resid(double impr[], double param[], double fret[]);
+static void getslipdir(double dir[]);
+static void contact(const double q[], double pt[], double velr[]);
+static void contactacc(double pt[], double accr[]);
+
+int main(void)
 {
-    int       i,status,err,which,wantcond,condchg;
-    double    t,y[NEQ],dy[NEQ],param[1],step,tout,tfinal;
-    double    imp[3],com[3],work[6*NEQ],dtr,a;
-    double    rad,radv,lat,latv,lng,lngv,angvel[3];
-    FILE*     anim = NULL;
+    double dtr = acos(-1.)/180.;
+    double com[3] = {0., 0., 0.};
+    double t = 0.;
+    double y[NEQ];
+    double dy[NEQ];
+    double param[1];
+    double imp[3];
+    double work[6*NEQ];
+    double rad = 0.;
+    double radv = 0.;
+    double lat = 0.;
+    double latv = 0.;
+    double lng = 0.;
+    double lngv = 0.;
+    double angvel[3];
+    int status = 0;
 
-    dtr = acos(-1.)/180.;
-    com[0] = com[1] = com[2] = 0.;
-
-    fprintf(stderr,"static friction coefficient : "); scanf("%lf", &mu_static);
-    fprintf(stderr,"dynamic friction coefficient: "); scanf("%lf", &mu_dynamic);
-    fprintf(stderr,"coefficient of restitution  : "); scanf("%lf", &coef_rest);
-    fprintf(stderr,"initial radial pos (m) and vel (m/s): ");
-    scanf("%lf %lf", &rad, &radv);
-    fprintf(stderr,"rotation about z (deg) and rate (rad/s): ");
-    scanf("%lf %lf", &lat, &latv);
-    fprintf(stderr,"rotation about x (deg) and rate (rad/s): ");
-    scanf("%lf %lf", &lng, &lngv);
-    fprintf(stderr,"ball ang. vel. vector in INNER frame (rad/s): ");
-    scanf("%lf %lf %lf", &angvel[0], &angvel[1], &angvel[2]);
+    if (!read_doubles("static friction coefficient : ", &mu_static, 1) ||
+        !read_doubles("dynamic friction coefficient: ", &mu_dynamic, 1) ||
+        !read_doubles("coefficient of restitution  : ", &coef_rest, 1) ||
+        !read_doubles("initial radial pos (m) and vel (m/s): ", &rad, 1) ||
+        !read_doubles("", &radv, 1) ||
+        !read_doubles("rotation about z (deg) and rate (rad/s): ", &lat, 1) ||
+        !read_doubles("", &latv, 1) ||
+        !read_doubles("rotation about x (deg) and rate (rad/s): ", &lng, 1) ||
+        !read_doubles("", &lngv, 1) ||
+        !read_doubles("ball ang. vel. vector in INNER frame (rad/s): ",
+                      angvel, 3))
+        return 1;
 
     printf("radii: inner=%g outer=%g\n", R_INNER, R_OUTER);
     printf("coef: static=%g dynamic=%g restitution=%g\n",
@@ -255,11 +335,12 @@ main()
     sdinit();
 
     /* enable constraint stabilization */
-    a = 10.;
-    sdstab(2.*a,a*a);
+    {
+        double a = 10.;
+        sdstab(2.*a,a*a);
+    }
 
     /* Set up the initial conditions. */
-    t = 0.;
     y[sdindx(RADIUS,0)] = rad;                /* positions */
     y[sdindx(LATLONG,LATITUDE)] = lat*dtr;
     y[sdindx(LATLONG,LONGITUDE)] = lng*dtr;
@@ -269,7 +350,7 @@ main()
 
     /* Initialize ball coordinates using 1-2-3 Euler angles, then convert to
        Euler parameters. */
-    for (i=0; i<3; i++) {
+    for (int i = 0; i < 3; i++) {
         y[sdindx(INNER,i)] = 0.;
         y[NQ+sdindx(INNER,i)] = angvel[i];
     }
@@ -291,85 +372,101 @@ main()
     /* Machine-readable samples for examples/c/animate_sphere.py.
      * The human table above is unchanged. dircos is body-to-ground.
      */
-    anim = fopen("sphere_anim.dat", "w");
+    FILE* anim = fopen("sphere_anim.dat", "w");
     if (anim)
         fprintf(anim, "t mark cond cx cy cz "
                       "r00 r01 r02 r10 r11 r12 r20 r21 r22\n");
     else
         fprintf(stderr, "sphere: cannot write sphere_anim.dat\n");
 
-    tfinal = t + NSTEP*DT;
-    step = DT;
-    for (i=0; i<NSTEP+1; i++) {
-    condchg = 0;
-    tout = t + DT;
-    while (t < tout) {
-        double comg[3], junk[3], ke, pe, mass, grav[3];
-        double dc[3][3];
+    double tfinal = t + NSTEP*DT;
+    double step = DT;
+    for (int i = 0; i < NSTEP+1; i++) {
+        int condchg = 0;
+        double tout = t + DT;
+        while (t < tout) {
+            double comg[3], junk[3], ke, pe, mass, grav[3];
+            double dc[3][3];
 
-        /* calculate quantities to display */
-        sdpos(INNER,com,comg);
-        sdorient(INNER, dc);
-        sdangvel(INNER,angvel);
-        sdtrans(INNER,angvel,GROUND,angvel);
-        sdmom(junk,junk,&ke);
-        sdgetgrav(grav);
-        sdgetmass(INNER,&mass);
-        pe = -(R_OUTER+comg[1])*grav[1]*mass;
+            /* calculate quantities to display */
+            sdpos(INNER,com,comg);
+            sdorient(INNER, dc);
+            sdangvel(INNER,angvel);
+            sdtrans(INNER,angvel,GROUND,angvel);
+            sdmom(junk,junk,&ke);
+            sdgetgrav(grav);
+            sdgetmass(INNER,&mass);
+            pe = -(R_OUTER+comg[1])*grav[1]*mass;
 
-        printf(
-          "%c%.4s%9.5f%6.2f%8.2f%6.2f%6.2f%6.2f%8.2f%8.2f%8.2f%9.3f\n",
-        condchg ? '*' : ' ', condnames[syscond], t,
-        y[sdindx(RADIUS,0)], y[NQ+sdindx(RADIUS,0)],
-        comg[0], comg[1], comg[2],
-        angvel[0], angvel[1], angvel[2], ke+pe);
-        if (anim)
-            fprintf(anim,
-                "%.5f %d %s %.6f %.6f %.6f "
-                "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n",
-                t, condchg ? 1 : 0, condnames[syscond],
-                comg[0], comg[1], comg[2],
-                dc[0][0], dc[0][1], dc[0][2],
-                dc[1][0], dc[1][1], dc[1][2],
-                dc[2][0], dc[2][1], dc[2][2]);
+            printf(
+              "%c%.4s%9.5f%6.2f%8.2f%6.2f%6.2f%6.2f%8.2f%8.2f%8.2f%9.3f\n",
+            condchg ? '*' : ' ', condnames[syscond], t,
+            y[sdindx(RADIUS,0)], y[NQ+sdindx(RADIUS,0)],
+            comg[0], comg[1], comg[2],
+            angvel[0], angvel[1], angvel[2], ke+pe);
+            if (anim)
+                fprintf(anim,
+                    "%.5f %d %s %.6f %.6f %.6f "
+                    "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n",
+                    t, condchg ? 1 : 0, condnames[syscond],
+                    comg[0], comg[1], comg[2],
+                    dc[0][0], dc[0][1], dc[0][2],
+                    dc[1][0], dc[1][1], dc[1][2],
+                    dc[2][0], dc[2][1], dc[2][2]);
 
-        if (t >= tfinal)
-        break;
-        condchg = 0;
+            if (t >= tfinal)
+                break;
+            condchg = 0;
 
-        sdvinteg(deriv,&t,y,dy,param,tout-t,&step,NEQ,TOL,work,&err,&which);
-        if (!err) continue;
+            int err = 0;
+            int which = 0;
+            sdvinteg(deriv,&t,y,dy,param,tout-t,&step,NEQ,TOL,work,&err,&which);
+            if (!err)
+                continue;
 
-        if (err == OVERBUMP)
-        printf("sdvinteg: went over a bump in function %d\n", which);
-        else if (err == USERSTAT && which == WANTCONDCHG) {
-        wantcond = param[0];
+            if (err == OVERBUMP)
+                printf("sdvinteg: went over a bump in function %d\n", which);
+            else if (err == USERSTAT && which == WANTCONDCHG) {
+                int wantcond = (int)param[0];
 
-        if (syscond == COND_FREE)
-            impact(t,y,imp);
-        else {
-            if (wantcond == COND_ROLLING)
-            impact(t,y,imp);
-            else if (wantcond == COND_SLIPPING)
-            getslipdir(slipdir);
-            syscond = wantcond;
+                if (syscond == COND_FREE)
+                    impact(t,y,imp);
+                else {
+                    if (wantcond == COND_ROLLING)
+                        impact(t,y,imp);
+                    else if (wantcond == COND_SLIPPING)
+                        getslipdir(slipdir);
+                    syscond = wantcond;
+                }
+                condchg = 1;
+
+                /* enable/disable prescribed motion as appropriate */
+                sdpres(RADIUS,0, syscond != COND_FREE);
+                deriv(t,y,dy,param,&status);
+            } else {
+                printf("sdvinteg: err=%d which=%d\n", err, which);
+                exit(1);
+            }
         }
-        condchg = 1;
-
-        /* enable/disable prescribed motion as appropriate */
-        sdpres(RADIUS,0, syscond != COND_FREE);
-        deriv(t,y,dy,param,&status);
-        } else {
-        printf("sdvinteg: err=%d which=%d\n", err, which);
-        exit(1);
-        }
-    }
     }
 
     if (anim)
         fclose(anim);
     sdprinterr(stdout);
     return 0;
+}
+
+static int read_doubles(const char* prompt, double* out, int n)
+{
+    if (prompt[0] != '\0')
+        fprintf(stderr, "%s", prompt);
+    for (int i = 0; i < n; i++) {
+        if (scanf("%lf", &out[i]) != 1) {
+            fprintf(stderr, "sphere: bad input\n");
+            return 0;
+        }
+    }
+    return 1;
 }
 
 /* This routine computes system derivatives, given the time and state
@@ -379,15 +476,13 @@ main()
  *
  * This routine is normally called by the integrator.
  */
-deriv(t,y,dy,param,status)
-double t,y[NEQ],dy[NEQ],param[1];
-int    *status;
+static int deriv(double t, double y[], double dy[], double param[], int* status)
 {
     static double lastnormal = 0.;
     double prevnorm, frc[3], dir[3], radial, radialv;
     double cpt[3], cptvr[3], vmag;    /* contact point */
     double mults[NC], fmag, perr[NC], verr[NC];
-    int multmap[NC], st, rank, routine, err, i, j;
+    int multmap[NC], rank = 0, routine = 0, err = 0;
 
     /* Set time and state.  If the integrator's guess produced an
      * illegal state, reject it immediately.
@@ -395,7 +490,7 @@ int    *status;
     sdstate(t,y,&y[NQ]);
     sderror(&routine,&err);
     if (err)
-    goto allDone;
+        goto allDone;
 
     /* Apply prescribed motions, if any. */
     sdumotion(t,y,&y[NQ]);
@@ -405,19 +500,21 @@ int    *status;
      */
     sdperr(perr);
     sdverr(verr);
-    for (i=0; i<NC; i++) {
-      if (fabs(verr[i]) > CTOL) {
-        for (j=0; j<NEQ; j++) dy[j] = 0.;
-        /*printf("verr[%d]=%g at t=%lg\n",i,verr[i],t);*/
-        *status = CONSVIOL;
+    for (int i = 0; i < NC; i++) {
+        if (fabs(verr[i]) > CTOL) {
+            for (int j = 0; j < NEQ; j++)
+                dy[j] = 0.;
+            /*printf("verr[%d]=%g at t=%lg\n",i,verr[i],t);*/
+            *status = CONSVIOL;
             goto allDone;
-      }
-      if (fabs(perr[i]) > CTOL) {
-        for (j=0; j<NEQ; j++) dy[j] = 0.;
-        printf("perr[%d]=%g at t=%lg\n",i,perr[i],t);
-        *status = CONSVIOL;
+        }
+        if (fabs(perr[i]) > CTOL) {
+            for (int j = 0; j < NEQ; j++)
+                dy[j] = 0.;
+            printf("perr[%d]=%g at t=%lg\n",i,perr[i],t);
+            *status = CONSVIOL;
             goto allDone;
-      }
+        }
     }
 
     /* If we make it this far, the integrator's trial state is
@@ -428,110 +525,113 @@ int    *status;
 
     case COND_UNKNOWN:
     case COND_FREE:
-    sduforce(t,y,&y[NQ]);
-    sdderiv(dy,&dy[NQ]);
+        sduforce(t,y,&y[NQ]);
+        sdderiv(dy,&dy[NQ]);
 
-    /* radial  is length of the radius from the outer sphere center to
-     *         the furthest-out point of the inner sphere.
-     * radialv is the rate at which radial is changing (negative means
-     *         moving towards the center).
-     */
-    radial = fabs(y[sdindx(RADIUS,0)]) + R_INNER;
-    radialv = SIGN(y[sdindx(RADIUS,0)]) * y[NQ+sdindx(RADIUS,0)];
+        /* radial  is length of the radius from the outer sphere center to
+         *         the furthest-out point of the inner sphere.
+         * radialv is the rate at which radial is changing (negative means
+         *         moving towards the center).
+         */
+        radial = fabs(y[sdindx(RADIUS,0)]) + R_INNER;
+        radialv = SIGN(y[sdindx(RADIUS,0)]) * y[NQ+sdindx(RADIUS,0)];
 
-    /* stay COND_FREE until we touch the wall while approaching */
-    if (radial < R_OUTER || radialv < EPS_MINMEANINGFULVEL) {
-        /* we're free */
-        if (syscond == COND_UNKNOWN) {
-        *status = WANTCONDCHG;
-        param[0] = COND_FREE;
+        /* stay COND_FREE until we touch the wall while approaching */
+        if (radial < R_OUTER || radialv < EPS_MINMEANINGFULVEL) {
+            /* we're free */
+            if (syscond == COND_UNKNOWN) {
+                *status = WANTCONDCHG;
+                param[0] = COND_FREE;
+            }
+        } else {
+            /* we're on the wall -- first guess that we're rolling */
+            *status = WANTCONDCHG;
+            param[0] = COND_ROLLING;
         }
-    } else {
-        /* we're on the wall -- first guess that we're rolling */
-        *status = WANTCONDCHG;
-        param[0] = COND_ROLLING;
-    }
-    goto allDone;
+        goto allDone;
 
     case COND_ROLLING:
-    sduforce(t,y,&y[NQ]);
-    sdderiv(dy,&dy[NQ]);
-    sdmult(mults,&rank,multmap);
-    if (mults[MULT_NORMAL] != 0. &&
-           SIGN(mults[MULT_NORMAL]) == SIGN(y[sdindx(RADIUS,0)]))
-    {
-        *status = WANTCONDCHG;
-        param[0] = COND_FREE;
-    } else {
-        fmag = sqrt(SQR(mults[MULT_SLIPX]) + SQR(mults[MULT_SLIPZ]));
-        if (fmag > mu_static*fabs(mults[MULT_NORMAL])) {
-            *status = WANTCONDCHG;
-            param[0] = COND_SLIPPING;
-        }
-    }
-    goto allDone;
-
-    case COND_SLIPPING:
-    /* if slipping, use the last known normal force as an estimate
-       and correct if necessary. */
-
-    contact(y, cpt, cptvr);
-    vmag = sqrt(SQR(cptvr[0]) + SQR(cptvr[2]));
-
-    /* in transition we'll use last known rolling constraint force
-       direction if slip velocity is too small to be a reliable direction */
-
-    if (vmag < EPS_MINMEANINGFULVEL)
-        for (i=0; i<3; i++) dir[i] = slipdir[i];
-    else {
-        dir[0] = cptvr[0]/vmag;
-        dir[1] = 0.;
-        dir[2] = cptvr[2]/vmag;
-    }
-
-    /* Use fixed-point iteration until consistent forces are achieved.
-     * In this problem, this never requires more than two iterations
-     * since the normal and tangential forces are independent.
-     */
-    do {
-        sdstate(t,y,&y[NQ]);
-        sdumotion(t,y,&y[NQ]);
         sduforce(t,y,&y[NQ]);
-        for (i=0; i<3; i++) frc[i] = -dir[i]*fabs(lastnormal)*mu_dynamic;
-        sdtrans(RADIUS,frc,INNER,frc);
-        sdpointf(INNER,cpt,frc);
-
         sdderiv(dy,&dy[NQ]);
         sdmult(mults,&rank,multmap);
-        prevnorm = lastnormal;
-        lastnormal = mults[MULT_NORMAL];
-    } while (fabs(lastnormal-prevnorm) > EPS_FORCE);
-
-    /* go from SLIPPING to FREE? */
-    if (lastnormal != 0. && SIGN(lastnormal) == SIGN(y[sdindx(RADIUS,0)])) {
-        *status = WANTCONDCHG;
-        param[0] = COND_FREE;
-        goto allDone;
-    }
-
-    /* go from SLIPPING to ROLLING? */
-    if (vmag >= EPS_MINMEANINGFULVEL && vmag < EPS_MINSLIPVEL) {
-        double cptar[3], sgrowth;
-
-        contactacc(cpt, cptar);
-        sgrowth = cptar[0]*cptvr[0] + cptar[2]*cptvr[2];
-
-        if (sgrowth < 0.) {
-        *status = WANTCONDCHG;
-        param[0] = COND_ROLLING;
-        goto allDone;
+        if (mults[MULT_NORMAL] != 0. &&
+               SIGN(mults[MULT_NORMAL]) == SIGN(y[sdindx(RADIUS,0)]))
+        {
+            *status = WANTCONDCHG;
+            param[0] = COND_FREE;
+        } else {
+            fmag = sqrt(SQR(mults[MULT_SLIPX]) + SQR(mults[MULT_SLIPZ]));
+            if (fmag > mu_static*fabs(mults[MULT_NORMAL])) {
+                *status = WANTCONDCHG;
+                param[0] = COND_SLIPPING;
+            }
         }
+        goto allDone;
+
+    case COND_SLIPPING:
+        /* if slipping, use the last known normal force as an estimate
+           and correct if necessary. */
+
+        contact(y, cpt, cptvr);
+        vmag = sqrt(SQR(cptvr[0]) + SQR(cptvr[2]));
+
+        /* in transition we'll use last known rolling constraint force
+           direction if slip velocity is too small to be a reliable direction */
+
+        if (vmag < EPS_MINMEANINGFULVEL) {
+            for (int i = 0; i < 3; i++)
+                dir[i] = slipdir[i];
+        } else {
+            dir[0] = cptvr[0]/vmag;
+            dir[1] = 0.;
+            dir[2] = cptvr[2]/vmag;
+        }
+
+        /* Use fixed-point iteration until consistent forces are achieved.
+         * In this problem, this never requires more than two iterations
+         * since the normal and tangential forces are independent.
+         */
+        do {
+            sdstate(t,y,&y[NQ]);
+            sdumotion(t,y,&y[NQ]);
+            sduforce(t,y,&y[NQ]);
+            for (int i = 0; i < 3; i++)
+                frc[i] = -dir[i]*fabs(lastnormal)*mu_dynamic;
+            sdtrans(RADIUS,frc,INNER,frc);
+            sdpointf(INNER,cpt,frc);
+
+            sdderiv(dy,&dy[NQ]);
+            sdmult(mults,&rank,multmap);
+            prevnorm = lastnormal;
+            lastnormal = mults[MULT_NORMAL];
+        } while (fabs(lastnormal-prevnorm) > EPS_FORCE);
+
+        /* go from SLIPPING to FREE? */
+        if (lastnormal != 0. && SIGN(lastnormal) == SIGN(y[sdindx(RADIUS,0)])) {
+            *status = WANTCONDCHG;
+            param[0] = COND_FREE;
+            goto allDone;
+        }
+
+        /* go from SLIPPING to ROLLING? */
+        if (vmag >= EPS_MINMEANINGFULVEL && vmag < EPS_MINSLIPVEL) {
+            double cptar[3], sgrowth;
+
+            contactacc(cpt, cptar);
+            sgrowth = cptar[0]*cptvr[0] + cptar[2]*cptvr[2];
+
+            if (sgrowth < 0.) {
+                *status = WANTCONDCHG;
+                param[0] = COND_ROLLING;
+                goto allDone;
+            }
+        }
+
+        /* keep SLIPPING */
+        break;
     }
 
-    /* keep SLIPPING */
-    }
-
-  allDone:
+allDone:
 
     /* We're done with deriv().  If an error occurred, we'll assume that
      * means the integrator picked a bad time/state for this guess, and
@@ -549,12 +649,14 @@ int    *status;
     sderror(&routine,&err);
     if (err) {
         if (err != ERR_SINGULAR_MASS_MATRIX) {
-        printf("deriv: bad state err=%d rou=%d\n",err,routine);
-        for (j=0; j<NEQ; j++) dy[j] = 0.;
-        *status = BADSTATE;
+            printf("deriv: bad state err=%d rou=%d\n",err,routine);
+            for (int j = 0; j < NEQ; j++)
+                dy[j] = 0.;
+            *status = BADSTATE;
+        }
+        sdclearerr();
     }
-    sdclearerr();
-    }
+    return 0;
 }
 
 /*
@@ -563,100 +665,92 @@ int    *status;
  * transition from slipping to rolling where the residual slipping velocity
  * must be converted to rolling.
  */
-
-/* Where things go in the param[] array. */
-#define TIME    0
-#define COEF    1    /* coefficient of restitution */
-#define QS    2
-#define US    (QS+NQ)
-#define NEWUS    (US+NU)
-#define PARAMLEN (2+NQ+NU+NU)
-
-/* root finder stuff */
-#define NV    3        /* number of variables */
-#define NF    3        /* number of functions */
-#define SOLNTOL    EPS_FORCE     /* required solution tol */
-#define MAXEVAL    500        /* maximum allowable number of resid calls */
-
-impact(t,y,imp)
-double t,y[NEQ],imp[3];
+static void impact(double t, double y[], double imp[])
 {
-    int i,err,fcnt,lock[NV],iw[4*(NF+NV)];
-    int secondtime = 0, newstate;
-    double param[PARAMLEN], fret[NF], tmag, cpt[3], cptvr[3];
-    double jw[NF*NV], dw[2*(NF+NV)*(NF+NV)], rw[9*(NF+NV)];
-    extern resid();
+    int err = 0;
+    int fcnt = 0;
+    int lock[NV];
+    int iw[4*(NF+NV)];
+    int secondtime = 0;
+    int newstate = 0;
+    double param[PARAMLEN];
+    double fret[NF];
+    double jw[NF*NV];
+    double dw[2*(NF+NV)*(NF+NV)];
+    double rw[9*(NF+NV)];
 
     param[COEF] = (syscond == COND_FREE ? coef_rest : 0.);
     param[TIME] = t;
-    for (i=0; i<NEQ; i++)
-    param[QS+i] = y[i];
+    for (int i = 0; i < NEQ; i++)
+        param[QS+i] = y[i];
 
     /* initial guess for the impulse is 0 */
     imp[0] = imp[1] = imp[2] = 0.;
     lock[0] = lock[1] = lock[2] = 0;
 
-  tryagain:
-
+tryagain:
     sdroot(resid,imp,param,NV,NF,0,lock,SOLNTOL,0.,MAXEVAL,
-       jw,dw,rw,iw,fret,&fcnt,&err);
+        jw,dw,rw,iw,fret,&fcnt,&err);
 
     if (err) {
-    printf("!!! root finder failed err=%d fcnt=%d\n", err, fcnt);
-    printf("!!! best imp: %g %g %g\n", imp[0],imp[1],imp[2]);
-    printf("!!! residual: %g %g %g\n", fret[0],fret[1],fret[2]);
+        printf("!!! root finder failed err=%d fcnt=%d\n", err, fcnt);
+        printf("!!! best imp: %g %g %g\n", imp[0],imp[1],imp[2]);
+        printf("!!! residual: %g %g %g\n", fret[0],fret[1],fret[2]);
     }
 
     /* Check for slipping by looking at magnitude of tangential impulse.
        If it's too big, adjust it down. */
-    tmag = sqrt(SQR(imp[0]) + SQR(imp[2]));
-    if (syscond == COND_FREE && tmag > mu_static*fabs(imp[1])) {
-    /* a slipping impact */
-    imp[0] = (imp[0]/tmag)*mu_dynamic*fabs(imp[1]);
-    imp[2] = (imp[2]/tmag)*mu_dynamic*fabs(imp[1]);
-    newstate = COND_SLIPPING;
-    } else {
-    /* a rolling impact */
-    newstate = COND_ROLLING;
+    {
+        double tmag = sqrt(SQR(imp[0]) + SQR(imp[2]));
+        if (syscond == COND_FREE && tmag > mu_static*fabs(imp[1])) {
+            /* a slipping impact */
+            imp[0] = (imp[0]/tmag)*mu_dynamic*fabs(imp[1]);
+            imp[2] = (imp[2]/tmag)*mu_dynamic*fabs(imp[1]);
+            newstate = COND_SLIPPING;
+        } else {
+            /* a rolling impact */
+            newstate = COND_ROLLING;
+        }
     }
 
     /* Compute final u's. */
     resid(imp,param,fret);
-    for (i=0; i<NU; i++)
-    y[NQ+i] = param[NEWUS+i];
+    for (int i = 0; i < NU; i++)
+        y[NQ+i] = param[NEWUS+i];
 
     if (syscond != COND_FREE) {
-    syscond = newstate;
-    return;
+        syscond = newstate;
+        return;
     }
 
     sdstate(t,y,&y[NQ]);
-    contact(y, cpt, cptvr);
+    {
+        double cpt[3], cptvr[3];
+        contact(y, cpt, cptvr);
 
-    if (!secondtime) {
-    /* See if we're rebounding too slowly. */
-    if (fabs(cptvr[1]) < EPS_MINREBOUNDVEL) {
-        /* solve the problem again with 0 coefficient of restitution */
-        secondtime = 1;
-        param[COEF] = 0.;
-        goto tryagain;
-    }
-    } else {
-    /* We're now either rolling or sliding along the surface. */
-    syscond = newstate;
+        if (!secondtime) {
+            /* See if we're rebounding too slowly. */
+            if (fabs(cptvr[1]) < EPS_MINREBOUNDVEL) {
+                /* solve the problem again with 0 coefficient of restitution */
+                secondtime = 1;
+                param[COEF] = 0.;
+                goto tryagain;
+            }
+        } else {
+            /* We're now either rolling or sliding along the surface. */
+            syscond = newstate;
+        }
     }
 }
-
+
 /* This routine takes a proposed impulse, and returns the residual error
  * in the resulting velocities.
  *
  * This routine is normally called by the root finder, which responds by
  * attempting to adjust the impulse until the error goes to zero.
  */
-resid(impr,param,fret)
-double impr[3],param[PARAMLEN],fret[3];
+static int resid(double impr[], double param[], double fret[])
 {
-    int i;
     double qdot[NQ], udot1[NU], udot2[NU], imp[3];
     double cpt[3], cptvr[3], nvel;
 
@@ -673,8 +767,8 @@ double impr[3],param[PARAMLEN],fret[3];
 
     nvel = cptvr[1];
 
-    for (i=0; i<NU; i++)
-    param[NEWUS+i] = param[US+i] + (udot2[i] - udot1[i]);
+    for (int i = 0; i < NU; i++)
+        param[NEWUS+i] = param[US+i] + (udot2[i] - udot1[i]);
 
     sdstate(param[TIME],&param[QS],&param[NEWUS]);
     contact(&param[QS],cpt,cptvr);
@@ -682,61 +776,66 @@ double impr[3],param[PARAMLEN],fret[3];
     fret[0] = cptvr[0];
     fret[1] = cptvr[1] + param[COEF]*nvel;
     fret[2] = cptvr[2];
+    return 0;
 }
 
 /* These routines define the two user constraints. */
 
 /* There are no position errors since a "no-slip" constraint is nonholonomic. */
-sduperr(t,q,errs)
-double t, q[NQ], errs[NC];
+void sduperr(double t, double q[], double errs[])
 {
+    UNUSED(t);
+    UNUSED(q);
     errs[CSLIPX] = 0.;
     errs[CSLIPZ] = 0.;
 }
 
 /* The relative velocity at the contact point should be zero. */
-sduverr(t,q,u,errs)
-double t, q[NQ], u[NU], errs[NC];
+void sduverr(double t, double q[], double u[], double errs[])
 {
-    double cpt[3],cptvr[3];
-
+    UNUSED(t);
+    UNUSED(u);
     if (syscond == COND_ROLLING) {
-    contact(q,cpt,cptvr);
-    errs[CSLIPX] = cptvr[0];
-    errs[CSLIPZ] = cptvr[2];
+        double cpt[3], cptvr[3];
+        contact(q,cpt,cptvr);
+        errs[CSLIPX] = cptvr[0];
+        errs[CSLIPZ] = cptvr[2];
     } else {
-    errs[CSLIPX] = 0.;
-    errs[CSLIPZ] = 0.;
+        errs[CSLIPX] = 0.;
+        errs[CSLIPZ] = 0.;
     }
 }
 
 /* This is the derivative of the velocity constraint above. */
-sduaerr(t,q,u,udot,errs)
-double t, q[NQ], u[NU], udot[NU], errs[NC];
+void sduaerr(double t, double q[], double u[], double udot[], double errs[])
 {
-    double cpt[3],cptvr[3],cptar[3],angvr[3],angvi[3];
-
+    UNUSED(t);
+    UNUSED(u);
+    UNUSED(udot);
     if (syscond == COND_ROLLING) {
-    contact(q, cpt, cptvr);
-    contactacc(cpt, cptar);
+        double cpt[3], cptvr[3], cptar[3], angvr[3], angvi[3];
 
-    sdangvel(RADIUS,angvr);
-    sdangvel(INNER, angvi);
-    sdtrans (INNER, angvi, RADIUS,angvi);
+        contact(q, cpt, cptvr);
+        contactacc(cpt, cptar);
 
-    errs[CSLIPX] = cptar[0] + cptvr[1]*angvr[2] - cptvr[2]*angvr[1];
-    errs[CSLIPZ] = cptar[2] + cptvr[0]*angvr[1] - cptvr[1]*angvr[0];
+        sdangvel(RADIUS,angvr);
+        sdangvel(INNER, angvi);
+        sdtrans (INNER, angvi, RADIUS,angvi);
+
+        errs[CSLIPX] = cptar[0] + cptvr[1]*angvr[2] - cptvr[2]*angvr[1];
+        errs[CSLIPZ] = cptar[2] + cptvr[0]*angvr[1] - cptvr[1]*angvr[0];
     } else {
-    errs[CSLIPX] = 0.;
-    errs[CSLIPZ] = 0.;
+        errs[CSLIPX] = 0.;
+        errs[CSLIPZ] = 0.;
     }
 }
 
 /* Interpret the multipliers as forces and apply them. */
-sduconsfrc(t,q,u,mults)
-double t, q[NQ], u[NU], mults[NUSERC];
+void sduconsfrc(double t, double q[], double u[], double mults[])
 {
     double cpt[3], cptvr[3], frc[3];
+    UNUSED(t);
+    UNUSED(u);
 
     contact(q,cpt,cptvr);
     frc[0] = syscond == COND_ROLLING ? mults[CSLIPX]  : 0.;
@@ -749,9 +848,11 @@ double t, q[NQ], u[NU], mults[NUSERC];
 /* If there were any applied forces besides gravity, they would be
  * applied here.
  */
-sduforce(t,q,u)
-double t,q[NQ], u[NU];
+void sduforce(double t, double q[], double u[])
 {
+    UNUSED(t);
+    UNUSED(q);
+    UNUSED(u);
 }
 
 /* Calculate prescribed motion constraint.  This is ignored if the
@@ -760,9 +861,10 @@ double t,q[NQ], u[NU];
  * or acceleration.  (Caution: with our choice of coordinates, the
  * "radius" may be either positive or negative.)
  */
-sdumotion(t,q,u)
-double t,q[NQ], u[NU];
+void sdumotion(double t, double q[], double u[])
 {
+    UNUSED(t);
+    UNUSED(u);
     sdprespos(RADIUS,0,SIGN(q[sdindx(RADIUS,0)])*(R_OUTER-R_INNER));
     sdpresvel(RADIUS,0,0.);
     sdpresacc(RADIUS,0,0.);
@@ -775,11 +877,10 @@ double t,q[NQ], u[NU];
  * just before we transit from ROLLING to SLIPPING.  The initial slip
  * direction must be opposite to the direction of the "no-slip" force.
  */
-getslipdir(dir)
-double dir[3];
+static void getslipdir(double dir[])
 {
     double mults[NC], fmag;
-    int    rank, multmap[NC];
+    int rank, multmap[NC];
 
     sdmult(mults,&rank,multmap);
     fmag = sqrt(SQR(mults[MULT_SLIPX])+ SQR(mults[MULT_SLIPZ]));
@@ -794,8 +895,7 @@ double dir[3];
  * given relative to inner sphere COM in INNER frame.  Velocity
  * is given relative to ground frame and expressed in RADIUS frame.
  */
-contact(q, pt, velr)
-double q[NQ], pt[3], velr[3];
+static void contact(const double q[], double pt[], double velr[])
 {
     double locr[3];
 
@@ -815,8 +915,7 @@ double q[NQ], pt[3], velr[3];
  * routine contact() above).  Output is the acceleration in the
  * RADIUS frame.
  */
-contactacc(pt, accr)
-double pt[3], accr[3];
+static void contactacc(double pt[], double accr[])
 {
     double angvr[3], angvi[3];
 
