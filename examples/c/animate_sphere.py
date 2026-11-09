@@ -16,9 +16,11 @@ integrated.
     python3 examples/c/animate_sphere.py --self-test
 
 Set SDFAST or pass --sdfast to skip the search. Set CC to choose the
-compiler (cc, gcc, and clang are preferred; cl is used only if it is the
-only compiler on PATH). An MP4 is written when ffmpeg is on PATH; otherwise
-a GIF is written with Pillow. Python is not required to build SD/FAST.
+compiler. A real GNU gcc is preferred, including versioned gcc-N from
+Homebrew, because macOS /usr/bin/gcc is Apple clang. cl is used only if
+it is the only compiler on PATH. An MP4 is written when ffmpeg is on PATH; otherwise
+a GIF is written with Pillow. --no-render only checks sphere_anim.dat and
+does not import numpy. Python is not required to build SD/FAST.
 """
 
 import argparse
@@ -91,13 +93,39 @@ def find_sdfast(build_dir, explicit):
     )
 
 
+def _compiler_is_clang(cc):
+    try:
+        out = subprocess.run(
+            [cc, "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return False
+    return "clang" in (out.stdout + out.stderr).lower()
+
+
 def c_compiler():
     cc = os.environ.get("CC")
     if cc:
         return cc
-    # gcc before cc: on some Linux images cc is clang, which rejects this
-    # K&R example. cl is last because the driver is not MSVC C.
+    # macOS /usr/bin/gcc is Apple clang, which rejects this example's
+    # implicit declarations. Prefer a real GNU gcc, including brew's
+    # gcc-N, which is what the macOS CI build uses.
+    for major in range(20, 10, -1):
+        found = shutil.which("gcc-%d" % major)
+        if found and not _compiler_is_clang(found):
+            return found
     for name in ("gcc", "cc", "clang", "cl"):
+        found = shutil.which(name)
+        if not found:
+            continue
+        if name in ("gcc", "cc") and _compiler_is_clang(found):
+            continue
+        return found
+    for name in ("gcc", "cc", "clang"):
         found = shutil.which(name)
         if found:
             return found
@@ -146,8 +174,14 @@ def model_sources(work):
 def compile_command(cc, exe, sources):
     if _is_cl(cc):
         return [cc, "/nologo", "/Fe:" + str(exe), *sources]
+    # Apple clang promotes implicit declarations to errors. This driver
+    # and the generated files are gnu89 and call each other that way.
     return [
-        cc, "-std=gnu89", "-Wno-return-type", "-Wno-deprecated-non-prototype",
+        cc, "-std=gnu89",
+        "-Wno-return-type",
+        "-Wno-deprecated-non-prototype",
+        "-Wno-error=implicit-function-declaration",
+        "-Wno-error=implicit-int",
         "-o", str(exe), *sources, "-lm",
     ]
 
@@ -214,20 +248,32 @@ def generate_and_run(sdfast, case, work):
     return data
 
 
-def load_anim(path):
-    times, pos, rots, cond = [], [], [], []
+def _anim_rows(path):
+    rows = []
     with open(path, "r", encoding="utf-8", errors="replace") as handle:
         for raw in handle:
             parts = raw.split()
             if len(parts) < 15 or parts[0] == "t":
                 continue
-            times.append(float(parts[0]))
-            cond.append(parts[2])
-            pos.append([float(parts[3]), float(parts[4]), float(parts[5])])
-            rots.append([float(item) for item in parts[6:15]])
-    if len(times) < 2:
+            rows.append(parts)
+    if len(rows) < 2:
         raise SystemExit("no samples in %s" % path)
+    return rows
+
+
+def summarize_anim(path):
+    """Stdlib-only check used by --no-render. Does not import numpy."""
+    rows = _anim_rows(path)
+    return len(rows), rows[0][0], rows[-1][0], rows[0][2]
+
+
+def load_anim(path):
+    rows = _anim_rows(path)
     import numpy as np
+    times = [float(row[0]) for row in rows]
+    cond = [row[2] for row in rows]
+    pos = [[float(row[3]), float(row[4]), float(row[5])] for row in rows]
+    rots = [[float(item) for item in row[6:15]] for row in rows]
     return (
         np.asarray(times),
         np.asarray(pos),
@@ -308,6 +354,8 @@ def draw(ax, times, pos, rots, cond, index, title, shell, ball):
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim, lim)
     ax.set_zlim(-lim, lim)
+    # Default mplot3d box is wider than tall, which draws the balls oblate.
+    ax.set_box_aspect((1, 1, 1))
     ax.set_xlabel("x")
     ax.set_ylabel("z")
     ax.set_zlabel("y")
@@ -422,6 +470,14 @@ def self_test():
             os.chdir(cwd)
             if saved is not None:
                 os.environ["SDFAST"] = saved
+        sample = root / "anim.dat"
+        sample.write_text(
+            "t mark cond cx cy cz r00 r01 r02 r10 r11 r12 r20 r21 r22\n"
+            "0 0 FREE 0 0 0 1 0 0 0 1 0 0 0 1\n"
+            "0.02 0 FREE 0 -0.002 0 1 0 0 0 1 0 0 0 1\n",
+            encoding="ascii",
+        )
+        assert summarize_anim(sample) == (2, "0", "0.02", "FREE")
     print("self-test ok")
 
 
@@ -446,11 +502,13 @@ def main():
     print("using sdfast %s" % sdfast)
     with tempfile.TemporaryDirectory(prefix="sphere-anim-") as tmp:
         data = generate_and_run(sdfast, args.case, tmp)
+        if args.no_render:
+            count, t0, t1, cond0 = summarize_anim(data)
+            print("%s samples, t=%s..%s, first cond %s" % (count, t0, t1, cond0))
+            return 0
         rows = load_anim(data)
     print("%s samples, t=%.3f..%.3f, first cond %s" % (
         len(rows[0]), rows[0][0], rows[0][-1], rows[3][0]))
-    if args.no_render:
-        return 0
     written = save_movie(
         args.output, rows, args.until, args.stride, args.fps, args.case)
     print("wrote %s" % written)
