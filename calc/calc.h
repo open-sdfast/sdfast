@@ -26,17 +26,18 @@
 #define cVeryClose 1e-15        /* used to see if a constant is "equal" to
                                    a particular numerical value */
 
-/* ANSI C model header. declare_proc copies a prototype here when set.
- * ansi_proto_only makes declare_proc emit a forward declaration and
- * tells library printers to skip the function body.
- * ansi_fn_depth is 1 while an ANSI C function body is being written;
- * the matching close flushes `(void)` uses for unused names. */
-extern FILE* ansi_c_header;
-extern int ansi_proto_only;
-extern int ansi_fn_depth;
+/* Model header for languages that set LANG_MODEL_HEADER.
+ * declare_proc copies a prototype here when the file is open.
+ * proto_only makes declare_proc emit a forward declaration and tells
+ * library printers to skip the function body.
+ * fn_depth is 1 while a function body that records unused names is open.
+ * The matching "%<}\n" flushes those names with Lang->unused_use. */
+extern FILE* model_header;
+extern int proto_only;
+extern int fn_depth;
 extern int lexlev;
 
-void ansi_flush_voids(FILE* F);
+void flush_unused(FILE* F);
 void efprintf_reset_state(void);
 
 #define cMaxDim 1000000

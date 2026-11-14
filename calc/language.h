@@ -110,6 +110,11 @@ struct language {
         char *func_acos;
         char *func_sqrt;
         char *func_atan2;
+        char *single_ptr_cast; /* %* : cast a real to a pointer, or "" */
+        char *double_ptr_cast; /* %* for double precision, or "" */
+        char *unused_use;      /* printf format for an unused name, or "" */
+        char *nest_b;          /* open a nested initializer aggregate, or "" */
+        char *nest_e;          /* close one, or "" */
         int flags;
 #define LANG_STMT_UPPER         0x001  /* convert statements to upper case */
 #define LANG_CMT_UPPER          0x002  /* convert comments to upper case */
@@ -127,8 +132,15 @@ struct language {
 #define LANG_FUNCVAL_IN_NAME    0x100  /* function return values are assigned
                                           to the function name rather than
                                           set with the return statement */
-#define LANG_C_FAMILY           0x200  /* language in C family: K&R, ANSI, C++ */
+#define LANG_C_FAMILY           0x200  /* C-family languages */
 #define LANG_DECL_IN_ARGLIST    0x400  /* type decls in function arglist */
+#define LANG_MODEL_HEADER       0x800  /* write {basename}_defs.h */
+#define LANG_TRIM_FUNC_TYPE     0x1000 /* function type sits on its own line
+                                          without a trailing blank */
+#define LANG_ZERO_UNINIT        0x2000 /* explicit zeros for the uninitialized
+                                          tail of an aggregate */
+#define LANG_EMPTY_RANGE        0x4000 /* a range with no elements is rejected
+                                          without a tautological compare */
 };
 
 extern struct language *Lang, FORTRAN_language, ADSIM_language,

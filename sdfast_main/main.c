@@ -75,12 +75,10 @@ static void emit_size_defines(FILE* hdr, const char* pfx)
 {
     fprintf(hdr,
         "\n/* Model sizes. These are integer constant expressions, so user\n"
-        " * code can use them as array bounds. Add further counts here.\n"
+        " * code can use them as array bounds.\n"
         " *\n"
         " * The macro prefix is the uppercased -p prefix (SD_NQ, or XX_NQ\n"
-        " * with -p xx), not the input basename. Two models in one program\n"
-        " * already need distinct prefixes: the generated routines would\n"
-        " * otherwise clash, and so would these macros.\n"
+        " * with -p xx). Two models in one program need distinct prefixes.\n"
         " *\n"
         " * NU is the number of rate coordinates (the sdinfo \"nu\" line),\n"
         " * not the number of user constraints (NUSERC, sdinfo \"nuserc\").\n"
@@ -103,7 +101,7 @@ static void emit_size_defines(FILE* hdr, const char* pfx)
     fprintf(hdr, "#define %s_NUSERC %d\n", pfx, SysI.nu);
 }
 
-/* User routines this model actually calls. Types follow the calls
+/* User routines this model calls. Types follow the calls
  * (VT_REAL / %t), so -s uses float and the default stays double. */
 static void emit_user_prototypes(FILE* hdr)
 {
@@ -169,9 +167,7 @@ static int open_defs_header(void)
     PRINT_SUBR_STAMP(hdr);
     fprintf(hdr,
         "Public declarations for this model. This is the header to include\n"
-        "from user code. Single-precision (-s) prototypes use float. A K&R\n"
-        "definition with a float parameter is not ABI-compatible with that\n"
-        "prototype, because a K&R float argument is promoted to double.\n"
+        "from user code. Single-precision (-s) prototypes use float.\n"
         "*/\n");
     fprintf(hdr, "#include <stdio.h>\n");
     fprintf(hdr, "#ifdef __cplusplus\nextern \"C\" {\n#endif\n");
@@ -182,8 +178,8 @@ static int open_defs_header(void)
      * Every public library routine is declared, whether or not this model
      * calls it. The library file itself includes no header. */
     efprintf_reset_state();
-    ansi_c_header = NULL;
-    ansi_proto_only = 1;
+    model_header = NULL;
+    proto_only = 1;
     PRINT_SDPRERRMSG(hdr);
     PRINT_ERRSTUFF(hdr);
     PRINT_SDLDUSLV(hdr);
@@ -197,24 +193,24 @@ static int open_defs_header(void)
     PRINT_SDQUAT2DC(hdr);
     PRINT_VECSUBS(hdr);
     PRINT_SDSERIALNO(hdr);
-    ansi_proto_only = 0;
+    proto_only = 0;
     efprintf_reset_state();
     emit_user_prototypes(hdr);
     efprintf_reset_state();
-    ansi_c_header = hdr;
+    model_header = hdr;
     return 0;
 }
 
 static void close_defs_header(int announce)
 {
-    ansi_proto_only = 0;
-    ansi_fn_depth = 0;
-    if (!ansi_c_header)
+    proto_only = 0;
+    fn_depth = 0;
+    if (!model_header)
         return;
-    fprintf(ansi_c_header, "#ifdef __cplusplus\n}\n#endif\n#endif /* %s */\n",
+    fprintf(model_header, "#ifdef __cplusplus\n}\n#endif\n#endif /* %s */\n",
             defs_guard);
-    CLOSE_FILE(ansi_c_header);
-    ansi_c_header = NULL;
+    CLOSE_FILE(model_header);
+    model_header = NULL;
     efprintf_reset_state();
     if (announce && sdfast_opt.verbose)
         printf("Header File %s generated.\n", sdfast_opt.hdrname);
@@ -389,10 +385,9 @@ int main(int argc, char *argv[])
             printf("Information File %s generated.\n", sdfast_opt.infoname);
     }
 
-    /* ANSI C: one {basename}_defs.h. No separate library header.
-     * Open it before dyn/sar so their definitions are mirrored into it. */
-    if (Lang == &ANSIC_language &&
-        (sdfast_opt.gendyn || sdfast_opt.gensar)) {
+    /* {basename}_defs.h for languages that have one. Open it before
+     * dyn/sar so their definitions are mirrored into it. */
+    if ((Lang->flags & LANG_MODEL_HEADER) && sdfast_opt.genhdr) {
         if (open_defs_header()) {
             exitstat = EXIT_FILEERR;
             goto error_return;

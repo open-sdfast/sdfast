@@ -88,6 +88,7 @@ appear without any flags (except for @), field width, or precision:
         %=        Output an assignment operator
         %r        Language and precision-appropriate real number conversion
         %t        Language and precision-appropriate real number type name
+        %*        Cast a real to a pointer: (float*) or (double*), or nothing
         %>        Increase lexical level (amount of indent).  Statement mode
                 defaults to 1, while comment mode defaults to 0.  A %>
                 after a %{ on the same line will be aligned with statements at
@@ -112,6 +113,36 @@ void efprintf_reset_state(void)
 }
 static char *output_str;
 
+/* %* is spliced into the surrounding literal so it does not create a
+ * line-break boundary. The cast (or nothing) is part of the same chunk
+ * the characters would have formed if they had been written in the format.
+ */
+static char lit_acc[4096];
+static int lit_len;
+
+static void
+lit_add(const char* s, int n)
+{
+    if (n <= 0)
+        return;
+    if (lit_len + n >= (int)sizeof lit_acc) {
+        n = (int)sizeof lit_acc - 1 - lit_len;
+        if (n <= 0)
+            return;
+    }
+    memcpy(lit_acc + lit_len, s, (size_t)n);
+    lit_len += n;
+}
+
+static void
+lit_flush(void (*out_func)(char*, int, int, int))
+{
+    if (!lit_len)
+        return;
+    (*out_func)(lit_acc, lit_len, 0, 0);
+    lit_len = 0;
+}
+
 /* CMT_MODE
  *
  * Returns non-zero if we're currently in a comment.
@@ -131,12 +162,14 @@ do_eprintf(
     char ofmt[50], *percent_pos, outtmp[200], *outstr, *deststr;
     static char macros['W' - 'H' + 1][200];
 
+    lit_len = 0;
     while (*fmt) {
         if ((percent_pos = strchr(fmt, '%'))) {
             int nindir, otype, subs_offset = 0, leave_lc = 1, begin_line = 0;
+            int absorb = 0;
             register char *ofmtp, *cp;
 
-            (*out_func)(fmt, (int)(percent_pos - fmt), 0, 0);
+            lit_add(fmt, (int)(percent_pos - fmt));
             fmt = percent_pos + 1;
             outstr = deststr = outtmp;
             outtmp[0] = '\0';        /* print nothing by default */
@@ -145,6 +178,11 @@ do_eprintf(
                 leave_lc = 2;        /* force %s to lower-case */
                 fmt++;
             }
+            /* Write the pending literal before a conversion changes indent,
+             * comment state, or the line position. %* stays in the literal
+             * so it does not become its own line-break chunk. */
+            if (*fmt != '*')
+                lit_flush(out_func);
             switch (*fmt++) {
             case 'A':
                 outstr = gPrefix;
@@ -193,18 +231,26 @@ do_eprintf(
                 lexlev++;
                 break;
             case '<':
-                /* Function close is "%<}" once the body indent is back
-                 * at the function level. Write (void) uses first. */
-                /* Function close is "%<}\n". A struct close is "%<} name;"
-                 * and must not receive the (void) uses. */
-                if (ansi_fn_depth && lexlev <= 1 &&
+                /* "%<}\n" closes a function. A struct close is "%<} name;"
+                 * and must not receive the unused-name markers. */
+                if (fn_depth && Lang->unused_use && Lang->unused_use[0] &&
+                    lexlev <= 1 &&
                     fmt[0] == '}' && (fmt[1] == '\n' || fmt[1] == '\0')) {
-                    ansi_fn_depth = 0;
-                    ansi_flush_voids(stream);
+                    fn_depth = 0;
+                    flush_unused(stream);
                     linepos = 0;
                 }
                 lexlev--;
                 break;
+            case '*': {
+                const char* cast = gSinglePrecision ? Lang->single_ptr_cast
+                                                    : Lang->double_ptr_cast;
+
+                if (cast && cast[0])
+                    lit_add(cast, (int)strlen(cast));
+                absorb = 1;
+                break;
+            }
             case '&':
                 break;
             case 'r':        /* real number conversion */
@@ -374,16 +420,21 @@ do_eprintf(
                     if (islower((unsigned char)*cp))
                         *cp = (char)toupper((unsigned char)*cp);
             }
-            if (deststr == outtmp)        /* not a macro definition */
-                (*out_func)(outstr, (int)strlen(outstr),
-                  leave_lc || outstr == outtmp, begin_line);
+            if (!absorb) {
+                lit_flush(out_func);
+                if (deststr == outtmp)        /* not a macro definition */
+                    (*out_func)(outstr, (int)strlen(outstr),
+                      leave_lc || outstr == outtmp, begin_line);
+            }
         } else {        /* no % found */
-            (*out_func)(fmt, (int)strlen(fmt), 0, 0);
+            lit_add(fmt, (int)strlen(fmt));
+            lit_flush(out_func);
             fmt = "";        /* make while loop get out */
         }
         if (cmtmode < 0)        /* flag for not indenting comment terminator */
             cmtmode++;
     }        /* while not end of format string */
+    lit_flush(out_func);
     va_end(argptr);
 }
 

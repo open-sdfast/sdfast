@@ -157,7 +157,7 @@ void PRINT_SDINTEG(FILE *F)
       packvar(VT_REAL|VT_BYREF,                "maxerr"),
       packvar(VT_INTEGER|VT_BYREF,        "which"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDINTEG_1;
     efprintf(F, Lang->proc_dbegin);
 
@@ -255,7 +255,7 @@ A fixed-step integrator.  Work should be dimensioned 4*neq.%}\n");
       VT_REAL|VT_BYREF,        "errest", 
       VT_INTEGER|VT_BYREF, "status",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDINTEG_2;
     efprintf(F, Lang->proc_dbegin);
 
@@ -323,7 +323,7 @@ A variable-step integrator.  Work should be dimensioned 6*neq.%}");
       packvar(VT_INTEGER|VT_BYREF,        "err"),
       packvar(VT_DUP|VT_BYREF,             "which"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDINTEG_3;
     efprintf(F, Lang->proc_dbegin);
 

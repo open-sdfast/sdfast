@@ -17,18 +17,16 @@
 #include "sderror.h"
 #include "../calc/gencode.h"
 
-/* Nested braces for ANSI C initializers. Scalars stay unbraced.
- * Other languages keep the flat list they have always emitted. */
+/* Nested initializer braces. nest_b/nest_e are empty for languages
+ * that keep a flat initializer list. */
 static void c_arr_open(FILE* F)
 {
-    if (Lang == &ANSIC_language)
-        efprintf(F, "{\n");
+    efprintf(F, "%s", Lang->nest_b);
 }
 
 static void c_arr_close(FILE* F)
 {
-    if (Lang == &ANSIC_language)
-        efprintf(F, "},\n");
+    efprintf(F, "%s", Lang->nest_e);
 }
 
 /* These declarations are for the fussy SGI compiler which
@@ -2171,7 +2169,7 @@ void init_sdginput(FILE *F,
     /* The fields after stabposq are left uninitialized on purpose and
      * were implicit zeros. ANSI C warns about the missing initializer,
      * so write the same zeros explicitly. Other languages are unchanged. */
-    if (Lang == &ANSIC_language) {
+    if (Lang->flags & LANG_ZERO_UNINIT) {
         efprintf(F, "%@Lmtot%@M%r%@R", 0.0);
         efprintf(F, "%@Lpsmkg%@M%r%@R", 0.0);
         efprintf(F, "%@Lrhead%@M{{0}}%@R");

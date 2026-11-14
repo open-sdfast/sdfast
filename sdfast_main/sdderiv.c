@@ -244,14 +244,8 @@ void PRINT_SDDOWW(FILE      *mainF,
                     for (k = 0; k < SysI.s; k++)
                         if (IS_CONST(INDX(dfsx,k)))
                             PRINT_ASSN1(F, PRINTNAME(dfs), k, INDX(dfsx, k));
-                    if (Lang == &ANSIC_language)
-                        efprintf(F, "%s%Aldubsl(%d,%d,mmap,%smlo,%s,row)%;\n",
-                                 Lang->proc_call, SysI.s, SysI.s,
-                                 gSinglePrecision ? "(float*)" : "(double*)",
-                                 PRINTNAME(dfs));
-                    else
-                        efprintf(F, "%s%Aldubsl(%d,%d,mmap,mlo,%s,row)%;\n",
-                                 Lang->proc_call, SysI.s, SysI.s, PRINTNAME(dfs));
+                    efprintf(F, "%s%Aldubsl(%d,%d,mmap,%*mlo,%s,row)%;\n",
+                             Lang->proc_call, SysI.s, SysI.s, PRINTNAME(dfs));
                     opcnt->nldubsl++;
                 }
                 DISPOSE_EXPR(UNUSE(dfsx));
@@ -271,14 +265,8 @@ void PRINT_SDDOWW(FILE      *mainF,
                 redundant = 0; /* we can't know at generate time ... */
                 CALL0("%Afsmult");
                 opcnt->nfsmult++;
-                if (Lang == &ANSIC_language)
-                    efprintf(F, "%s%Aldubsl(%d,%d,mmap,%smlo,%s,row)%;\n",
-                             Lang->proc_call, SysI.s, SysI.s,
-                             gSinglePrecision ? "(float*)" : "(double*)",
-                             PRINTNAME(fs));
-                else
-                    efprintf(F, "%s%Aldubsl(%d,%d,mmap,mlo,%s,row)%;\n",
-                             Lang->proc_call, SysI.s, SysI.s, PRINTNAME(fs));
+                efprintf(F, "%s%Aldubsl(%d,%d,mmap,%*mlo,%s,row)%;\n",
+                         Lang->proc_call, SysI.s, SysI.s, PRINTNAME(fs));
                 opcnt->nldubsl++;
             }
 
@@ -384,13 +372,8 @@ void PRINT_SDDOWW(FILE      *mainF,
 
         efprintf(F, "%{\nForm QR decomposition of WW\n%}");
 
-        if (Lang == &ANSIC_language)
-            efprintf(F, "%s%Aqrdcomp(%d,%d,%d,%d,wmap,wmap,%sww,qraux,jpvt)%;\n",
-                  Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc,
-                  gSinglePrecision ? "(float*)" : "(double*)");
-        else
-            efprintf(F, "%s%Aqrdcomp(%d,%d,%d,%d,wmap,wmap,ww,qraux,jpvt)%;\n",
-                  Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc);
+        efprintf(F, "%s%Aqrdcomp(%d,%d,%d,%d,wmap,wmap,%*ww,qraux,jpvt)%;\n",
+              Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc);
         opcnt->nqrdcomp++;
     } else 
         efprintf(F, "%{\nNo independent constraints were present\n%}");
@@ -636,13 +619,8 @@ void PRINT_SDUDOT0(FILE *F, opstats_t *opcnt)
         CALL0("%Afs0");
         opcnt->nfs0++;
 
-        if (Lang == &ANSIC_language)
-            efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%smlo,mdi,fs,udot)%;\n",
-                        Lang->proc_call, SysI.s, SysI.s,
-                        gSinglePrecision ? "(float*)" : "(double*)");
-        else
-            efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,mlo,mdi,fs,udot)%;\n",
-                        Lang->proc_call,SysI.s,SysI.s);
+        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%*mlo,mdi,fs,udot)%;\n",
+                    Lang->proc_call,SysI.s,SysI.s);
         opcnt->nldubsl += 2;
         opcnt->nldubsd++;
     } else {
@@ -830,13 +808,8 @@ void PRINT_SDUDOTM(FILE *F, opstats_t *opcnt)
     if (sdfast_opt.formulation != OPT_ORDERN) {
         CALL0("%Afsmult");                        /* SDFSMULT()   */
         opcnt->nfsmult++;
-        if (Lang == &ANSIC_language)
-            efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%smlo,mdi,fs,udot)%;\n",
-                        Lang->proc_call, SysI.s, SysI.s,
-                        gSinglePrecision ? "(float*)" : "(double*)");
-        else
-            efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,mlo,mdi,fs,udot)%;\n",
-                        Lang->proc_call,SysI.s,SysI.s);
+        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%*mlo,mdi,fs,udot)%;\n",
+                    Lang->proc_call,SysI.s,SysI.s);
         opcnt->nldubsl += 2;
         opcnt->nldubsd++;
     } else {
@@ -1176,18 +1149,10 @@ void PRINT_SDDERIV(FILE *F,
     }
 
     if (nindepc > 0) {
-        if (Lang == &ANSIC_language)
-            efprintf(F, "%s%Aqrbslv(%d,%d,%d,%d,wmap,wmap,%r,workr,iwork,\
-%&%sww,qraux,jpvt,bb,mult,%swrank)%;\n",
-                  Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc,
-                  cEquationNegligible,
-                  gSinglePrecision ? "(float*)" : "(double*)",
-                  Lang->ref);
-        else
-            efprintf(F, "%s%Aqrbslv(%d,%d,%d,%d,wmap,wmap,%r,workr,iwork,\
-%&ww,qraux,jpvt,bb,mult,%swrank)%;\n",
-                  Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc,
-                  cEquationNegligible, Lang->ref);
+        efprintf(F, "%s%Aqrbslv(%d,%d,%d,%d,wmap,wmap,%r,workr,iwork,\
+%&%*ww,qraux,jpvt,bb,mult,%swrank)%;\n",
+              Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc,
+              cEquationNegligible, Lang->ref);
         opcnt->nqrbslv++;
         FOR("80", "i", str_0, str_nindepc1);
           ISET("multmap%(i%)", 0);

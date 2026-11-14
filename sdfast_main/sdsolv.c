@@ -197,7 +197,7 @@ the na interesting elements.\n");
       packvar(VT_DUP,                     "l"),
       packvar(VT_SARRAY,                  "d",   "n",        NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_1;
     efprintf(F, Lang->proc_dbegin);
 
@@ -261,7 +261,7 @@ the na interesting elements.\n");
       VT_SARRAY,  "b", "n", NULL,
       VT_DUP,  "x",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_2;
 
     efprintf(F, Lang->proc_dbegin);
@@ -300,7 +300,7 @@ the na interesting elements.\n");
       VT_DUP,  "b",
       VT_DUP,  "x",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_3;
 
     efprintf(F, Lang->proc_dbegin);
@@ -328,7 +328,7 @@ the na interesting elements.\n");
       VT_SARRAY,  "b", "n", NULL,
       VT_DUP,  "x",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_4;
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
@@ -372,7 +372,7 @@ sum%=b%(mi%)%;\n");
       packvar(VT_DUP,                          "b"),
       packvar(VT_DUP,                          "x"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_5;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -400,7 +400,7 @@ sum%=b%(mi%)%;\n");
       packvar(VT_SARRAY,                  "d",     "n",        NULL),
       packvar(VT_DUP,                          "x"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLDUSLV_6;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -478,7 +478,7 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "qraux", "nca",      NULL),
       packvar(VT_SARRAY|VT_INTEGER,         "jpvt",  "nca",      NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDQRSLV_1;
     efprintf(F, Lang->proc_dbegin);
 
@@ -625,7 +625,7 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "b",     "nr",       NULL),
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDQRSLV_2;
 
     efprintf(F, Lang->proc_dbegin);
@@ -727,7 +727,7 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(VT_INTEGER|VT_BYREF,         "rank"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDQRSLV_3;
 
     efprintf(F, Lang->proc_dbegin);
@@ -835,7 +835,7 @@ kk%=iwork%(j%)%;\n");
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(VT_INTEGER|VT_BYREF,         "rank"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDQRSLV_4;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -996,7 +996,7 @@ Work arrays should be dimensioned as follows:\n\
       packvar(VT_SARRAY,                  "b",    "nr",               NULL),
       packvar(VT_SARRAY,                  "x",    "nc",               NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDLSSLV_1;
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 

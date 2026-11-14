@@ -41,6 +41,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_STMT_UPPER|LANG_COMMON_DECL
         |LANG_LINE_COMMENTS|LANG_SEPARATE_INIT|LANG_VARDIM|LANG_COLMAJOR
         |LANG_FUNCVAL_IN_NAME },
@@ -64,6 +65,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_COMMON_DECL|LANG_LINE_COMMENTS|LANG_SEPARATE_INIT
         |LANG_FUNCVAL_IN_NAME },
     ADSIM_language_decl = {
@@ -86,6 +88,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_COMMON_DECL|LANG_LINE_COMMENTS|LANG_SEPARATE_INIT
         |LANG_FUNCVAL_IN_NAME },
     KRC_language = {
@@ -109,6 +112,7 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_C_FAMILY },
     ANSIC_language = {
         &KRC_language,
@@ -131,7 +135,9 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
-        LANG_C_FAMILY|LANG_DECL_IN_ARGLIST },
+        "(float*)", "(double*)", "(void)%s;\n", "{\n", "},\n",
+        LANG_C_FAMILY|LANG_DECL_IN_ARGLIST|LANG_MODEL_HEADER|
+        LANG_TRIM_FUNC_TYPE|LANG_ZERO_UNINIT|LANG_EMPTY_RANGE },
     Cpp_language = {
         &ANSIC_language,
         "C++", ".cpp", 0, 80, 4, 0,
@@ -153,6 +159,7 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_C_FAMILY|LANG_DECL_IN_ARGLIST|LANG_LINE_COMMENTS },
     Pascal_language = {
         &Cpp_language,
@@ -177,6 +184,7 @@ struct language FORTRAN_language = {
         "\ntype %@A%s = record\n%>", "end;\n%<", "%@A%s.%s",
         " := \n%>",";%<\n","{ "," } ",",\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_DECL2|LANG_DECL_IN_ARGLIST|LANG_FUNCVAL_IN_NAME },
     Ada_language = {
         &Pascal_language,
@@ -198,6 +206,7 @@ struct language FORTRAN_language = {
         "\ntype %@A%s = record\n%>", "end;\n%<", "%@A%s.%s",
         " := \n%>",";%<\n","{ "," } ",",\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_DECL2|LANG_DECL_IN_ARGLIST|LANG_LINE_COMMENTS|LANG_VARDIM },
     Text_language = {        /* used for output to user */
         0,
@@ -218,5 +227,6 @@ struct language FORTRAN_language = {
         "", "", "",
         "", "", "", "", "",
         "", "", "", "", "", "", "",
+        "", "", "", "", "",
         0 },
     *Lang;

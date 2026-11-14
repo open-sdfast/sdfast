@@ -2116,7 +2116,7 @@ void sdquat2dc(double ie1,
 (void)e44;
 (void)norm;
 }
-double 
+double
 sdvdot(double ivec1[3],
     double ivec2[3])
 {
@@ -2130,7 +2130,7 @@ sdvdot(double ivec1[3],
 (void)ivec2;
 (void)dprod;
 }
-double 
+double
 sdvnorm(double ivec[3])
 {
     double norm;

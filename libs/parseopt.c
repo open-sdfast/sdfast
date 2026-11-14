@@ -36,6 +36,7 @@ options_t sdfast_optdef = {
     /*geninfo*/         1,
     /*gensar*/          1,
     /*genlib*/          0,
+    /*genhdr*/          0,
     /*dynname*/         OPT_STRDEFAULT, /* construct from basename */
     /*infoname*/        OPT_STRDEFAULT, /* construct from basename */
     /*sarname*/         OPT_STRDEFAULT, /* construct from basename */
@@ -47,7 +48,7 @@ options_t sdfast_optdef = {
 static void usage(void)
 {
     fprintf(stderr, "\n\
-usage: %s [-sdknvb] [-l language] [-p prefix] [-g disle] [infile [basename]]\n\
+usage: %s [-sdknvb] [-l language] [-p prefix] [-g dishle] [infile [basename]]\n\
     -s -d  Use single or double precision\n\
     -k -n  Use Kane's or Order(N) formulation\n\
        -v  Verbose: output roadmap, stats, etc.; -vv echos input file also\n\
@@ -62,7 +63,8 @@ usage: %s [-sdknvb] [-l language] [-p prefix] [-g disle] [infile [basename]]\n\
     fprintf(stderr, "\
        -l  Specify output language: fortran, c\n\
        -p  Specify prefix to be used for all generated external symbol names\n\
-       -g  1-4 letters to generate dyn,info,sar,lib or everything (def: dis)\n\
+       -g  Letters to generate: d dyn, i info, s sar, l lib, h header,\n\
+           e everything (default: dis)\n\
    infile  Input File name\n\
  basename  Base to use in forming output file names\n");
 
@@ -100,6 +102,7 @@ void parse_cmdline(int argc,
     sdfast_opt.geninfo     =        OPT_DEFAULT;
     sdfast_opt.gensar      =        OPT_DEFAULT;
     sdfast_opt.genlib      =        OPT_DEFAULT;
+    sdfast_opt.genhdr      =        0;
     sdfast_opt.dynname     =        OPT_STRDEFAULT;
     sdfast_opt.infoname    =        OPT_STRDEFAULT;
     sdfast_opt.sarname     =        OPT_STRDEFAULT;
@@ -198,6 +201,7 @@ void parse_cmdline(int argc,
                     sdfast_opt.geninfo = 0;
                     sdfast_opt.gensar  = 0;
                     sdfast_opt.genlib  = 0;
+                    sdfast_opt.genhdr  = 0;
                     if (arg[1])
                         namep = arg + 1;
                     else {
@@ -217,13 +221,16 @@ void parse_cmdline(int argc,
                             sdfast_opt.gensar  = 1; break;
                         case 'l': case 'L':
                             sdfast_opt.genlib  = 1; break;
+                        case 'h': case 'H':
+                            sdfast_opt.genhdr  = 1; break;
                         case 'e': case 'E':
                             sdfast_opt.gendyn = sdfast_opt.geninfo = 
-                            sdfast_opt.gensar = sdfast_opt.genlib = 1;
+                            sdfast_opt.gensar = sdfast_opt.genlib =
+                            sdfast_opt.genhdr = 1;
                             break;
                         default:
                             fprintf(stderr, 
-                                "Only d,i,s,l and e allowed after -g\n");
+                                "Only d,i,s,l,h and e allowed after -g\n");
                             usage();
                         }
                     }
@@ -301,8 +308,9 @@ void parse_cmdline(int argc,
                         }
                         break;
                     case 'h': case 'H':
-                        /* Does not by itself turn generation on. ANSI C
-                         * writes {basename}_defs.h unless this overrides it. */
+                        /* Secret filename override. -gh is the documented
+                         * switch; this also turns the header on. */
+                        sdfast_opt.genhdr = 1;
                         if (arg[2])
                             sdfast_opt.hdrname = arg + 2;
                         else {
@@ -470,11 +478,11 @@ GET_INPUTS(SystemInfo_t *sys)
                 Lang->file_suffix,LibFname);
         sdfast_opt.libname = LibFname;
     }
-    /* One user header, {basename}_defs.h, on every platform. -fh overrides
-     * the path. It is not given a short Windows suffix. */
-    if (sdfast_opt.lang == &ANSIC_language &&
+    /* {basename}_defs.h when -gh (or -ge) asks for it. -fh overrides
+     * the path. The name is not given a short Windows suffix. */
+    if ((Lang->flags & LANG_MODEL_HEADER) &&
+        sdfast_opt.genhdr &&
         sdfast_opt.basename &&
-        (sdfast_opt.gendyn || sdfast_opt.gensar) &&
         sdfast_opt.hdrname == OPT_STRDEFAULT) {
         genname(prompting, "Header", "", sdfast_opt.basename,
                 "_defs", ".h", HdrFname);

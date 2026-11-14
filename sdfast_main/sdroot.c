@@ -193,7 +193,7 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_DUP|VT_BYREF,  "maxrerr"),
       packvar(VT_DUP|VT_BYREF,  "derrnorm"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDROOT_1;
     efprintf(F, Lang->proc_dbegin);
 
@@ -264,7 +264,7 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_SARRAY,                   "newvars", "nvar", NULL),
       packvar(VT_SARRAY,                   "newerrs", "nfunc", NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDROOT_2;
     efprintf(F, Lang->proc_dbegin);
 
@@ -397,7 +397,7 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_INTEGER|VT_BYREF,        "fcnt"),
       packvar(VT_SARRAY,                  "scale", "nfunc",  NULL),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDROOT_3;
     efprintf(F, Lang->proc_dbegin);
 
@@ -541,7 +541,7 @@ Work arrays should be dimensioned as follows:\n\
       packvar(VT_INTEGER|VT_BYREF,         "fcnt"),
       packvar(VT_DUP|VT_BYREF,             "err"),
       packvar(0));
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDROOT_4;
     efprintf(F, Lang->proc_dbegin);
 

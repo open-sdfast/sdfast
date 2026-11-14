@@ -1395,7 +1395,7 @@ void sdaerr(double errs[1])
 
 (void)errs;
 }
-int 
+int
 sdchkbnum(int routine,
     int bnum)
 {
@@ -1408,7 +1408,7 @@ sdchkbnum(int routine,
 (void)routine;
 (void)bnum;
 }
-int 
+int
 sdchkjnum(int routine,
     int jnum)
 {
@@ -1421,7 +1421,7 @@ sdchkjnum(int routine,
 (void)routine;
 (void)jnum;
 }
-int 
+int
 sdchkucnum(int routine,
     int ucnum)
 {
@@ -1431,7 +1431,7 @@ sdchkucnum(int routine,
 (void)routine;
 (void)ucnum;
 }
-int 
+int
 sdchkjaxis(int routine,
     int jnum,
     int axnum)
@@ -1459,7 +1459,7 @@ sdchkjaxis(int routine,
 (void)axnum;
 (void)maxax;
 }
-int 
+int
 sdchkjpin(int routine,
     int jnum,
     int pinno)
@@ -1499,7 +1499,7 @@ sdchkjpin(int routine,
 (void)maxax;
 (void)pinok;
 }
-int 
+int
 sdindx(int joint,
     int axis)
 {

@@ -105,7 +105,7 @@ void PRINT_SDERROR(FILE *F)
       VT_INTEGER|VT_BYREF, "routine",
       VT_DUP|VT_BYREF,           "errnum",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDERROR_1;
 
     efprintf(F, Lang->proc_dbegin);
@@ -127,19 +127,19 @@ void PRINT_SDPRINTERR(FILE *F)
         declare_proc(F, 0, "printerr", 
           VT_TYPENAME|VT_BYREF, "FILE", "fnum",
           0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDPRINTERR_1;
     } else if (Lang == &FORTRAN_language) {
         declare_proc(F, 0, "printerr", 
           VT_INTEGER, "fnum",
           0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDPRINTERR_1;
     } else if (Lang == &Ada_language) {
         declare_proc(F, 0, "printerr", 
           VT_TYPENAME, "FILE_TYPE", "fnum",
           0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDPRINTERR_1;
     }
 
@@ -158,7 +158,7 @@ void PRINT_SDCLEARERR(FILE *F)
     /* Print the sdclearerr() routine. */
     declare_proc(F, 0, "clearerr", 
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDCLEARERR_1;
 
     efprintf(F, Lang->proc_dbegin);
@@ -184,7 +184,7 @@ void PRINT_SDSETERR(FILE *F)
       VT_INTEGER, "routine",
       VT_DUP,          "errnum",
       0);
-    if (ansi_proto_only)
+    if (proto_only)
         goto ansi_proto_PRINT_SDSETERR_1;
 
     efprintf(F, Lang->proc_dbegin);
@@ -271,7 +271,7 @@ void PRINT_CHECKSTUFF(FILE *F)
     /* nu == 0 makes `ucnum > -1` true for every int, which clang rejects
      * under -Wtautological-overlap-compare. The check still rejects every
      * index: there is no valid user constraint. */
-    if (Lang == &ANSIC_language && SysI.nu == 0) {
+    if ((Lang->flags & LANG_EMPTY_RANGE) && SysI.nu == 0) {
         esprintf(callstr, "%@Aseterr(routine,%d)", ERR_BadUserConstraintNum);
         CALL(callstr);
         FRETURN("%Achkucnum", "1");

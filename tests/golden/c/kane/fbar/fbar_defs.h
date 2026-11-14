@@ -4,9 +4,7 @@
 Generated TIMESTAMP by SD/FAST, Kane's formulation
 (sdfast 2.0 #10001)
 Public declarations for this model. This is the header to include
-from user code. Single-precision (-s) prototypes use float. A K&R
-definition with a float parameter is not ABI-compatible with that
-prototype, because a K&R float argument is promoted to double.
+from user code. Single-precision (-s) prototypes use float.
 */
 #include <stdio.h>
 #ifdef __cplusplus
@@ -14,12 +12,10 @@ extern "C" {
 #endif
 
 /* Model sizes. These are integer constant expressions, so user
- * code can use them as array bounds. Add further counts here.
+ * code can use them as array bounds.
  *
  * The macro prefix is the uppercased -p prefix (SD_NQ, or XX_NQ
- * with -p xx), not the input basename. Two models in one program
- * already need distinct prefixes: the generated routines would
- * otherwise clash, and so would these macros.
+ * with -p xx). Two models in one program need distinct prefixes.
  *
  * NU is the number of rate coordinates (the sdinfo "nu" line),
  * not the number of user constraints (NUSERC, sdinfo "nuserc").
@@ -422,11 +418,11 @@ void sdquat2dc(double ie1,
     double ie4,
     double dircos[3][3])
 ;
-double 
+double
 sdvdot(double ivec1[3],
     double ivec2[3])
 ;
-double 
+double
 sdvnorm(double ivec[3])
 ;
 
@@ -597,29 +593,29 @@ void sdverr(double errs[5])
 
 void sdaerr(double errs[5])
 ;
-int 
+int
 sdchkbnum(int routine,
     int bnum)
 ;
-int 
+int
 sdchkjnum(int routine,
     int jnum)
 ;
-int 
+int
 sdchkucnum(int routine,
     int ucnum)
 ;
-int 
+int
 sdchkjaxis(int routine,
     int jnum,
     int axnum)
 ;
-int 
+int
 sdchkjpin(int routine,
     int jnum,
     int pinno)
 ;
-int 
+int
 sdindx(int joint,
     int axis)
 ;
