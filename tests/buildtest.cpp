@@ -1,5 +1,9 @@
 #include "buildtest.h"
 
+#include <cctype>
+#include <fstream>
+#include <map>
+
 #ifdef _WIN32
 // WINDOWS
 #include <windows.h>
@@ -169,6 +173,228 @@ int run_program(const std::string& executable,
 
 #endif
 
+namespace {
+
+std::string read_text(const std::filesystem::path& path) {
+  std::ifstream in(path, std::ios::binary);
+  if (!in)
+    return {};
+  std::ostringstream buf;
+  buf << in.rdbuf();
+  return buf.str();
+}
+
+std::string upper_ident(std::string text) {
+  for (char& c : text) {
+    unsigned char u = static_cast<unsigned char>(c);
+    if (u >= 'a' && u <= 'z')
+      c = static_cast<char>(u - 'a' + 'A');
+    else if (!((u >= 'A' && u <= 'Z') || (u >= '0' && u <= '9')))
+      c = '_';
+  }
+  if (text.empty())
+    text = "SD";
+  return text;
+}
+
+bool take_int(const std::string& text, size_t& i, int& value) {
+  while (i < text.size() &&
+         std::isspace(static_cast<unsigned char>(text[i])))
+    ++i;
+  if (i >= text.size())
+    return false;
+  size_t end = i;
+  if (text[end] == '-' || text[end] == '+')
+    ++end;
+  size_t digits = end;
+  while (end < text.size() &&
+         std::isdigit(static_cast<unsigned char>(text[end])))
+    ++end;
+  if (end == digits)
+    return false;
+  value = std::stoi(text.substr(i, end - i));
+  i = end;
+  return true;
+}
+
+std::map<std::string, int> parse_defines(const std::string& text,
+                                        const std::string& prefix) {
+  std::map<std::string, int> out;
+  const std::string key = "#define " + prefix + "_";
+  for (size_t at = 0; (at = text.find(key, at)) != std::string::npos;) {
+    size_t name = at + key.size();
+    size_t end = name;
+    while (end < text.size() &&
+           (std::isalnum(static_cast<unsigned char>(text[end])) ||
+            text[end] == '_'))
+      ++end;
+    size_t i = end;
+    int value = 0;
+    if (end > name && take_int(text, i, value))
+      out[text.substr(name, end - name)] = value;
+    at = end + 1;
+  }
+  return out;
+}
+
+std::map<std::string, int> parse_info_params(const std::string& text) {
+  std::map<std::string, int> out;
+  size_t i = 0;
+  while (i < text.size()) {
+    size_t eol = text.find('\n', i);
+    if (eol == std::string::npos)
+      eol = text.size();
+    std::string line = text.substr(i, eol - i);
+    i = eol < text.size() ? eol + 1 : eol;
+    size_t name = 0;
+    while (name < line.size() &&
+           std::isspace(static_cast<unsigned char>(line[name])))
+      ++name;
+    size_t end = name;
+    while (end < line.size() &&
+           std::islower(static_cast<unsigned char>(line[end])))
+      ++end;
+    if (end == name)
+      continue;
+    size_t num = end;
+    int value = 0;
+    if (!take_int(line, num, value))
+      continue;
+    out[line.substr(name, end - name)] = value;
+  }
+  return out;
+}
+
+std::map<std::string, int> parse_gtopo_scalars(const std::string& text) {
+  std::map<std::string, int> out;
+  const std::string mark = "/* ";
+  for (size_t at = 0; (at = text.find(mark, at)) != std::string::npos;) {
+    size_t name = at + mark.size();
+    size_t end = name;
+    while (end < text.size() &&
+           std::islower(static_cast<unsigned char>(text[end])))
+      ++end;
+    if (end == name || text.compare(end, 3, " */") != 0) {
+      at = name;
+      continue;
+    }
+    size_t i = end + 3;
+    int value = 0;
+    if (take_int(text, i, value) && !out.count(text.substr(name, end - name)))
+      out[text.substr(name, end - name)] = value;
+    at = i;
+  }
+  return out;
+}
+
+bool expect_eq(const std::string& what, int got, int want) {
+  if (got == want)
+    return true;
+  std::cerr << "[FAIL] " << what << " is " << got << ", expected " << want
+            << "\n";
+  return false;
+}
+
+}  // namespace
+
+int check_model_defs(const std::filesystem::path& defs,
+                     const std::filesystem::path& info,
+                     const std::filesystem::path& dyn,
+                     const std::string& prefix) {
+  const std::string pfx = upper_ident(prefix);
+  const std::string header = read_text(defs);
+  const std::string info_text = read_text(info);
+  const std::string dyn_text = read_text(dyn);
+  if (header.empty() || info_text.empty() || dyn_text.empty()) {
+    std::cerr << "[FAIL] missing defs, info, or dyn for size check\n";
+    return 1;
+  }
+  const auto macros = parse_defines(header, pfx);
+  const auto reported = parse_info_params(info_text);
+  const auto topo = parse_gtopo_scalars(dyn_text);
+
+  const std::pair<const char*, const char*> info_map[] = {
+      {"nbod", "NBOD"},   {"njnt", "NJNT"},   {"ndof", "NDOF"},
+      {"nloop", "NLOOP"}, {"nldof", "NLDOF"}, {"nq", "NQ"},
+      {"nu", "NU"},       {"nlq", "NLQ"},     {"nlu", "NLU"},
+      {"nc", "NC"},       {"nlc", "NLC"},     {"npresc", "NPRESC"},
+      {"nuserc", "NUSERC"},
+  };
+  const std::pair<const char*, const char*> topo_map[] = {
+      {"nbod", "NBOD"},     {"ndof", "NDOF"},   {"ncons", "NC"},
+      {"nloop", "NLOOP"},   {"nldof", "NLDOF"}, {"nloopc", "NLC"},
+      {"nball", "NBALL"},   {"nlball", "NLBALL"}, {"npres", "NPRESC"},
+      {"nuser", "NUSERC"},
+  };
+
+  int rc = 0;
+  auto macro_of = [&](const char* name, int& value) -> bool {
+    auto it = macros.find(name);
+    if (it == macros.end()) {
+      std::cerr << "[FAIL] missing #" << pfx << "_" << name << "\n";
+      rc = 1;
+      return false;
+    }
+    value = it->second;
+    return true;
+  };
+
+  for (const auto& item : info_map) {
+    auto it = reported.find(item.first);
+    int value = 0;
+    if (it == reported.end()) {
+      std::cerr << "[FAIL] sdinfo has no " << item.first << "\n";
+      rc = 1;
+      continue;
+    }
+    if (!macro_of(item.second, value))
+      continue;
+    if (!expect_eq(std::string(pfx) + "_" + item.second + " vs sdinfo " +
+                       item.first,
+                   value, it->second))
+      rc = 1;
+  }
+  for (const auto& item : topo_map) {
+    auto it = topo.find(item.first);
+    int value = 0;
+    if (it == topo.end()) {
+      std::cerr << "[FAIL] sdgtopo has no " << item.first << "\n";
+      rc = 1;
+      continue;
+    }
+    if (!macro_of(item.second, value))
+      continue;
+    if (!expect_eq(std::string(pfx) + "_" + item.second + " vs sdgtopo " +
+                       item.first,
+                   value, it->second))
+      rc = 1;
+  }
+
+  int nq = 0, nu = 0, ndof = 0, nball = 0, nlq = 0, nldof = 0, nlball = 0;
+  int njnt = 0, nbod = 0, nloop = 0, nc = 0, npresc = 0, nlc = 0, nxc = 0,
+      nuserc = 0;
+  if (macro_of("NQ", nq) && macro_of("NDOF", ndof) && macro_of("NBALL", nball))
+    if (!expect_eq(pfx + "_NQ vs ndof+nball", nq, ndof + nball))
+      rc = 1;
+  if (macro_of("NU", nu) && macro_of("NDOF", ndof))
+    if (!expect_eq(pfx + "_NU vs ndof", nu, ndof))
+      rc = 1;
+  if (macro_of("NLQ", nlq) && macro_of("NLDOF", nldof) &&
+      macro_of("NLBALL", nlball))
+    if (!expect_eq(pfx + "_NLQ vs nldof+nlball", nlq, nldof + nlball))
+      rc = 1;
+  if (macro_of("NJNT", njnt) && macro_of("NBOD", nbod) &&
+      macro_of("NLOOP", nloop))
+    if (!expect_eq(pfx + "_NJNT vs nbod+nloop", njnt, nbod + nloop))
+      rc = 1;
+  if (macro_of("NC", nc) && macro_of("NPRESC", npresc) && macro_of("NLC", nlc) &&
+      macro_of("NXC", nxc) && macro_of("NUSERC", nuserc))
+    if (!expect_eq(pfx + "_NC vs presc+loop+explicit+user", nc,
+                   npresc + nlc + nxc + nuserc))
+      rc = 1;
+  return rc;
+}
+
 int test_sdfast_example(const test_program& t,
                         const std::filesystem::path& sdfast_examples,
                         const std::filesystem::path& sdfast_bin) {
@@ -199,6 +425,59 @@ int test_sdfast_example(const test_program& t,
     if (run_program(sdfast_bin.string(), args, build_dir.string()) !=
         EXIT_SUCCESS) {
       std::cerr << "sdfast: " << base << "\n";
+      return EXIT_FAILURE;
+    }
+  }
+
+  // A user translation unit that includes only the model header must be
+  // able to size arrays from the prefix macros and call library routines.
+  if (t.lang == "c" && base == "sphere") {
+    if (check_model_defs(build_dir / names.defs, build_dir / names.info,
+                         build_dir / names.dyn, "sd") != 0)
+      return EXIT_FAILURE;
+    const std::filesystem::path user_tu = build_dir / "defs_user.c";
+    {
+      std::ofstream out(user_tu);
+      if (!out)
+        return EXIT_FAILURE;
+      out << "#include \"" << names.defs << "\"\n"
+          << "static void step(double t, double st[], double dst[],\n"
+          << "                 double param[], int* status) {\n"
+          << "    (void)t; (void)st; (void)dst; (void)param; (void)status;\n"
+          << "}\n"
+          << "static void residual(double vars[], double param[], double fval[]) {\n"
+          << "    (void)vars; (void)param; (void)fval;\n"
+          << "}\n"
+          << "int main(void) {\n"
+          << "    double q[SD_NQ];\n"
+          << "    double u[SD_NU];\n"
+          << "    double st[1] = {0}, dst[1] = {0}, param[1] = {0}, work[8] = {0};\n"
+          << "    double time = 0, step_h = 0.1, tol = 1e-8;\n"
+          << "    double vars[1] = {0}, jw[4] = {0}, dw[16] = {0}, rw[32] = {0};\n"
+          << "    double fret[1] = {0}, ld[1] = {0}, sum[1] = {0};\n"
+          << "    double m[1] = {0}, l[1] = {0}, d[1] = {0};\n"
+          << "    int lock[1] = {0}, iw[16] = {0}, map[1] = {0};\n"
+          << "    int err = 0, which = 0, fcnt = 0;\n"
+          << "    (void)q;\n"
+          << "    (void)u;\n"
+          << "    sdvinteg(step, &time, st, dst, param, 0.1, &step_h, 1, tol,\n"
+          << "             work, &err, &which);\n"
+          << "    sdroot(residual, vars, param, 1, 1, 0, lock, 1e-6, 1e-6, 1,\n"
+          << "           jw, dw, rw, iw, fret, &fcnt, &err);\n"
+          << "    sdldudcomp(1, 1, map, 1e-12, ld, sum, m, l, d);\n"
+          << "    return 0;\n"
+          << "}\n";
+    }
+    const std::string cc = SDFAST_C_COMPILER;
+    std::vector<std::string> uargs;
+    if (compiler_is_msvc(cc))
+      uargs = {"/nologo", "/std:c17", "/W4", "/WX", "/TC", "/c",
+               user_tu.string()};
+    else
+      uargs = {"-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-c",
+               user_tu.filename().string(), "-o", "defs_user.o"};
+    if (run_program(cc, uargs, build_dir.string()) != EXIT_SUCCESS) {
+      std::cerr << "defs header user TU failed to compile\n";
       return EXIT_FAILURE;
     }
   }

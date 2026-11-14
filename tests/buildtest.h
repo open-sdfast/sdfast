@@ -24,6 +24,7 @@ struct SdOutputNames {
   std::string sar;
   std::string info;
   std::string lib;
+  std::string defs;
   std::string ext;
 };
 
@@ -41,6 +42,8 @@ inline SdOutputNames sd_output_names(const std::string& lang,
   n.sar = base + (win ? "_s" : "_sar") + n.ext;
   n.info = base + (win ? "_i" : "_info");
   n.lib = "sdlib" + n.ext;
+  // Always {basename}_defs.h, including on Windows. Not a short suffix.
+  n.defs = base + "_defs.h";
   return n;
 }
 
@@ -88,4 +91,11 @@ int run_program(const std::string& executable,
                 const std::string& stdout_path = "");
 
 int build_test();
+
+// ANSI C model header: prefix_NQ / prefix_NU and the other size macros
+// must match sdinfo and the sdgtopo initializer.
+int check_model_defs(const std::filesystem::path& defs,
+                     const std::filesystem::path& info,
+                     const std::filesystem::path& dyn,
+                     const std::string& prefix);
 #endif // !SDFAST_BUILDTEST_H

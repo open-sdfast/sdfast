@@ -104,6 +104,8 @@ int check_one(bool update, const std::filesystem::path& source,
   SdOutputNames names = sd_output_names(lang, base);
   std::vector<std::string> produced = {names.dyn, names.sar, names.info,
                                        names.lib};
+  if (lang == "c")
+    produced.push_back(names.defs);
   auto spellings = path_spellings(sd);
   // One library golden per language. Written from Kane fbar; every model
   // is compared to it. The formulation banner is normalized away.
@@ -157,6 +159,12 @@ int check_one(bool update, const std::filesystem::path& source,
       std::cerr << "[FAIL] " << label << " " << canon << "\n" << report;
       rc = 1;
     }
+  }
+  if (lang == "c" &&
+      check_model_defs(work / names.defs, work / names.info, work / names.dyn,
+                       "sd") != 0) {
+    std::cerr << "[FAIL] " << label << " size macros\n";
+    rc = 1;
   }
   if (rc == 0 && !update)
     std::cout << "[PASS] " << label << "\n";

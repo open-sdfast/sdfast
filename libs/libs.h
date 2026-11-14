@@ -735,6 +735,7 @@ typedef struct {
     char*            sarname;     /* special name for Simplified Analysis File */
     char*            libname;     /* special name for Library File */
     char*            progname;    /* e.g. `sdfast' */
+    char*            hdrname;     /* ANSI C {basename}_defs.h, or -fh */
 } options_t;
 
 extern options_t sdfast_opt;

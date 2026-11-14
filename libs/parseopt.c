@@ -41,6 +41,7 @@ options_t sdfast_optdef = {
     /*sarname*/         OPT_STRDEFAULT, /* construct from basename */
     /*libname*/         OPT_STRDEFAULT, /* construct from LIBNAME */
     /*progname*/        OPT_STRDEFAULT, /* always comes from argv[0] */
+    /*hdrname*/         OPT_STRDEFAULT, /* {basename}_defs.h */
 };
 
 static void usage(void)
@@ -104,6 +105,7 @@ void parse_cmdline(int argc,
     sdfast_opt.sarname     =        OPT_STRDEFAULT;
     sdfast_opt.libname     =        OPT_STRDEFAULT;
     sdfast_opt.progname    =    argv[0];
+    sdfast_opt.hdrname     =        OPT_STRDEFAULT;
 
     while (--argc) {
 
@@ -234,7 +236,7 @@ void parse_cmdline(int argc,
                 case 'f':
                     if (!arg[1]) {
                         fprintf(stderr, 
-                            "d,i,s or l expected immediately after -f\n");
+                            "d,i,s,l or h expected immediately after -f\n");
                         exit(1);
                     }
                     switch (arg[1]) {
@@ -298,8 +300,24 @@ void parse_cmdline(int argc,
                           }
                         }
                         break;
+                    case 'h': case 'H':
+                        /* Does not by itself turn generation on. ANSI C
+                         * writes {basename}_defs.h unless this overrides it. */
+                        if (arg[2])
+                            sdfast_opt.hdrname = arg + 2;
+                        else {
+                          if (argc > 1 && **(argv+1) != OPT_CHAR) {
+                              --argc;
+                              sdfast_opt.hdrname = *++argv;
+                          } else {
+                              fprintf(stderr,
+                                  "Header file name expected after -fh\n");
+                              exit(1);
+                          }
+                        }
+                        break;
                     default:
-                        fprintf(stderr, "Only d,i,s, or l allowed after -f\n");
+                        fprintf(stderr, "Only d,i,s,l, or h allowed after -f\n");
                         exit(1);
                     }
                     goto nextArg;
@@ -354,6 +372,7 @@ GET_INPUTS(SystemInfo_t *sys)
     static char InfoFname[128];
     static char SarFname[128];
     static char LibFname[128];
+    static char HdrFname[128];
 
     /* If user supplied an input file name, or if we don't need to
      * see an input file (e.g. library generation only), we'll just
@@ -450,6 +469,16 @@ GET_INPUTS(SystemInfo_t *sys)
         genname(prompting,"Library",sdfast_opt.prefix,LIBNAME, "",
                 Lang->file_suffix,LibFname);
         sdfast_opt.libname = LibFname;
+    }
+    /* One user header, {basename}_defs.h, on every platform. -fh overrides
+     * the path. It is not given a short Windows suffix. */
+    if (sdfast_opt.lang == &ANSIC_language &&
+        sdfast_opt.basename &&
+        (sdfast_opt.gendyn || sdfast_opt.gensar) &&
+        sdfast_opt.hdrname == OPT_STRDEFAULT) {
+        genname(prompting, "Header", "", sdfast_opt.basename,
+                "_defs", ".h", HdrFname);
+        sdfast_opt.hdrname = HdrFname;
     }
 
 /*XXX dump_options(stderr, "final", &sdfast_opt); */

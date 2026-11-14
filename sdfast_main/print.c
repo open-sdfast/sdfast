@@ -739,18 +739,24 @@ void PRINT_SDPRERRMSG(FILE *F)
           VT_INTEGER,     "routine",
           VT_DUP,           "errnum",
           0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDPRERRMSG_1;
     } else if (Lang == &FORTRAN_language) {
         declare_proc(F, 0, "prerrmsg", 
           VT_INTEGER,     "fnum",
           VT_DUP,         "routine",
           VT_DUP,           "errnum",
           0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDPRERRMSG_1;
     } else if (Lang == &Ada_language) {
         declare_proc(F, 0, "prerrmsg", 
           VT_TYPENAME, "FILE_TYPE", "fnum",
           VT_INTEGER,     "routine",
           VT_DUP,           "errnum",
           0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDPRERRMSG_1;
     }
 
     efprintf(F, Lang->proc_dbegin);
@@ -926,6 +932,7 @@ void PRINT_SDPRERRMSG(FILE *F)
       "Singular mass matrix - bad inertialess body?");
 
     efprintf(F, Lang->proc_end); 
+    ansi_proto_PRINT_SDPRERRMSG_1: ;
 }
 
 /* Generates the sdserialno() routine, which returns (from the library)
@@ -942,6 +949,8 @@ void PRINT_SDSERIALNO(FILE *F)
     declare_proc(F, 0, "serialno",
       VT_INTEGER|VT_BYREF, "serno",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDSERIALNO_1;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -950,6 +959,7 @@ void PRINT_SDSERIALNO(FILE *F)
     SETREF("serno", sernostr);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDSERIALNO_1: ;
 }
 
 /* Generates the sdgentime() routine, which returns (from the dynamics file)

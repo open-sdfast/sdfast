@@ -117,7 +117,7 @@ struct language FORTRAN_language = {
         "/* ", -3, " */\n",
         "", " = ",
         " < "," <= "," == "," != "," >= "," > "," && "," || ","!",
-        "", "int ", "float ", "double ", "int ", "&", "*",
+        "", "int ", "float ", "double ", "void ", "&", "*",
         "\nvoid ", "\n", "{\n", ";\n", "%>", "%<\n", "%>", 
         "%<}\n", "%<}\n", "", "(void)", "()",
         "if (fabs(%s) > %s)\n%>%s\n%<",

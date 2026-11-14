@@ -495,8 +495,20 @@ void PRINT_SDDOMMLDU(FILE *F,
         THEN
           CALL("%Adomm(routine)");        /* Compute new mass matrix if needed. */
           efprintf(F, "%{\nNumerically decompose the mass matrix\n%}");
-          CALL3("%Aldudcomp(%d,%d,mmap,%r,workss,works,%&mm,mlo,mdi)", 
-              SysI.s, SysI.s, cEquationNegligible);
+          /* workss, mm, and mlo are rank-2 fields. The library indexes
+           * them as flat arrays, so the address is passed as %t*. */
+          if (Lang == &ANSIC_language) {
+              if (gSinglePrecision) {
+                  CALL3("%Aldudcomp(%d,%d,mmap,%r,(float*)workss,works,(float*)%&mm,(float*)mlo,mdi)",
+                      SysI.s, SysI.s, cEquationNegligible);
+              } else {
+                  CALL3("%Aldudcomp(%d,%d,mmap,%r,(double*)workss,works,(double*)%&mm,(double*)mlo,mdi)",
+                      SysI.s, SysI.s, cEquationNegligible);
+              }
+          } else {
+              CALL3("%Aldudcomp(%d,%d,mmap,%r,workss,works,%&mm,mlo,mdi)",
+                  SysI.s, SysI.s, cEquationNegligible);
+          }
           efprintf(F, "%{\nCheck for singular mass matrix\n%}");
           FORCNT("100", "i", str_s);
             IFCOND efprintf(F, "mdi%(i%)%s%r", EQ, 0.0);

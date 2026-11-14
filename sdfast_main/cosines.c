@@ -1079,6 +1079,8 @@ void PRINT_SDDC2ANG(FILE *F)
       VT_DUP|VT_BYREF|VT_DSYM,          "a2",     &a2,
       VT_DUP|VT_BYREF|VT_DSYM,          "a3",     &a3,
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDDC2ANG_1;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1107,6 +1109,7 @@ void PRINT_SDDC2ANG(FILE *F)
     DISPOSE_EXPR(a3x);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDDC2ANG_1: ;
 }
 
 void PRINT_SDDC2QUAT(FILE *F)
@@ -1121,6 +1124,8 @@ void PRINT_SDDC2QUAT(FILE *F)
       VT_DUP|VT_BYREF|VT_DSYM,          "e3",     &e3,
       VT_DUP|VT_BYREF|VT_DSYM,          "e4",     &e4,
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDDC2QUAT_1;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1150,6 +1155,7 @@ void PRINT_SDDC2QUAT(FILE *F)
     DISPOSE_EXPR(e4x);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDDC2QUAT_1: ;
 }
 
 void PRINT_SDANG2DC(FILE *F)
@@ -1163,6 +1169,8 @@ void PRINT_SDANG2DC(FILE *F)
       VT_DUP|VT_DSYM,          "a3", &a3,
       VT_USER|VT_DSYM, &SysI.type_Mat,  "dircos", &dircos,
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDANG2DC_1;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1227,6 +1235,7 @@ void PRINT_SDANG2DC(FILE *F)
     DISPOSE_EXPR(UNUSE(sin3x));
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDANG2DC_1: ;
 }
 
 void PRINT_SDQUAT2DC(FILE *F)
@@ -1243,6 +1252,8 @@ void PRINT_SDQUAT2DC(FILE *F)
       VT_DUP,          "ie4",
       VT_USER, &SysI.type_Mat,  "dircos", 
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_SDQUAT2DC_1;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1297,6 +1308,7 @@ void PRINT_SDQUAT2DC(FILE *F)
     efprintf(F, "dircos%(%@d%,%@d%)%=%r-(%r*(e11+e22))%;\n",2,2,1.,2.);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDQUAT2DC_1: ;
 }
 
 /*
@@ -1330,6 +1342,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_VECTOR,       "ivec1",
       VT_DUP,          "ivec2",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_1;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0,
@@ -1347,12 +1361,15 @@ void PRINT_VECSUBS(FILE *F)
 
     FRETURN("%Avdot", "dprod");
     efprintf(F, Lang->proc_end_noret);
+    ansi_proto_PRINT_VECSUBS_1: ;
 
     /* SDVNORM() */
 
     declare_proc(F, DECL_FUNCTION, VT_REAL, "vnorm",
       VT_VECTOR,       "ivec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_2;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0,
@@ -1369,6 +1386,7 @@ void PRINT_VECSUBS(FILE *F)
 
     FRETURN("%Avnorm", "norm");
     efprintf(F, Lang->proc_end_noret);
+    ansi_proto_PRINT_VECSUBS_2: ;
 
     /* SDVCOPY() */
 
@@ -1376,6 +1394,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_VECTOR,       "ivec",
       VT_DUP,          "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_3;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1387,6 +1407,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=ivec%(%@d%)%;\n", i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_3: ;
 
     /* SDVSET() */
 
@@ -1396,6 +1417,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_DUP,               "sclr3",
       VT_VECTOR,       "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_4;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1408,6 +1431,7 @@ void PRINT_VECSUBS(FILE *F)
     efprintf(F, "ovec%(%@d%)%=sclr3%;\n", 2);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_4: ;
 
     /* SDVADD() */
 
@@ -1416,6 +1440,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_DUP,          "ivec2",
       VT_DUP,          "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_5;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1427,6 +1453,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=ivec1%(%@d%)+ivec2%(%@d%)%;\n", i, i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_5: ;
 
     /* SDVSUB() */
 
@@ -1435,6 +1462,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_DUP,          "ivec2",
       VT_DUP,          "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_6;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1446,6 +1475,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=ivec1%(%@d%)-ivec2%(%@d%)%;\n", i, i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_6: ;
 
     /* SDVMUL() */
 
@@ -1454,6 +1484,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_VECTOR,       "ivec",
       VT_VECTOR,       "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_7;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1465,6 +1497,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=sclr*ivec%(%@d%)%;\n", i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_7: ;
 
     /* SDVAXPY() */
 
@@ -1474,6 +1507,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_DUP,          "ivec2",
       VT_VECTOR,       "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_8;
 
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
@@ -1486,6 +1521,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=sclr*ivec1%(%@d%)+ivec2%(%@d%)%;\n", i, i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_8: ;
 
     /* SDVCROSS() */
 
@@ -1494,6 +1530,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_DUP,          "ivec2",
       VT_DUP,               "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_9;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1518,6 +1556,7 @@ void PRINT_VECSUBS(FILE *F)
         efprintf(F, "ovec%(%@d%)%=tempout%(%@d%)%;\n", i, i);
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_9: ;
 
     /* SDVROT() */
 
@@ -1527,6 +1566,8 @@ void PRINT_VECSUBS(FILE *F)
       VT_REAL,         "theta",
       VT_VECTOR,       "ovec",
       0);
+    if (ansi_proto_only)
+        goto ansi_proto_PRINT_VECSUBS_10;
 
     efprintf(F, Lang->proc_dbegin);
 
@@ -1590,4 +1631,5 @@ void PRINT_VECSUBS(FILE *F)
     CALL("%Avadd(ovec,uxisin,ovec)");
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_VECSUBS_10: ;
 }

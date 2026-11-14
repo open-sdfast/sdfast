@@ -17,6 +17,20 @@
 #include "sderror.h"
 #include "../calc/gencode.h"
 
+/* Nested braces for ANSI C initializers. Scalars stay unbraced.
+ * Other languages keep the flat list they have always emitted. */
+static void c_arr_open(FILE* F)
+{
+    if (Lang == &ANSIC_language)
+        efprintf(F, "{\n");
+}
+
+static void c_arr_close(FILE* F)
+{
+    if (Lang == &ANSIC_language)
+        efprintf(F, "},\n");
+}
+
 /* These declarations are for the fussy SGI compiler which
  * can't find these static routines otherwise.
  */
@@ -1499,55 +1513,76 @@ void init_sdgtopo(FILE *F,
 SysI.Grounded, SysI.n, SysI.s, SysI.nc, SysI.nl, SysI.sl, 
 SysI.nlc,SysI.nb,SysI.nlb,SysI.np,SysI.nu);
 
+    c_arr_open(F);
     for (k = 0; k < SysI.n+SysI.nl; k++) {
         if (k < SysI.n)
              jkind = SysI.Bodies[k].jnt.JointKind;
         else jkind = SysI.LoopConst[k-SysI.n].jnt.JointKind;
         efprintf(F, "%@Ljtype%(%@d%)%@M%d%@R", k, (int)jkind);
     }
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.n; i++)
         efprintf(F, "%@Linb%(%@d%)%@M%@d%@R", i, SysI.Bodies[i].jnt.InbBody);
     for (i = 0; i < SysI.nl; i++)
         efprintf(F, "%@Linb%(%@d%)%@M%@d%@R", SysI.n+i, 
             SysI.LoopConst[i].jnt.InbBody);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.n; i++)
         efprintf(F, "%@Loutb%(%@d%)%@M%@d%@R", i, SysI.Bodies[i].jnt.OutbBody);
     for (i = 0; i < SysI.nl; i++)
         efprintf(F, "%@Loutb%(%@d%)%@M%@d%@R", SysI.n+i, 
             SysI.LoopConst[i].jnt.OutbBody);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.nj; i++)
         efprintf(F, "%@Lnjntdof%(%@d%)%@M%d%@R", i, 
                         SysI.LastDOF[i]-SysI.FirstDOF[i]+1);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.n; i++)
         efprintf(F, "%@Lnjntc%(%@d%)%@M%d%@R", i, 0);
     for (i = 0; i < SysI.nl; i++)
         efprintf(F, "%@Lnjntc%(%@d%)%@M%d%@R", SysI.n+i, 
                                     6 - SysI.LoopConst[i].jnt.JointDOF);
+    c_arr_close(F);
+    c_arr_open(F);
     for (i = 0; i < SysI.n; i++)
         efprintf(F, "%@Lnjntp%(%@d%)%@M%d%@R", i, 
                                 SysI.Bodies[i].jnt.JointPres);
     for (i = 0; i < SysI.nl; i++)
         efprintf(F, "%@Lnjntp%(%@d%)%@M%d%@R", SysI.n+i, 
                                     SysI.LoopConst[i].jnt.JointPres);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.nj; i++)
         efprintf(F, "%@Lfirstq%(%@d%)%@M%@d%@R", i, SysI.FirstDOF[i]);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.nj; i++)
         efprintf(F, "%@Lballq%(%@d%)%@M%@d%@R", i, SysI.BallQ[i]);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.nj; i++)
         efprintf(F, "%@Lfirstm%(%@d%)%@M%@d%@R", i, 
             i < SysI.n ? -1 : SysI.FirstM[i-SysI.n]);
+    c_arr_close(F);
 
+    c_arr_open(F);
     for (i = 0; i < SysI.nj; i++)
         efprintf(F, "%@Lfirstp%(%@d%)%@M%@d%@R", i, SysI.PresM[i]);
+    c_arr_close(F);
 
     /* trans is always declared at least 1, so leave a space if necessary */
+    c_arr_open(F);
     if (SysI.nh) {
         for (i = 0; i < SysI.n; i++) {
             jntp = &SysI.Bodies[i].jnt;
@@ -1566,10 +1601,15 @@ SysI.nlc,SysI.nb,SysI.nlb,SysI.np,SysI.nu);
         }
     } else
         efprintf(F, "%@Ltrans%(%@d%)%@M%d%@R", 0, 0);
+    c_arr_close(F);
 
-    for (i = 0; i < SysI.nu; i++)
-        efprintf(F, "%@Lfirstu%(%@d%)%@M%@d%@R", i, 
-            SysI.Const[i].Mindex);
+    if (SysI.nu) {
+        c_arr_open(F);
+        for (i = 0; i < SysI.nu; i++)
+            efprintf(F, "%@Lfirstu%(%@d%)%@M%@d%@R", i,
+                SysI.Const[i].Mindex);
+        c_arr_close(F);
+    }
 
     efprintf(F, Lang->initblk_e);
 }
@@ -1593,6 +1633,7 @@ void init_sdginput(FILE *F,
     efprintf(F, "%{Model parameters from the input file%}");
 
     efprintf(F, "\n%{gravity%}");
+    c_arr_open(F);
     for (i = 0; i < 3; i++) {
         efprintf(F, "%@L");
         temp = VREF1(SysI.grav,i);
@@ -1602,8 +1643,10 @@ void init_sdginput(FILE *F,
         PRINT_E(F, INDX(SysI.grav_nom, i));
         efprintf(F, "%@R");
     }
+    c_arr_close(F);
 
     efprintf(F, "\n%{mass%}");
+    c_arr_open(F);
     for (k = 0; k < SysI.n; k++) {
         efprintf(F, "%@L");
         temp = VREF1(SysI.mk, k);
@@ -1613,10 +1656,14 @@ void init_sdginput(FILE *F,
         PRINT_E(F, INDX(SysI.mk_nom, k));
         efprintf(F, "%@R");
     }
+    c_arr_close(F);
 
     efprintf(F, "\n%{inertia%}");
-    for (k = 0; k < SysI.n; k++)
-        for (i = 0; i < 3; i++)
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
+        for (i = 0; i < 3; i++) {
+            c_arr_open(F);
             for (j = 0; j < 3; j++) {
                 efprintf(F, "%@L");
                 temp = INDX2(VREF1(SysI.ik,k), i,j);
@@ -1626,11 +1673,18 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX2(INDX(SysI.ik_nom,k), i, j));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
 
     efprintf(F, "\n%{tree hinge axis vectors%}");
+    c_arr_open(F);
     if (SysI.s)
         for (k = 0; k < SysI.n; k++)
-            for (i = SysI.FirstDOF[k]; i <= SysI.LastDOF[k]; i++)
+            for (i = SysI.FirstDOF[k]; i <= SysI.LastDOF[k]; i++) {
+                c_arr_open(F);
                 for (j = 0; j < 3; j++) {
                     efprintf(F, "%@L");
                     temp = INDX(VREF1(SysI.pin, i), j);
@@ -1640,7 +1694,10 @@ void init_sdginput(FILE *F,
                     PRINT_E(F, INDX11(SysI.pin_nom, i, j));
                     efprintf(F, "%@R");
                 }
-    else /* emit placeholder since pin is dimensioned at least 1 */
+                c_arr_close(F);
+            }
+    else { /* emit placeholder since pin is dimensioned at least 1 */
+        c_arr_open(F);
         for (j = 0; j < 3; j++) {
             efprintf(F, "%@L");
             temp = INDX(VREF1(SysI.pin, 0), j);
@@ -1648,9 +1705,14 @@ void init_sdginput(FILE *F,
             DISPOSE_EXPR(temp);
             efprintf(F, "%@M%r%@R", 0.0);
         }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
 
     efprintf(F, "\n%{tree bodytojoint vectors%}");
-    for (k = 0; k < SysI.n; k++)
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
         for (i = 0; i < 3; i++) {
             efprintf(F, "%@L");
             temp = INDX(VREF1(SysI.rk, k), i);
@@ -1660,9 +1722,14 @@ void init_sdginput(FILE *F,
             PRINT_E(F, INDX11(SysI.rk_nom, k, i));
             efprintf(F, "%@R");
         }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
 
     efprintf(F, "\n%{tree inbtojoint vectors%}");
-    for (k = 0; k < SysI.n; k++)
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
         for (i = 0; i < 3; i++) {
             efprintf(F, "%@L");
             temp = INDX(VREF1(SysI.ri, k), i);
@@ -1672,8 +1739,12 @@ void init_sdginput(FILE *F,
             PRINT_E(F, INDX11(SysI.ri_nom, k, i));
             efprintf(F, "%@R");
         }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
     
     efprintf(F, "\n%{tree prescribed motion%}");
+    c_arr_open(F);
     if (SysI.s)
         for (k = 0; k < SysI.s; k++) {
             efprintf(F, "%@L");
@@ -1692,6 +1763,7 @@ void init_sdginput(FILE *F,
         DISPOSE_EXPR(temp);
         efprintf(F, "%@M%r%@R", 0.0);
     }
+    c_arr_close(F);
 
     efprintf(F, "\n%{stabilization parameters%}");
     efprintf(F, "%@L");
@@ -1712,7 +1784,9 @@ void init_sdginput(FILE *F,
 
     if (SysI.nl) {
         efprintf(F, "\n%{loop first inboard pin vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.inbpin1, k), i);
@@ -1722,8 +1796,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.inbpin1_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop second inboard pin vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.inbpin2, k), i);
@@ -1733,8 +1812,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.inbpin2_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop third inboard pin vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.inbpin3, k), i);
@@ -1744,8 +1828,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.inbpin3_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop inboard reference vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.inbref, k), i);
@@ -1755,8 +1844,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.inbref_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop body pin vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.bodypin, k), i);
@@ -1766,8 +1860,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.bodypin_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop body reference vectors%}");
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.bodyref, k), i);
@@ -1777,9 +1876,14 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.bodyref_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
 
         efprintf(F, "\n%{loop bodytojoint vectors%}");
-        for (k = 0; k < SysI.nl; k++)
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.lbtj, k), i);
@@ -1789,8 +1893,13 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.lbtj_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         efprintf(F, "\n%{loop inbtojoint vectors%}");
-        for (k = 0; k < SysI.nl; k++)
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@L");
                 temp = INDX(VREF1(SysI.litj, k), i);
@@ -1800,8 +1909,12 @@ void init_sdginput(FILE *F,
                 PRINT_E(F, INDX11(SysI.litj_nom, k, i));
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
         
         efprintf(F, "\n%{loop prescribed motion%}");
+        c_arr_open(F);
         if (SysI.sl) {
             for (k = 0; k < SysI.sl; k++) {
                 efprintf(F, "%@L");
@@ -1820,6 +1933,7 @@ void init_sdginput(FILE *F,
             DISPOSE_EXPR(temp);
             efprintf(F, "%@M%r%@R", 0.0);
         }
+        c_arr_close(F);
 
     }
 
@@ -1833,6 +1947,7 @@ void init_sdginput(FILE *F,
     efprintf(F, "%@Lwwflg%@M0%@R");
     efprintf(F, "%@Lltauflg%@M0%@R");
     efprintf(F, "%@Lfs0flg%@M0%@R");
+    c_arr_open(F);
     if (SysI.s)
         for (i = 0; i < SysI.s; i++) {
             efprintf(F, "%@Lmmap%(%@d%)",i);
@@ -1845,55 +1960,87 @@ void init_sdginput(FILE *F,
         efprintf(F, "%@M%@d",0);
         efprintf(F, "%@R");
     }
+    c_arr_close(F);
 
     efprintf(F, "\n%{Which parameters were \"?\" (1) or \"<nominal>?\" (3)%}");
 
+    c_arr_open(F);
     for (i = 0; i < 3; i++) {
         efprintf(F, "%@Lgravq%(%@d%)",i);
         efprintf(F, "%@M%d",SysI.GravFlg[i]);
         efprintf(F, "%@R");
     }
+    c_arr_close(F);
+    c_arr_open(F);
     for (k = 0; k < SysI.n; k++) {
         efprintf(F, "%@Lmkq%(%@d%)",k);
         efprintf(F, "%@M%d",SysI.Bodies[k].MassFlg);
         efprintf(F, "%@R");
     }
-    for (k = 0; k < SysI.n; k++)
-        for (i = 0; i < 3; i++)
+    c_arr_close(F);
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
+        for (i = 0; i < 3; i++) {
+            c_arr_open(F);
             for (j = 0; j < 3; j++) {
                 efprintf(F, "%@Likq%(%@d%,%@d%,%@d%)",k,i,j);
                 efprintf(F, "%@M%d",SysI.Bodies[k].InerFlg[i][j]);
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
 
+    c_arr_open(F);
     if (SysI.s) 
         for (k = 0; k < SysI.n; k++)
-            for (i = SysI.FirstDOF[k]; i <= SysI.LastDOF[k]; i++)
+            for (i = SysI.FirstDOF[k]; i <= SysI.LastDOF[k]; i++) {
+                c_arr_open(F);
                 for (j = 0; j < 3; j++) {
                     efprintf(F, "%@Lpinq%(%@d%,%@d%)",i,j);
                     efprintf(F, "%@M%d",
                         SysI.Bodies[k].jnt.PinFlg[i-SysI.FirstDOF[k]][j]);
                     efprintf(F, "%@R");
                 }
-    else /* emit placeholder since pinq is dimensioned 1 */
+                c_arr_close(F);
+            }
+    else { /* emit placeholder since pinq is dimensioned 1 */
+        c_arr_open(F);
         for (j = 0; j < 3; j++) {
             efprintf(F, "%@Lpinq%(%@d%,%@d%)",0,j);
             efprintf(F, "%@M%d", 0);
             efprintf(F, "%@R");
         }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
 
-    for (k = 0; k < SysI.n; k++)
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
         for (i = 0; i < 3; i++) {
             efprintf(F, "%@Lrkq%(%@d%,%@d%)",k,i);
             efprintf(F, "%@M%d",SysI.Bodies[k].jnt.BtjFlg[i]);
             efprintf(F, "%@R");
         }
-    for (k = 0; k < SysI.n; k++)
+        c_arr_close(F);
+    }
+    c_arr_close(F);
+    c_arr_open(F);
+    for (k = 0; k < SysI.n; k++) {
+        c_arr_open(F);
         for (i = 0; i < 3; i++) {
             efprintf(F, "%@Lriq%(%@d%,%@d%)",k,i);
             efprintf(F, "%@M%d",SysI.Bodies[k].jnt.ItjFlg[i]);
             efprintf(F, "%@R");
         }
+        c_arr_close(F);
+    }
+    c_arr_close(F);
+    c_arr_open(F);
     if (SysI.s)
         for (k = 0; k < SysI.n; k++)
             for (i = SysI.FirstDOF[k]; i <= SysI.LastDOF[k]; i++) {
@@ -1907,6 +2054,7 @@ void init_sdginput(FILE *F,
         efprintf(F, "%@M%d", 0);
         efprintf(F, "%@R");
     }
+    c_arr_close(F);
     efprintf(F, "%@Lstabvelq");
     efprintf(F, "%@M%d",SysI.StabVelFlg);
     efprintf(F, "%@R");
@@ -1915,54 +2063,95 @@ void init_sdginput(FILE *F,
     efprintf(F, "%@R");
 
     if (SysI.nl) {
-        for (k = 0; k < SysI.nl; k++) 
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Linbpin1q%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[INBPIN1][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Linbpin2q%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[INBPIN2][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Linbpin3q%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[INBPIN3][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Linbrefq%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[INBREF][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Lbodypinq%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[BODYPIN][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Lbodyrefq%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.PinFlg[BODYREF][i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Llbtjq%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.BtjFlg[i]);
                 efprintf(F, "%@R");
             }
-        for (k = 0; k < SysI.nl; k++) 
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
+        for (k = 0; k < SysI.nl; k++) {
+            c_arr_open(F);
             for (i = 0; i < 3; i++) {
                 efprintf(F, "%@Llitjq%(%@d%,%@d%)",k,i);
                 efprintf(F, "%@M%d",SysI.LoopConst[k].jnt.ItjFlg[i]);
                 efprintf(F, "%@R");
             }
+            c_arr_close(F);
+        }
+        c_arr_close(F);
+        c_arr_open(F);
         if (SysI.sl)
             for (k = SysI.n; k < SysI.nj; k++)
                 for (i = SysI.FirstDOF[k]; i<=SysI.LastDOF[k]; i++) {
@@ -1975,6 +2164,37 @@ void init_sdginput(FILE *F,
             /* emit placeholder since lpresq is dimensioned 1 */
             efprintf(F, "%@Llpresq%(%@d%)", 0);
             efprintf(F, "%@M%d%@R", 0);
+        }
+        c_arr_close(F);
+    }
+
+    /* The fields after stabposq are left uninitialized on purpose and
+     * were implicit zeros. ANSI C warns about the missing initializer,
+     * so write the same zeros explicitly. Other languages are unchanged. */
+    if (Lang == &ANSIC_language) {
+        efprintf(F, "%@Lmtot%@M%r%@R", 0.0);
+        efprintf(F, "%@Lpsmkg%@M%r%@R", 0.0);
+        efprintf(F, "%@Lrhead%@M{{0}}%@R");
+        efprintf(F, "%@Lrcom%@M{{0}}%@R");
+        efprintf(F, "%@Lmkrcomt%@M{{{0}}}%@R");
+        efprintf(F, "%@Lpsikg%@M{{0}}%@R");
+        efprintf(F, "%@Lpsrcomg%@M{0}%@R");
+        efprintf(F, "%@Lpsrkg%@M{0}%@R");
+        efprintf(F, "%@Lpsrig%@M{0}%@R");
+        efprintf(F, "%@Lpsmk%@M{0}%@R");
+        efprintf(F, "%@Lpsik%@M{{{0}}}%@R");
+        efprintf(F, "%@Lpsrcom%@M{{0}}%@R");
+        efprintf(F, "%@Lpsrk%@M{{0}}%@R");
+        efprintf(F, "%@Lpsri%@M{{0}}%@R");
+        if (SysI.nl) {
+            efprintf(F, "%@Lipin%@M{{0}}%@R");
+            efprintf(F, "%@Lipin2%@M{{0}}%@R");
+            efprintf(F, "%@Liref%@M{{0}}%@R");
+            efprintf(F, "%@Liperp%@M{{0}}%@R");
+            efprintf(F, "%@Lopin%@M{{0}}%@R");
+            efprintf(F, "%@Loref%@M{{0}}%@R");
+            efprintf(F, "%@Loperp%@M{{0}}%@R");
+            efprintf(F, "%@Lghand%@M{0}%@R");
         }
     }
 

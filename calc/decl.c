@@ -17,6 +17,58 @@
 #include "decl.h"
 #include "calcprot.h"
 
+FILE* ansi_c_header = NULL;
+int ansi_proto_only = 0;
+int ansi_fn_depth = 0;
+
+/* Parameter and local names for ANSI C `(void)name;` uses.
+ * Casts are written just before the function's closing brace so they
+ * stay after every declaration (C89 still accepts that). */
+#define ANSI_NAME_MAX 256
+static char ansi_param_names[ANSI_NAME_MAX][64];
+static int ansi_param_count;
+static char ansi_local_names[ANSI_NAME_MAX][64];
+static int ansi_local_count;
+
+static int ansi_ident(const char* name)
+{
+    unsigned char c;
+
+    if (!name)
+        return 0;
+    c = (unsigned char)name[0];
+    if (!(c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+        return 0;
+    for (name++; *name; name++) {
+        c = (unsigned char)*name;
+        if (!(c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+              (c >= '0' && c <= '9')))
+            return 0;
+    }
+    return 1;
+}
+
+static void ansi_store(char names[][64], int* count, const char* name)
+{
+    if (!ansi_ident(name) || *count >= ANSI_NAME_MAX)
+        return;
+    strncpy(names[*count], name, 63);
+    names[*count][63] = '\0';
+    (*count)++;
+}
+
+void ansi_flush_voids(FILE* F)
+{
+    int i;
+
+    for (i = 0; i < ansi_param_count; i++)
+        fprintf(F, "(void)%s;\n", ansi_param_names[i]);
+    for (i = 0; i < ansi_local_count; i++)
+        fprintf(F, "(void)%s;\n", ansi_local_names[i]);
+    ansi_param_count = 0;
+    ansi_local_count = 0;
+}
+
 static char *
 skip_decl(unsigned    vtype,
           va_list     *argptr,
@@ -401,16 +453,49 @@ VT_PAUSE may not be used.  decl_flags may specify:
 The proc_name is output preceded by the external name prefix.
 */
 
+static void declare_proc_va(FILE* F, unsigned decl_flags, va_list* argptr);
+
 /*VARARGS*/
 void 
 declare_proc(FILE *F, unsigned decl_flags, ...)
 {
     va_list     argptr;
+
+    if (ansi_proto_only && Lang == &ANSIC_language)
+        decl_flags |= DECL_FORWARD;
+
+    /* Fortran and the other non-prototype languages keep the original
+     * path, including the va_start restart below. ANSI C shares one
+     * formatter (declare_proc_va) for the definition and the header. */
+    if (!(Lang->flags & LANG_DECL_IN_ARGLIST) || Lang != &ANSIC_language) {
+        va_start(argptr, decl_flags);
+        goto legacy;
+    }
+
+    va_start(argptr, decl_flags);
+    ansi_param_count = 0;
+    ansi_local_count = 0;
+    if (ansi_c_header && ansi_c_header != F && !(decl_flags & DECL_FORWARD)) {
+        va_list copy;
+        int saved_lev = lexlev;
+
+        /* Header prototypes stay at column 0 even if the definition
+         * is emitted from inside an indented block. */
+        lexlev = 0;
+        va_copy(copy, argptr);
+        declare_proc_va(ansi_c_header, decl_flags | DECL_FORWARD, &copy);
+        va_end(copy);
+        lexlev = saved_lev;
+    }
+    declare_proc_va(F, decl_flags, &argptr);
+    va_end(argptr);
+    return;
+
+legacy:
+    {
     unsigned    vtype, ftype = 0;
     char        *pname;
     packedvar_t *pvar = NULL;
-
-    va_start(argptr, decl_flags);
     if (Lang == &ADSIM_language)
         Lang = &ADSIM_language_decl;  /* special mode for commented out decls */
 
@@ -521,6 +606,66 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
     if (decl_flags & DECL_PACKED)
         free_packedvars();
     va_end(argptr);
+    }
+}
+
+/* ANSI C half of declare_proc. The signature text comes from
+ * do_declare_vars1, the same routine that writes the definition. */
+static void declare_proc_va(FILE* F, unsigned decl_flags, va_list* argptr)
+{
+    unsigned    vtype, ftype = 0;
+    char*       pname;
+    packedvar_t* pvar = NULL;
+
+    if (Lang == &ADSIM_language)
+        Lang = &ADSIM_language_decl;
+
+    if (decl_flags & DECL_FUNCTION) {
+        ftype = va_arg(*argptr, unsigned);
+        if (Lang->flags & LANG_C_FAMILY) {
+            if ((ftype & VT_BASETYPE) == VT_INTEGER)
+                efprintf(F, Lang->int_decl);
+            else if ((ftype & VT_BASETYPE) == VT_REAL)
+                efprintf(F, "%t");
+            else {
+                fprintf(stderr, "declare_proc: bad function type %#x\n", ftype);
+                abort();
+            }
+        }
+    }
+    pname = va_arg(*argptr, char*);
+    efprintf(F, "%s%@A%s%>",
+      decl_flags & DECL_FUNCTION ? Lang->func_decl : Lang->proc_decl,
+      pname);
+
+    vtype = GETPVAR(argptr, decl_flags, &pvar);
+    if (vtype) {
+        efprintf(F, "(");
+        if (Lang->flags & LANG_DECL2)
+            do_declare_vars2(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+        else
+            do_declare_vars1(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+        efprintf(F, ")\n");
+    } else {
+        efprintf(F, "%s", Lang->proc_noargs_decl);
+        if (!(Lang->flags & LANG_DECL2))
+            efprintf(F, "\n");
+    }
+
+    if (decl_flags & DECL_FUNCTION && Lang->flags & LANG_DECL2)
+        efprintf(F, ": ");
+    if (decl_flags & DECL_FORWARD)
+        efprintf(F, "%<%s", Lang->proc_decl_fwd);
+    else {
+        efprintf(F, "%<%s", Lang->proc_decl_end);
+        if (Lang == &ANSIC_language)
+            ansi_fn_depth = 1;
+    }
+
+    if (Lang == &ADSIM_language_decl)
+        Lang = &ADSIM_language;
+    if (decl_flags & DECL_PACKED)
+        free_packedvars();
 }
 
 /* declare_type(F, decl_flags, {user_type, type_declaration} ... , NULL)
@@ -788,6 +933,14 @@ do_declare_vars1(FILE            *F,
         }
 
         if (vname) {
+            if (Lang == &ANSIC_language && prt
+                && !(decl_flags & (DECL_STRUCT|DECL_EXTERN|DECL_GLOBAL|
+                                   DECL_FORWARD|DECL_NOPRINT|DECL_INIT))) {
+                if (formal)
+                    ansi_store(ansi_param_names, &ansi_param_count, vname);
+                else if (ansi_fn_depth)
+                    ansi_store(ansi_local_names, &ansi_local_count, vname);
+            }
             if (first_name)
                 first_name = 0;
             else if (prt)

@@ -102,6 +102,14 @@ contiguous.
 static int linepos, cmtmode, stmt_lexlev;
 int lexlev;
 static FILE *stream;
+
+void efprintf_reset_state(void)
+{
+    linepos = 0;
+    cmtmode = 0;
+    stmt_lexlev = 0;
+    lexlev = 0;
+}
 static char *output_str;
 
 /* CMT_MODE
@@ -185,6 +193,16 @@ do_eprintf(
                 lexlev++;
                 break;
             case '<':
+                /* Function close is "%<}" once the body indent is back
+                 * at the function level. Write (void) uses first. */
+                /* Function close is "%<}\n". A struct close is "%<} name;"
+                 * and must not receive the (void) uses. */
+                if (ansi_fn_depth && lexlev <= 1 &&
+                    fmt[0] == '}' && (fmt[1] == '\n' || fmt[1] == '\0')) {
+                    ansi_fn_depth = 0;
+                    ansi_flush_voids(stream);
+                    linepos = 0;
+                }
                 lexlev--;
                 break;
             case '&':
