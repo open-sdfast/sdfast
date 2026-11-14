@@ -470,9 +470,11 @@ int test_sdfast_example(const test_program& t,
     }
     const std::string cc = SDFAST_C_COMPILER;
     std::vector<std::string> uargs;
+    /* cl is started with cwd = build_dir, so the source name is the
+     * leaf. A path relative to the test binary's directory is not found. */
     if (compiler_is_msvc(cc))
       uargs = {"/nologo", "/std:c17", "/W4", "/WX", "/TC", "/c",
-               user_tu.string()};
+               user_tu.filename().string()};
     else
       uargs = {"-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-c",
                user_tu.filename().string(), "-o", "defs_user.o"};
