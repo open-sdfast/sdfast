@@ -22,7 +22,7 @@ CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure,
 
 ### Generated C
 
-`-lc` writes ANSI C. `-gh` (also included in `-ge`) writes one user header, `{basename}_defs.h`, on every platform (there is no short Windows name). The dynamics file, the analysis file, and any `-b` auxiliary files include it. `{prefix}lib.c` does not include a header, and no `{prefix}lib.h` is written.
+`-lc` writes ANSI C. The default generation set is `dish`: dynamics, information, analysis, and one user header, `{basename}_defs.h`, on every platform (there is no short Windows name). The header is emitted only for ANSI C. The dynamics file, the analysis file, and any `-b` auxiliary files include it. `{prefix}lib.c` does not include a header, and no `{prefix}lib.h` is written.
 
 `{basename}_defs.h` declares the public dynamics and analysis routines, the user routines this model calls, and every public library routine (integrator, root finder, LU/QR helpers, and the rest), with the `-p` prefix and the selected precision. It also `#define`s the model sizes as integer constant expressions (`SD_NQ`, `SD_NU`, `SD_NBOD`, `SD_NC`, `SD_NUSERC`, `SD_NPRESC`, and the other counts reported by the information file and `sdgtopo`). The macro prefix is the uppercased `-p` prefix, so `-p xx` produces `XX_NQ`. Two models in one program need distinct `-p` prefixes.
 

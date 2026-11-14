@@ -36,7 +36,7 @@ options_t sdfast_optdef = {
     /*geninfo*/         1,
     /*gensar*/          1,
     /*genlib*/          0,
-    /*genhdr*/          0,
+    /*genhdr*/          1,
     /*dynname*/         OPT_STRDEFAULT, /* construct from basename */
     /*infoname*/        OPT_STRDEFAULT, /* construct from basename */
     /*sarname*/         OPT_STRDEFAULT, /* construct from basename */
@@ -64,7 +64,7 @@ usage: %s [-sdknvb] [-l language] [-p prefix] [-g dishle] [infile [basename]]\n\
        -l  Specify output language: fortran, c\n\
        -p  Specify prefix to be used for all generated external symbol names\n\
        -g  Letters to generate: d dyn, i info, s sar, l lib, h header,\n\
-           e everything (default: dis)\n\
+           e everything (default: dish)\n\
    infile  Input File name\n\
  basename  Base to use in forming output file names\n");
 
@@ -102,7 +102,7 @@ void parse_cmdline(int argc,
     sdfast_opt.geninfo     =        OPT_DEFAULT;
     sdfast_opt.gensar      =        OPT_DEFAULT;
     sdfast_opt.genlib      =        OPT_DEFAULT;
-    sdfast_opt.genhdr      =        0;
+    sdfast_opt.genhdr      =        OPT_DEFAULT;
     sdfast_opt.dynname     =        OPT_STRDEFAULT;
     sdfast_opt.infoname    =        OPT_STRDEFAULT;
     sdfast_opt.sarname     =        OPT_STRDEFAULT;
@@ -308,8 +308,7 @@ void parse_cmdline(int argc,
                         }
                         break;
                     case 'h': case 'H':
-                        /* Secret filename override. -gh is the documented
-                         * switch; this also turns the header on. */
+                        /* Secret filename override. Also turns the header on. */
                         sdfast_opt.genhdr = 1;
                         if (arg[2])
                             sdfast_opt.hdrname = arg + 2;
@@ -357,7 +356,8 @@ void parse_cmdline(int argc,
      * verbosity to full blast.
      */
     if (sdfast_opt.infile == OPT_STRDEFAULT && 
-        (sdfast_opt.gendyn || sdfast_opt.geninfo || sdfast_opt.gensar))
+        (sdfast_opt.gendyn || sdfast_opt.geninfo || sdfast_opt.gensar
+         || sdfast_opt.genhdr))
         sdfast_opt.verbose = 2;
 
 /*XXX dump_options(stderr, "command line", &sdfast_opt); */
@@ -388,7 +388,7 @@ GET_INPUTS(SystemInfo_t *sys)
      */
 
     needinfile = !(sdfast_opt.gendyn==0 && sdfast_opt.geninfo==0 
-                   && sdfast_opt.gensar==0);
+                   && sdfast_opt.gensar==0 && sdfast_opt.genhdr==0);
     if (sdfast_opt.infile == OPT_STRDEFAULT && needinfile) {
         printf("System description file: ");
         READSTR(stdin, 127, InFname);
@@ -443,9 +443,11 @@ GET_INPUTS(SystemInfo_t *sys)
         sdfast_opt.gensar = sdfast_optdef.gensar;
     if (sdfast_opt.genlib == OPT_DEFAULT)
         sdfast_opt.genlib = sdfast_optdef.genlib;
+    if (sdfast_opt.genhdr == OPT_DEFAULT)
+        sdfast_opt.genhdr = sdfast_optdef.genhdr;
 
     if (!(sdfast_opt.gendyn || sdfast_opt.geninfo 
-          || sdfast_opt.gensar || sdfast_opt.genlib))
+          || sdfast_opt.gensar || sdfast_opt.genlib || sdfast_opt.genhdr))
         fprintf(stderr, "Warning: no output files will be generated\n");
 
     /* Generate the output file names if needed.  
@@ -478,8 +480,10 @@ GET_INPUTS(SystemInfo_t *sys)
                 Lang->file_suffix,LibFname);
         sdfast_opt.libname = LibFname;
     }
-    /* {basename}_defs.h when -gh (or -ge) asks for it. -fh overrides
-     * the path. The name is not given a short Windows suffix. */
+    /* {basename}_defs.h when the header is requested. It is in the
+     * default set (dish); -gh and -ge request it explicitly. -fh
+     * overrides the path. Only languages with LANG_MODEL_HEADER
+     * emit it. The name is not given a short Windows suffix. */
     if ((Lang->flags & LANG_MODEL_HEADER) &&
         sdfast_opt.genhdr &&
         sdfast_opt.basename &&

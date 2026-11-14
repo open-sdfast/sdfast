@@ -13,7 +13,7 @@ ctest --test-dir build --output-on-failure
 
 `SDFAST_WARNINGS_AS_ERRORS` defaults on, so that configure line builds the generator and `sdfast_tests` with `-Werror` or `/WX`. Generated `sdlib` and dynamics files are compiled by the tests and are not under that flag. Pass `-DSDFAST_WARNINGS_AS_ERRORS=OFF` to turn it off.
 
-`-lc -gh` (and `-lc -ge`) writes `{basename}_defs.h` (same name on Windows). That header is part of the C golden comparison. It is the only generated header: there is no `sdlib.h`, and `sdlib.c` includes nothing. Size macros in the header use the uppercased `-p` prefix (`SD_NQ`, `SD_NU`). Two models in one program need distinct prefixes. The sphere build test compiles a translation unit that includes only `sphere_defs.h`, sizes arrays with `SD_NQ` / `SD_NU`, and calls library routines, under the strict C17 warning set. The generated `.c` files themselves stay on the historical compile (`-std=gnu89`, or `cl /TC` without `/WX`).
+`-lc` writes `{basename}_defs.h` by default (the default set is `dish`; same name on Windows). `-ge` includes it as well. That header is part of the C golden comparison. It is the only generated header: there is no `sdlib.h`, and `sdlib.c` includes nothing. Size macros in the header use the uppercased `-p` prefix (`SD_NQ`, `SD_NU`). Two models in one program need distinct prefixes. The sphere build test compiles a translation unit that includes only `sphere_defs.h`, sizes arrays with `SD_NQ` / `SD_NU`, and calls library routines, under the strict C17 warning set. The generated `.c` files themselves stay on the historical compile (`-std=gnu89`, or `cl /TC` without `/WX`).
 
 `ctest` runs four tests:
 
