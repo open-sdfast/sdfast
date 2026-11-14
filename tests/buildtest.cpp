@@ -206,7 +206,46 @@ int test_sdfast_example(const test_program& t,
   // Compile + Link
 
   std::vector<std::string> args;
-  if (t.lang == "c") {
+  if (t.lang == "c" && base == "sphere") {
+    // sphere.c is C17 and is held to the same warnings as the generator.
+    // Generated files still use implicit declarations, so they stay gnu89.
+    const std::string cc = SDFAST_C_COMPILER;
+    if (compiler_is_msvc(cc)) {
+      args = {"/nologo", "/std:c17", "/W4", "/WX", "/TC", "/c",
+              "/Fosphere.obj", driver_path.string()};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+      for (const std::string& src : {dyn, sar, sdlib}) {
+        args = {"/nologo", "/TC", "/c", src};
+        if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+          return EXIT_FAILURE;
+      }
+      std::string dyn_obj = std::filesystem::path(dyn).stem().string() + ".obj";
+      std::string sar_obj = std::filesystem::path(sar).stem().string() + ".obj";
+      args = {"/nologo", "/Fe:sphere.exe", "sphere.obj", dyn_obj, sar_obj,
+              "sdlib.obj"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+    } else {
+      args = {"-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror",
+              "-c", driver_path.string(), "-o", "sphere.o"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+      args = {"-std=gnu89", "-c", dyn, "-o", "sphere_dyn.o"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+      args = {"-std=gnu89", "-c", sar, "-o", "sphere_sar.o"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+      args = {"-std=gnu89", "-c", sdlib, "-o", "sdlib.o"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+      args = {"-o", base, "sphere.o", "sphere_dyn.o", "sphere_sar.o", "sdlib.o",
+              "-lm"};
+      if (run_program(cc, args, build_dir.string()) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+    }
+  } else if (t.lang == "c") {
     args = {"-std=gnu89", driver_path.string(), dyn, sar, sdlib, "-lm", "-o",
             base};
 
@@ -280,19 +319,21 @@ int test_sdfast_example(const test_program& t,
 
 int build_test() {
 
-  // cl.exe does not accept the gcc/gfortran flags this driver uses.
-  // Golden comparison still runs on MSVC; the fbar numeric test invokes cl
-  // with its own command line.
-  if (compiler_is_msvc(SDFAST_C_COMPILER)) {
-    std::cout << "[SKIP] example compile test on MSVC "
-                 "(gcc-style flags). Golden and fbar numeric tests still run.\n";
-    return EXIT_SUCCESS;
-  }
-
   std::filesystem::path project_root = SDFAST_SOURCE_DIR;
 
   std::filesystem::path sdfast_bin = SDFAST_BIN_PATH;
   std::filesystem::path sdfast_examples = project_root / "examples";
+
+  // cl.exe does not accept the gcc/gfortran flags the other examples use.
+  // sphere.c is C17 and is compiled with /W4 /WX. Golden comparison still
+  // runs on MSVC; the fbar numeric test invokes cl itself.
+  if (compiler_is_msvc(SDFAST_C_COMPILER)) {
+    test_program sphere = {"c", "sphere", "sphere.c"};
+    int rc = test_sdfast_example(sphere, sdfast_examples, sdfast_bin);
+    std::cout << "[SKIP] other example compile tests on MSVC "
+                 "(gcc-style flags).\n";
+    return rc;
+  }
 
   std::vector<test_program> test_programs = {
 
