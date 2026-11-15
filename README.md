@@ -28,6 +28,15 @@ CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure,
 
 `SD_NU` is the number of rate coordinates (the information file's `nu` line). User constraints are `SD_NUSERC` (the `nuserc` line). `-s` prototypes use `float`; the default precision uses `double`.
 
+### Note from Sherm 20261114
+
+Version 2.1 is now available. The main update is that both the source code and 
+generated code compile without warnings in C17. A header file is generated and is now
+required. If your basename is foo (typically because you started with foo.sd)
+then the header file is foo_defs.h. All the generated files include it and
+your driver program should also include it. Macros for all the various system
+size constants are in the header along with function prototypes.
+
 ### Note from Sherm 20260412
 
 Thanks to @esba1ley for adding Mac support and @DonyDominic for a first crack at CI.
