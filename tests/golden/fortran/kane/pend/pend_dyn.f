@@ -1,6 +1,6 @@
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
 C
 C ROADMAP (pend.sd)
@@ -363,7 +363,7 @@ C
 C Compute kinematic information and store it in sdgstate.
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       DOUBLE PRECISION GRAV(3),MK(1),IK(1,3,3),PIN(1,3)
       DOUBLE PRECISION RK(1,3),RI(1,3),PRES(1),STABVEL,STABPOS
@@ -1876,7 +1876,7 @@ C
 C
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       DOUBLE PRECISION GRAV(3),MK(1),IK(1,3,3),PIN(1,3)
       DOUBLE PRECISION RK(1,3),RI(1,3),PRES(1),STABVEL,STABPOS
@@ -3169,7 +3169,7 @@ C
 C
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       DOUBLE PRECISION GRAV(3),MK(1),IK(1,3,3),PIN(1,3)
       DOUBLE PRECISION RK(1,3),RI(1,3),PRES(1),STABVEL,STABPOS
@@ -3269,7 +3269,7 @@ C
 C Compute system linear and angular momentum, and kinetic energy.
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       DOUBLE PRECISION GRAV(3),MK(1),IK(1,3,3),PIN(1,3)
       DOUBLE PRECISION RK(1,3),RI(1,3),PRES(1),STABVEL,STABPOS
@@ -3344,7 +3344,7 @@ C Compute system total mass, and instantaneous center of mass and
 C inertia matrix.
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       DOUBLE PRECISION GRAV(3),MK(1),IK(1,3,3),PIN(1,3)
       DOUBLE PRECISION RK(1,3),RI(1,3),PRES(1),STABVEL,STABPOS

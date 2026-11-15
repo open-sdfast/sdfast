@@ -2,7 +2,7 @@
 #define SDFAST_SD_FBAR_DEFS_H
 /*
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 Public declarations for this model. This is the header to include
 from user code. Single-precision (-s) prototypes use float.
 */

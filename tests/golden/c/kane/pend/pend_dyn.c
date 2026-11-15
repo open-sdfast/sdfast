@@ -1,6 +1,6 @@
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 
 
 ROADMAP (pend.sd)
@@ -612,7 +612,7 @@ void sdstate(double timein,
 Compute kinematic information and store it in sdgstate.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     int i,j,qchg,uchg;
 
@@ -1204,7 +1204,7 @@ void sdrhs(void)
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
 /*
@@ -1779,7 +1779,7 @@ void sdreac(double force[1][3],
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
     if (roustate != 3) {
@@ -1822,7 +1822,7 @@ void sdmom(double lm[3],
 Compute system linear and angular momentum, and kinetic energy.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double lk[1][3],hnk[1][3];
 
@@ -1859,7 +1859,7 @@ Compute system total mass, and instantaneous center of mass and
 inertia matrix.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double ikcnkt[1][3][3];
 
