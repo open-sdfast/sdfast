@@ -19,58 +19,6 @@
 
 FILE* model_header = NULL;
 int proto_only = 0;
-int fn_depth = 0;
-
-/* Parameter and local names for ANSI C `(void)name;` uses.
- * Casts are written just before the function's closing brace so they
- * stay after every declaration (C89 still accepts that). */
-#define ANSI_NAME_MAX 256
-static char ansi_param_names[ANSI_NAME_MAX][64];
-static int ansi_param_count;
-static char ansi_local_names[ANSI_NAME_MAX][64];
-static int ansi_local_count;
-
-static int ansi_ident(const char* name)
-{
-    unsigned char c;
-
-    if (!name)
-        return 0;
-    c = (unsigned char)name[0];
-    if (!(c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
-        return 0;
-    for (name++; *name; name++) {
-        c = (unsigned char)*name;
-        if (!(c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-              (c >= '0' && c <= '9')))
-            return 0;
-    }
-    return 1;
-}
-
-static void ansi_store(char names[][64], int* count, const char* name)
-{
-    if (!ansi_ident(name) || *count >= ANSI_NAME_MAX)
-        return;
-    strncpy(names[*count], name, 63);
-    names[*count][63] = '\0';
-    (*count)++;
-}
-
-void flush_unused(FILE* F)
-{
-    int i;
-    const char* fmt = Lang->unused_use;
-
-    if (fmt && fmt[0]) {
-        for (i = 0; i < ansi_param_count; i++)
-            fprintf(F, fmt, ansi_param_names[i]);
-        for (i = 0; i < ansi_local_count; i++)
-            fprintf(F, fmt, ansi_local_names[i]);
-    }
-    ansi_param_count = 0;
-    ansi_local_count = 0;
-}
 
 static char *
 skip_decl(unsigned    vtype,
@@ -478,8 +426,6 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
     }
 
     va_start(argptr, decl_flags);
-    ansi_param_count = 0;
-    ansi_local_count = 0;
     if ((Lang->flags & LANG_MODEL_HEADER) &&
         model_header && model_header != F && !(decl_flags & DECL_FORWARD)) {
         va_list copy;
@@ -678,8 +624,6 @@ static void declare_proc_va(FILE* F, unsigned decl_flags, va_list* argptr)
         efprintf(F, "%<%s", Lang->proc_decl_fwd);
     else {
         efprintf(F, "%<%s", Lang->proc_decl_end);
-        if (Lang->unused_use && Lang->unused_use[0])
-            fn_depth = 1;
     }
 
     if (Lang == &ADSIM_language_decl)
@@ -953,14 +897,6 @@ do_declare_vars1(FILE            *F,
         }
 
         if (vname) {
-            if (Lang->unused_use && Lang->unused_use[0] && prt
-                && !(decl_flags & (DECL_STRUCT|DECL_EXTERN|DECL_GLOBAL|
-                                   DECL_FORWARD|DECL_NOPRINT|DECL_INIT))) {
-                if (formal)
-                    ansi_store(ansi_param_names, &ansi_param_count, vname);
-                else if (fn_depth)
-                    ansi_store(ansi_local_names, &ansi_local_count, vname);
-            }
             if (first_name)
                 first_name = 0;
             else if (prt)

@@ -15,6 +15,17 @@ No  Name      body Joint type  Coords q
 #include <math.h>
 #include <stdio.h>
 #include "pend_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int ground_,nbod_,ndof_,ncons_,nloop_,nldof_,nloopc_,nball_,nlball_,npres_,
@@ -547,11 +558,6 @@ Initialization routine
         sdseterr(7,41);
     }
     roustate = 1;
-(void)sumsq;
-(void)norminv;
-(void)i;
-(void)j;
-(void)k;
 }
 
 /* Convert state to form using 1-2-3 Euler angles for ball joints. */
@@ -564,9 +570,6 @@ void sdst2ang(double st[1],
     for (i = 0; i < 1; i++) {
         stang[i] = st[i];
     }
-(void)st;
-(void)stang;
-(void)i;
 }
 
 /* Convert 1-2-3 form of state back to Euler parameters for ball joints. */
@@ -579,9 +582,6 @@ void sdang2st(double stang[1],
     for (i = 0; i < 1; i++) {
         st[i] = stang[i];
     }
-(void)stang;
-(void)st;
-(void)i;
 }
 
 /* Normalize Euler parameters in state. */
@@ -595,10 +595,6 @@ void sdnrmsterr(double st[1],
     for (i = 0; i < 1; i++) {
         normst[i] = st[i];
     }
-(void)st;
-(void)normst;
-(void)routine;
-(void)i;
 }
 
 void sdnormst(double st[1],
@@ -606,8 +602,6 @@ void sdnormst(double st[1],
 {
 
     sdnrmsterr(st,normst,0);
-(void)st;
-(void)normst;
 }
 
 void sdstate(double timein,
@@ -779,13 +773,6 @@ Initialize applied forces and torques to zero
                       2 divides
                      34 assignments
 */
-(void)timein;
-(void)qin;
-(void)uin;
-(void)i;
-(void)j;
-(void)qchg;
-(void)uchg;
 }
 
 void sdqdot(double oqdot[1])
@@ -802,8 +789,6 @@ Return position coordinate derivatives for tree joints.
     for (i = 0; i <= 0; i++) {
         oqdot[i] = qdot[i];
     }
-(void)oqdot;
-(void)i;
 }
 
 void sdu2qdot(double uin[1],
@@ -829,9 +814,6 @@ Convert velocities to qdots.
                       0 divides
                       1 assignments
 */
-(void)uin;
-(void)oqdot;
-(void)i;
 }
 
 void sdpsstate(double lqin[1])
@@ -841,7 +823,6 @@ void sdpsstate(double lqin[1])
         sdseterr(9,23);
         return;
     }
-(void)lqin;
 }
 
 void sddovpk(void)
@@ -976,10 +957,6 @@ Check for singular mass matrix
                       0 divides
                       1 assignments
 */
-(void)routine;
-(void)dumroutine;
-(void)errnum;
-(void)i;
 }
 
 void sddommldu(int routine)
@@ -1007,10 +984,6 @@ Check for singular mass matrix
             mmlduflg = 1;
         }
     }
-(void)routine;
-(void)i;
-(void)dumroutine;
-(void)errnum;
 }
 
 void sdlhs(int routine)
@@ -1021,13 +994,11 @@ void sdlhs(int routine)
     roustate = 2;
     sddommldu(routine);
     sddofs0();
-(void)routine;
 }
 
 void sdmfrc(double imult[1])
 {
 
-(void)imult;
 }
 
 void sdequivht(double tau[1])
@@ -1064,9 +1035,6 @@ Op counts below do not include called subroutines
                       0 divides
                       3 assignments
 */
-(void)tau;
-(void)fstareq;
-(void)tstareq;
 }
 
 void sdfs0(void)
@@ -1104,7 +1072,6 @@ Compute Fs (multiplier-generated forces only)
                       0 divides
                       1 assignments
 */
-(void)i;
 }
 
 void sdfsfull(void)
@@ -1143,7 +1110,6 @@ Compute Fs (generic multiplier-generated forces)
                       0 divides
                       1 assignments
 */
-(void)i;
 }
 
 void sdfsgenfull(void)
@@ -1202,14 +1168,6 @@ Op counts below do not include called subroutines
                       0 divides
                       5 assignments
 */
-(void)udotin;
-(void)multin;
-(void)trqout;
-(void)fstarr;
-(void)tstarr;
-(void)Otkr;
-(void)Atir;
-(void)Atkr;
 }
 
 void sdcomptrq(double udotin[1],
@@ -1224,9 +1182,6 @@ void sdcomptrq(double udotin[1],
         return;
     }
     sdfulltrq(udotin,multin,trqout);
-(void)udotin;
-(void)trqout;
-(void)multin;
 }
 
 void sdmulttrq(double multin[1],
@@ -1243,9 +1198,6 @@ void sdmulttrq(double multin[1],
     for (i = 0; i < 1; i++) {
         trqout[i] = 0.;
     }
-(void)multin;
-(void)trqout;
-(void)i;
 }
 
 void sdrhs(void)
@@ -1314,9 +1266,6 @@ void sdmassmat(double mmat[1][1])
             mmat[j][i] = mm[i][j];
         }
     }
-(void)mmat;
-(void)i;
-(void)j;
 }
 
 void sdfrcmat(double fmat[1])
@@ -1333,8 +1282,6 @@ void sdfrcmat(double fmat[1])
     for (i = 0; i < 1; i++) {
         fmat[i] = fs0[i];
     }
-(void)fmat;
-(void)i;
 }
 
 void sdpseudo(double lqout[1],
@@ -1348,8 +1295,6 @@ Return pseudo-coordinates for loop joints.
 There are no loop joints in this system.
 
 */
-(void)lqout;
-(void)luout;
 }
 
 void sdpsqdot(double lqdout[1])
@@ -1362,7 +1307,6 @@ Return pseudo-coordinate derivatives for loop joints.
 There are no loop joints in this system.
 
 */
-(void)lqdout;
 }
 
 void sdpsudot(double ludout[1])
@@ -1375,25 +1319,21 @@ Return pseudo-coordinate accelerations for loop joints.
 There are no loop joints in this system.
 
 */
-(void)ludout;
 }
 
 void sdperr(double errs[1])
 {
 
-(void)errs;
 }
 
 void sdverr(double errs[1])
 {
 
-(void)errs;
 }
 
 void sdaerr(double errs[1])
 {
 
-(void)errs;
 }
 int
 sdchkbnum(int routine,
@@ -1405,8 +1345,6 @@ sdchkbnum(int routine,
         return 1;
     }
     return 0;
-(void)routine;
-(void)bnum;
 }
 int
 sdchkjnum(int routine,
@@ -1418,8 +1356,6 @@ sdchkjnum(int routine,
         return 1;
     }
     return 0;
-(void)routine;
-(void)jnum;
 }
 int
 sdchkucnum(int routine,
@@ -1428,8 +1364,6 @@ sdchkucnum(int routine,
 
     sdseterr(routine,21);
     return 1;
-(void)routine;
-(void)ucnum;
 }
 int
 sdchkjaxis(int routine,
@@ -1454,10 +1388,6 @@ sdchkjaxis(int routine,
         return 1;
     }
     return 0;
-(void)routine;
-(void)jnum;
-(void)axnum;
-(void)maxax;
 }
 int
 sdchkjpin(int routine,
@@ -1493,11 +1423,6 @@ sdchkjpin(int routine,
         return 1;
     }
     return 0;
-(void)routine;
-(void)jnum;
-(void)pinno;
-(void)maxax;
-(void)pinok;
 }
 int
 sdindx(int joint,
@@ -1526,10 +1451,6 @@ sdindx(int joint,
         offs = firstq[joint]+axis;
     }
     return offs;
-(void)joint;
-(void)axis;
-(void)offs;
-(void)gotit;
 }
 
 void sdpresacc(int joint,
@@ -1537,9 +1458,6 @@ void sdpresacc(int joint,
     double prval)
 {
 
-(void)joint;
-(void)axis;
-(void)prval;
 }
 
 void sdpresvel(int joint,
@@ -1547,9 +1465,6 @@ void sdpresvel(int joint,
     double prval)
 {
 
-(void)joint;
-(void)axis;
-(void)prval;
 }
 
 void sdprespos(int joint,
@@ -1557,9 +1472,6 @@ void sdprespos(int joint,
     double prval)
 {
 
-(void)joint;
-(void)axis;
-(void)prval;
 }
 
 void sdgetht(int joint,
@@ -1575,9 +1487,6 @@ void sdgetht(int joint,
         return;
     }
     *torque = tauc[sdindx(joint,axis)];
-(void)joint;
-(void)axis;
-(void)torque;
 }
 
 void sdhinget(int joint,
@@ -1598,9 +1507,6 @@ void sdhinget(int joint,
         fs0flg = 0;
         utau[sdindx(joint,axis)] = utau[sdindx(joint,axis)]+torque;
     }
-(void)joint;
-(void)axis;
-(void)torque;
 }
 
 void sdpointf(int body,
@@ -1638,10 +1544,6 @@ void sdpointf(int body,
         ufk[body][2] = ufk[body][2]+force[2];
         utk[body][2] = utk[body][2]+torque[2];
     }
-(void)body;
-(void)point;
-(void)force;
-(void)torque;
 }
 
 void sdbodyt(int body,
@@ -1668,8 +1570,6 @@ void sdbodyt(int body,
         utk[body][1] = utk[body][1]+torque[1];
         utk[body][2] = utk[body][2]+torque[2];
     }
-(void)body;
-(void)torque;
 }
 
 void sddoww(int routine)
@@ -1687,7 +1587,6 @@ void sddoww(int routine)
                       0 divides
                       0 assignments
 */
-(void)routine;
 }
 
 void sdxudot0(int routine,
@@ -1715,9 +1614,6 @@ Solve equations for udots
                       0 divides
                       1 assignments
 */
-(void)routine;
-(void)oudot0;
-(void)i;
 }
 
 void sdudot0(double oudot0[1])
@@ -1728,7 +1624,6 @@ void sdudot0(double oudot0[1])
         return;
     }
     sdxudot0(66,oudot0);
-(void)oudot0;
 }
 
 void sdsetudot(double iudot[1])
@@ -1746,8 +1641,6 @@ Assign udots and advance to stage Dynamics Ready
         udot[i] = iudot[i];
     }
     sdrhs();
-(void)iudot;
-(void)i;
 }
 
 void sdxudotm(int routine,
@@ -1774,10 +1667,6 @@ Compute udots due only to multipliers
                       0 divides
                       2 assignments
 */
-(void)routine;
-(void)imult;
-(void)oudotm;
-(void)i;
 }
 
 void sdudotm(double imult[1],
@@ -1789,8 +1678,6 @@ void sdudotm(double imult[1],
         return;
     }
     sdxudotm(67,imult,oudotm);
-(void)imult;
-(void)oudotm;
 }
 
 void sdderiv(double oqdot[1],
@@ -1834,11 +1721,6 @@ Compute unconstrained equations
                       0 divides
                       2 assignments
 */
-(void)oqdot;
-(void)oudot;
-(void)i;
-(void)udot0;
-(void)udot1;
 }
 /*
 Compute residuals for use with DAE integrator
@@ -1878,12 +1760,6 @@ void sdresid(double eqdot[1],
                       0 divides
                       3 assignments
 */
-(void)eqdot;
-(void)eudot;
-(void)emults;
-(void)resid;
-(void)i;
-(void)uderrs;
 }
 
 void sdmult(double omults[1],
@@ -1896,9 +1772,6 @@ void sdmult(double omults[1],
         return;
     }
     *owrank = wrank;
-(void)omults;
-(void)owrank;
-(void)omultmap;
 }
 
 void sdreac(double force[1][3],
@@ -1939,8 +1812,6 @@ Compute reaction forces for tree weld joints
                       0 divides
                      12 assignments
 */
-(void)force;
-(void)torque;
 }
 
 void sdmom(double lm[3],
@@ -1977,11 +1848,6 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
                       0 divides
                       9 assignments
 */
-(void)lm;
-(void)am;
-(void)ke;
-(void)lk;
-(void)hnk;
 }
 
 void sdsys(double *mtoto,
@@ -2024,10 +1890,6 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
                       0 divides
                      13 assignments
 */
-(void)mtoto;
-(void)cm;
-(void)icm;
-(void)ikcnkt;
 }
 
 void sdpos(int body,
@@ -2062,10 +1924,6 @@ Return inertial frame location of a point on a body.
         loc[1] = pv[1];
         loc[2] = pv[2];
     }
-(void)body;
-(void)pt;
-(void)loc;
-(void)pv;
 }
 
 void sdvel(int body,
@@ -2100,10 +1958,6 @@ Return inertial frame velocity of a point on a body.
         velo[2] = vnb[body][2]+pv[0]*cnb[body][2][0]+pv[1]*cnb[body][2][1]+pv[2]
           *cnb[body][2][2];
     }
-(void)body;
-(void)pt;
-(void)velo;
-(void)pv;
 }
 
 void sdorient(int body,
@@ -2142,8 +1996,6 @@ Return orientation of body w.r.t. ground frame.
         dircos[2][1] = cnb[body][2][1];
         dircos[2][2] = cnb[body][2][2];
     }
-(void)body;
-(void)dircos;
 }
 
 void sdangvel(int body,
@@ -2170,8 +2022,6 @@ Return angular velocity of the body.
         avel[1] = wb[body][1];
         avel[2] = wb[body][2];
     }
-(void)body;
-(void)avel;
 }
 
 void sdtrans(int frbod,
@@ -2231,11 +2081,6 @@ Transform ivec from frbod frame to tobod frame.
       1];
     ovec[2] = pv[0]*cnb[tobod][0][2]+pv[1]*cnb[tobod][1][2]+pv[2]*cnb[tobod][2][
       2];
-(void)frbod;
-(void)ivec;
-(void)tobod;
-(void)ovec;
-(void)pv;
 }
 
 void sdrel2cart(int coord,
@@ -2285,16 +2130,6 @@ void sdrel2cart(int coord,
     }
     sdvcross(rotchg,pv,linchg);
     sdvadd(linchg,lin,linchg);
-(void)coord;
-(void)body;
-(void)point;
-(void)linchg;
-(void)rotchg;
-(void)x;
-(void)i;
-(void)gnd;
-(void)lin;
-(void)pv;
 }
 
 void sdacc(int body,
@@ -2332,10 +2167,6 @@ Return linear acceleration a point of the specified body.
         accel[2] = anb[body][2]+pv[0]*cnb[body][2][0]+pv[1]*cnb[body][2][1]+pv[2
           ]*cnb[body][2][2];
     }
-(void)body;
-(void)pt;
-(void)accel;
-(void)pv;
 }
 
 void sdangacc(int body,
@@ -2362,8 +2193,6 @@ Return angular acceleration of the body.
         aacc[1] = onb[body][1];
         aacc[2] = onb[body][2];
     }
-(void)body;
-(void)aacc;
 }
 
 void sdgrav(double gravin[3])
@@ -2371,7 +2200,6 @@ void sdgrav(double gravin[3])
 
     sdseterr(1,19);
     roustate = 0;
-(void)gravin;
 }
 
 void sdmass(int body,
@@ -2392,8 +2220,6 @@ void sdmass(int body,
         sdseterr(2,19);
     }
     roustate = 0;
-(void)body;
-(void)massin;
 }
 
 void sdiner(int body,
@@ -2449,9 +2275,6 @@ void sdiner(int body,
         sdseterr(3,19);
     }
     roustate = 0;
-(void)body;
-(void)inerin;
-(void)anyques;
 }
 
 void sdbtj(int joint,
@@ -2482,9 +2305,6 @@ void sdbtj(int joint,
         sdseterr(4,19);
     }
     roustate = 0;
-(void)joint;
-(void)btjin;
-(void)anyques;
 }
 
 void sditj(int joint,
@@ -2515,9 +2335,6 @@ void sditj(int joint,
         sdseterr(5,19);
     }
     roustate = 0;
-(void)joint;
-(void)itjin;
-(void)anyques;
 }
 
 void sdpin(int joint,
@@ -2556,11 +2373,6 @@ void sdpin(int joint,
         sdseterr(6,19);
     }
     roustate = 0;
-(void)joint;
-(void)pinno;
-(void)pinin;
-(void)anyques;
-(void)offs;
 }
 
 void sdpres(int joint,
@@ -2589,10 +2401,6 @@ void sdpres(int joint,
         sdseterr(37,19);
     }
     wwflg = 0;
-(void)joint;
-(void)axis;
-(void)presin;
-(void)anyques;
 }
 
 void sdconschg(void)
@@ -2609,8 +2417,6 @@ void sdstab(double velin,
     stabvelq = 3;
     stabpos = posin;
     stabposq = 3;
-(void)velin;
-(void)posin;
 }
 
 void sdgetgrav(double gravout[3])
@@ -2619,7 +2425,6 @@ void sdgetgrav(double gravout[3])
     gravout[0] = grav[0];
     gravout[1] = grav[1];
     gravout[2] = grav[2];
-(void)gravout;
 }
 
 void sdgetmass(int body,
@@ -2634,8 +2439,6 @@ void sdgetmass(int body,
         return;
     }
     *massout = mk[body];
-(void)body;
-(void)massout;
 }
 
 void sdgetiner(int body,
@@ -2658,8 +2461,6 @@ void sdgetiner(int body,
     inerout[2][0] = ik[body][2][0];
     inerout[2][1] = ik[body][2][1];
     inerout[2][2] = ik[body][2][2];
-(void)body;
-(void)inerout;
 }
 
 void sdgetbtj(int joint,
@@ -2672,8 +2473,6 @@ void sdgetbtj(int joint,
     btjout[0] = rk[joint][0];
     btjout[1] = rk[joint][1];
     btjout[2] = rk[joint][2];
-(void)joint;
-(void)btjout;
 }
 
 void sdgetitj(int joint,
@@ -2686,8 +2485,6 @@ void sdgetitj(int joint,
     itjout[0] = ri[joint][0];
     itjout[1] = ri[joint][1];
     itjout[2] = ri[joint][2];
-(void)joint;
-(void)itjout;
 }
 
 void sdgetpin(int joint,
@@ -2709,10 +2506,6 @@ void sdgetpin(int joint,
     pinout[0] = pin[offs][0];
     pinout[1] = pin[offs][1];
     pinout[2] = pin[offs][2];
-(void)joint;
-(void)pinno;
-(void)pinout;
-(void)offs;
 }
 
 void sdgetpres(int joint,
@@ -2728,9 +2521,6 @@ void sdgetpres(int joint,
     } else {
         *presout = 0;
     }
-(void)joint;
-(void)axis;
-(void)presout;
 }
 
 void sdgetstab(double *velout,
@@ -2739,8 +2529,6 @@ void sdgetstab(double *velout,
 
     *velout = stabvel;
     *posout = stabpos;
-(void)velout;
-(void)posout;
 }
 
 void sdinfo(int info[50])
@@ -2759,7 +2547,6 @@ void sdinfo(int info[50])
     info[10] = nuser;
     info[11] = 0;
 /* info entries from 12-49 are reserved */
-(void)info;
 }
 
 void sdjnt(int joint,
@@ -2792,11 +2579,6 @@ void sdjnt(int joint,
             tran[i] = -1;
         }
     }
-(void)joint;
-(void)info;
-(void)tran;
-(void)i;
-(void)offs;
 }
 
 void sdcons(int consno,
@@ -2807,15 +2589,12 @@ void sdcons(int consno,
         return;
     }
 /* There are no user constraints in this problem. */
-(void)consno;
-(void)info;
 }
 
 void sdgentime(int *gentm)
 {
 
     *gentm = TIMESTAMP;
-(void)gentm;
 }
 /*
 Done. CPU seconds used: TIMESTAMP  Memory used: TIMESTAMP bytes.

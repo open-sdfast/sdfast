@@ -29,15 +29,11 @@
 /* Model header for languages that set LANG_MODEL_HEADER.
  * declare_proc copies a prototype here when the file is open.
  * proto_only makes declare_proc emit a forward declaration and tells
- * library printers to skip the function body.
- * fn_depth is 1 while a function body that records unused names is open.
- * The matching "%<}\n" flushes those names with Lang->unused_use. */
+ * library printers to skip the function body. */
 extern FILE* model_header;
 extern int proto_only;
-extern int fn_depth;
 extern int lexlev;
 
-void flush_unused(FILE* F);
 void efprintf_reset_state(void);
 
 #define cMaxDim 1000000

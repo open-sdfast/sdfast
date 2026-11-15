@@ -135,7 +135,19 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
-        "(float*)", "(double*)", "(void)%s;\n", "{\n", "},\n",
+        "(float*)", "(double*)",
+        "/* The generator emits one set of parameters and temporaries for every\n"
+        " * model, so some are unused here. These warnings are suppressed in\n"
+        " * this generated file only.\n"
+        " */\n"
+        "#if defined(__GNUC__)\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-but-set-variable\"\n"
+        "#elif defined(_MSC_VER)\n"
+        "#pragma warning(disable: 4100 4101 4189)\n"
+        "#endif\n",
+        "{\n", "},\n",
         LANG_C_FAMILY|LANG_DECL_IN_ARGLIST|LANG_MODEL_HEADER|
         LANG_TRIM_FUNC_TYPE|LANG_ZERO_UNINIT|LANG_EMPTY_RANGE },
     Cpp_language = {

@@ -4,6 +4,17 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
 */
 #include <math.h>
 #include "pend_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 /* These routines are passed to sdroot. */
 
@@ -20,12 +31,6 @@ void sdposfunc(double vars[1],
     sdang2st(vars,pos);
     sdstate(param[0],pos,vel);
     sdperr(resid);
-(void)vars;
-(void)param;
-(void)resid;
-(void)i;
-(void)pos;
-(void)vel;
 }
 
 void sdvelfunc(double vars[1],
@@ -35,9 +40,6 @@ void sdvelfunc(double vars[1],
 
     sdstate(param[1],param,vars);
     sdverr(resid);
-(void)vars;
-(void)param;
-(void)resid;
 }
 
 void sdstatfunc(double vars[1],
@@ -51,11 +53,6 @@ void sdstatfunc(double vars[1],
     sduforce(param[1],pos,param);
     sdperr(resid);
     sdderiv(qdotdum,&resid[0]);
-(void)vars;
-(void)param;
-(void)resid;
-(void)pos;
-(void)qdotdum;
 }
 
 void sdstdyfunc(double vars[2],
@@ -70,11 +67,6 @@ void sdstdyfunc(double vars[2],
     sdperr(resid);
     sdverr(&resid[0]);
     sdderiv(qdotdum,&resid[0]);
-(void)vars;
-(void)param;
-(void)resid;
-(void)pos;
-(void)qdotdum;
 }
 
 /* This routine is passed to the integrator. */
@@ -90,11 +82,6 @@ void sdmotfunc(double time,
     sduforce(time,state,&state[1]);
     sdderiv(dstate,&dstate[1]);
     *status = 0;
-(void)time;
-(void)state;
-(void)dstate;
-(void)param;
-(void)status;
 }
 
 /* This routine performs assembly analysis. */
@@ -119,16 +106,6 @@ void sdassemble(double time,
     *fcnt = 0;
     sdposfunc(state,param,perrs);
     *fcnt = *fcnt+1;
-(void)time;
-(void)state;
-(void)lock;
-(void)tol;
-(void)maxevals;
-(void)fcnt;
-(void)err;
-(void)perrs;
-(void)param;
-(void)i;
 }
 
 /* This routine performs initial velocity analysis. */
@@ -156,16 +133,6 @@ void sdinitvel(double time,
     *fcnt = 0;
     sdvelfunc(&state[1],param,verrs);
     *fcnt = *fcnt+1;
-(void)time;
-(void)state;
-(void)lock;
-(void)tol;
-(void)maxevals;
-(void)fcnt;
-(void)err;
-(void)verrs;
-(void)param;
-(void)i;
 }
 
 /* This routine performs static analysis. */
@@ -203,22 +170,6 @@ void sdstatic(double time,
             *err = 1;
         }
     }
-(void)time;
-(void)state;
-(void)lock;
-(void)ctol;
-(void)tol;
-(void)maxevals;
-(void)fcnt;
-(void)err;
-(void)resid;
-(void)param;
-(void)jw;
-(void)dw;
-(void)rw;
-(void)iw;
-(void)rooterr;
-(void)i;
 }
 
 /* This routine performs steady motion analysis. */
@@ -254,22 +205,6 @@ void sdsteady(double time,
             *err = 1;
         }
     }
-(void)time;
-(void)state;
-(void)lock;
-(void)ctol;
-(void)tol;
-(void)maxevals;
-(void)fcnt;
-(void)err;
-(void)resid;
-(void)param;
-(void)jw;
-(void)dw;
-(void)rw;
-(void)iw;
-(void)rooterr;
-(void)i;
 }
 
 /* This routine performs state integration. */
@@ -305,22 +240,6 @@ void sdmotion(double *time,
       which);
     *time = ttime;
     *err = vintgerr;
-(void)time;
-(void)state;
-(void)dstate;
-(void)dt;
-(void)ctol;
-(void)tol;
-(void)flag;
-(void)err;
-(void)step;
-(void)work;
-(void)ttime;
-(void)param;
-(void)vintgerr;
-(void)which;
-(void)ferr;
-(void)i;
 }
 
 /* This routine performs state integration with a fixed-step integrator. */
@@ -353,17 +272,4 @@ void sdfmotion(double *time,
         *err = 1;
     }
     *time = ttime;
-(void)time;
-(void)state;
-(void)dstate;
-(void)dt;
-(void)ctol;
-(void)flag;
-(void)errest;
-(void)err;
-(void)work;
-(void)ttime;
-(void)param;
-(void)ferr;
-(void)i;
 }

@@ -204,7 +204,6 @@ static int open_defs_header(void)
 static void close_defs_header(int announce)
 {
     proto_only = 0;
-    fn_depth = 0;
     if (!model_header)
         return;
     fprintf(model_header, "#ifdef __cplusplus\n}\n#endif\n#endif /* %s */\n",
@@ -220,6 +219,13 @@ static void include_defs(FILE* F)
 {
     if (defs_leaf[0])
         fprintf(F, "#include \"%s\"\n", defs_leaf);
+}
+
+/* Lang->diag_preamble is empty except for languages that suppress
+ * unused-name warnings in generated sources. Not written to a header. */
+static void emit_diag_preamble(FILE* F)
+{
+    efprintf(F, "%s", Lang->diag_preamble);
 }
 
 /* Location of opcount stats for each routine. */
@@ -418,6 +424,7 @@ int main(int argc, char *argv[])
         efprintf(dynF,"#include <stdio.h>\n");
     }
     include_defs(dynF);
+    emit_diag_preamble(dynF);
 
     DECLARE_GLOBALS(dynF, 1/*generate initializations*/);
 
@@ -661,6 +668,7 @@ Equation complexity:\n\
         if (Lang->flags & LANG_C_FAMILY)
             efprintf(sarF,"#include <math.h>\n");
         include_defs(sarF);
+        emit_diag_preamble(sarF);
 
         PRINT_SDPOSFUNC(sarF);
         PRINT_SDANAL(sarF);
@@ -688,6 +696,7 @@ Equation complexity:\n\
             efprintf(libF,"#include <math.h>\n");
             efprintf(libF,"#include <stdio.h>\n");
         }
+        emit_diag_preamble(libF);
 
         DECLARE_LIB_GLOBALS(libF);
 
@@ -801,6 +810,7 @@ openaux(FILE **dynbF,
         efprintf(*dynbF,"#include <stdio.h>\n");
     }
     include_defs(*dynbF);
+    emit_diag_preamble(*dynbF);
 
     DECLARE_GLOBALS(*dynbF, 0/*no initializations*/);
 

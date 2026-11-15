@@ -4,6 +4,17 @@ Generated TIMESTAMP by SD/FAST, Kane's formulation
 */
 #include <math.h>
 #include <stdio.h>
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int lasterr_,lastrou_;
@@ -355,9 +366,6 @@ void sdprerrmsg(FILE *fnum,
     if (errnum == 47) {
         fprintf(fnum,"Singular mass matrix - bad inertialess body?\n");
     }
-(void)fnum;
-(void)routine;
-(void)errnum;
 }
 
 void sderror(int *routine,
@@ -366,15 +374,12 @@ void sderror(int *routine,
 
     *errnum = lasterr;
     *routine = lastrou;
-(void)routine;
-(void)errnum;
 }
 
 void sdprinterr(FILE *fnum)
 {
 
     sdprerrmsg(fnum,lastrou,lasterr);
-(void)fnum;
 }
 
 void sdclearerr(void)
@@ -392,8 +397,6 @@ void sdseterr(int routine,
         lasterr = errnum;
         lastrou = routine;
     }
-(void)routine;
-(void)errnum;
 }
 
 /*
@@ -445,26 +448,6 @@ void sdldudcomp(int n,
             l[row*n+col] = ldtemp*dtempi;
         }
     }
-(void)n;
-(void)na;
-(void)map;
-(void)tol;
-(void)ld;
-(void)sum;
-(void)m;
-(void)l;
-(void)d;
-(void)r;
-(void)c;
-(void)row;
-(void)col;
-(void)cm1;
-(void)j;
-(void)mj;
-(void)dtemp;
-(void)dtempi;
-(void)ldtemp;
-(void)tsum;
 }
 
 void sdldubsl(int n,
@@ -489,18 +472,6 @@ void sdldubsl(int n,
         }
         x[mi] = sum;
     }
-(void)n;
-(void)na;
-(void)map;
-(void)l;
-(void)b;
-(void)x;
-(void)i;
-(void)j;
-(void)im1;
-(void)mi;
-(void)mj;
-(void)sum;
 }
 
 void sdldubsd(int n,
@@ -516,14 +487,6 @@ void sdldubsd(int n,
         mi = map[i];
         x[mi] = b[mi]*d[mi];
     }
-(void)n;
-(void)na;
-(void)map;
-(void)d;
-(void)b;
-(void)x;
-(void)i;
-(void)mi;
 }
 
 void sdldubsu(int n,
@@ -550,18 +513,6 @@ void sdldubsu(int n,
         x[mi] = sum;
         i = i-1;
     }
-(void)n;
-(void)na;
-(void)map;
-(void)l;
-(void)b;
-(void)x;
-(void)i;
-(void)j;
-(void)ip1;
-(void)mi;
-(void)mj;
-(void)sum;
 }
 
 void sdldubslv(int n,
@@ -577,14 +528,6 @@ void sdldubslv(int n,
     sdldubsl(n,na,map,l,b,work);
     sdldubsd(n,na,map,d,work,work);
     sdldubsu(n,na,map,l,work,x);
-(void)n;
-(void)na;
-(void)map;
-(void)work;
-(void)l;
-(void)d;
-(void)b;
-(void)x;
 }
 
 void sdlduslv(int n,
@@ -602,17 +545,6 @@ void sdlduslv(int n,
 
     sdldudcomp(n,na,map,tol,work1,work2,m,l,d);
     sdldubslv(n,na,map,work2,l,d,b,x);
-(void)n;
-(void)na;
-(void)map;
-(void)tol;
-(void)work1;
-(void)work2;
-(void)m;
-(void)b;
-(void)l;
-(void)d;
-(void)x;
 }
 
 /*
@@ -725,29 +657,6 @@ void sdqrdcomp(int nr,
             }
         }
     }
-(void)nr;
-(void)nc;
-(void)nra;
-(void)nca;
-(void)mapr;
-(void)mapc;
-(void)w;
-(void)qraux;
-(void)jpvt;
-(void)i;
-(void)j;
-(void)l;
-(void)lp1;
-(void)maxj;
-(void)mi;
-(void)mj;
-(void)mlr;
-(void)mlc;
-(void)mmaxj;
-(void)minrca;
-(void)maxnrm;
-(void)nrmxl;
-(void)t;
 }
 
 void sdqrsl(int nr,
@@ -810,29 +719,6 @@ void sdqrsl(int nr,
             x[mic] = x[mic]+t*w[mir*nc+mjc];
         }
     }
-(void)nr;
-(void)nc;
-(void)nra;
-(void)nca;
-(void)mapr;
-(void)mapc;
-(void)k;
-(void)work;
-(void)w;
-(void)qraux;
-(void)b;
-(void)x;
-(void)i;
-(void)j;
-(void)jj;
-(void)jm1;
-(void)mir;
-(void)mic;
-(void)mjr;
-(void)mjc;
-(void)minrk;
-(void)t;
-(void)tt;
 }
 
 void sdqrbslv(int nr,
@@ -895,29 +781,6 @@ void sdqrbslv(int nr,
         }
     }
     *rank = k;
-(void)nr;
-(void)nc;
-(void)nra;
-(void)nca;
-(void)mapr;
-(void)mapc;
-(void)tol;
-(void)work;
-(void)iwork;
-(void)w;
-(void)qraux;
-(void)jpvt;
-(void)b;
-(void)x;
-(void)rank;
-(void)j;
-(void)k;
-(void)kk;
-(void)mjc;
-(void)mkkr;
-(void)mkkc;
-(void)minrca;
-(void)t;
 }
 
 void sdqrslv(int nr,
@@ -939,21 +802,6 @@ void sdqrslv(int nr,
 
     sdqrdcomp(nr,nc,nra,nca,mapr,mapc,w,qraux,jpvt);
     sdqrbslv(nr,nc,nra,nca,mapr,mapc,tol,work,iwork,w,qraux,jpvt,b,x,rank);
-(void)nr;
-(void)nc;
-(void)nra;
-(void)nca;
-(void)mapr;
-(void)mapc;
-(void)tol;
-(void)jpvt;
-(void)qraux;
-(void)work;
-(void)iwork;
-(void)w;
-(void)b;
-(void)x;
-(void)rank;
 }
 
 /*
@@ -1090,40 +938,6 @@ void sdlsslv(int nr,
             }
         }
     }
-(void)nr;
-(void)nc;
-(void)nra;
-(void)nca;
-(void)ndes;
-(void)mapr;
-(void)mapc;
-(void)tol;
-(void)dw;
-(void)rw;
-(void)iw;
-(void)w;
-(void)b;
-(void)x;
-(void)i;
-(void)j;
-(void)k;
-(void)nreq;
-(void)dsiz;
-(void)rank;
-(void)mapi;
-(void)mapj;
-(void)mapk;
-(void)ix;
-(void)wwt;
-(void)dloc;
-(void)ddt;
-(void)qraux;
-(void)work;
-(void)rhs;
-(void)soln;
-(void)map;
-(void)jpvt;
-(void)iwork;
 }
 
 /* Utility routines for use with sdroot. */
@@ -1160,16 +974,6 @@ void sdcalcerrs(double fval[],
     if (dnorm == 1) {
         *derrnorm = *maxderr;
     }
-(void)fval;
-(void)nfunc;
-(void)ndes;
-(void)dnorm;
-(void)maxderr;
-(void)maxrerr;
-(void)derrnorm;
-(void)i;
-(void)nreq;
-(void)tmp;
 }
 
 void sdadjvars(void (*func)(double [], double [], double []),
@@ -1250,34 +1054,6 @@ void sdadjvars(void (*func)(double [], double [], double []),
             goto retry;
         }
     }
-(void)func;
-(void)vars;
-(void)param;
-(void)nfunc;
-(void)ndes;
-(void)dnorm;
-(void)nvar;
-(void)deltas;
-(void)step;
-(void)rerr;
-(void)tderr;
-(void)rtol;
-(void)fcnt;
-(void)newvars;
-(void)newerrs;
-(void)i;
-(void)cnt;
-(void)alldone;
-(void)impr;
-(void)maxchg;
-(void)pmaxfact;
-(void)maxfact;
-(void)pmaxrerr;
-(void)pderrnorm;
-(void)maxderr;
-(void)maxrerr;
-(void)derrnorm;
-(void)mag;
 }
 
 void sdcalcjac(void (*func)(double [], double [], double []),
@@ -1334,24 +1110,6 @@ void sdcalcjac(void (*func)(double [], double [], double []),
             scale[i] = 1.;
         }
     }
-(void)func;
-(void)vars;
-(void)param;
-(void)nfunc;
-(void)nvar;
-(void)lock;
-(void)delta;
-(void)fval;
-(void)ftmp;
-(void)jw;
-(void)fcnt;
-(void)scale;
-(void)i;
-(void)j;
-(void)save;
-(void)chg;
-(void)vchg;
-(void)maxelt;
 }
 
 /*
@@ -1593,55 +1351,6 @@ void sdroot(void (*func)(double [], double [], double []),
             *err = 1;
         }
     }
-(void)func;
-(void)vars;
-(void)param;
-(void)nfunc;
-(void)nvar;
-(void)ndesin;
-(void)lock;
-(void)rtol;
-(void)dtol;
-(void)maxeval;
-(void)jw;
-(void)dw;
-(void)rw;
-(void)iw;
-(void)fret;
-(void)fcnt;
-(void)err;
-(void)i;
-(void)slowcnt;
-(void)tooslow;
-(void)ntrys;
-(void)nreq;
-(void)fixits;
-(void)ndes;
-(void)dnorm;
-(void)f1;
-(void)f2;
-(void)scale;
-(void)deltav;
-(void)guess;
-(void)rvars;
-(void)rdeltav;
-(void)rguess;
-(void)morerw;
-(void)mapf;
-(void)mapv;
-(void)moreiw;
-(void)qrtol;
-(void)maxderr;
-(void)maxrerr;
-(void)derrnorm;
-(void)pmaxderr;
-(void)pmaxrerr;
-(void)pderrnorm;
-(void)step;
-(void)crude;
-(void)impr;
-(void)rstep;
-(void)preverr;
 }
 
 /* Utility routine for use with sdfinteg and sdvinteg.  Work is 2*neq. */
@@ -1702,29 +1411,6 @@ void sdrk4m(void (*func)(double , double [], double [], double [], int*),
             *which = i;
         }
     }
-(void)func;
-(void)time;
-(void)st;
-(void)dst0;
-(void)param;
-(void)step;
-(void)nst;
-(void)neq;
-(void)work;
-(void)errs;
-(void)maxerr;
-(void)which;
-(void)i;
-(void)dst1;
-(void)dst2;
-(void)errf;
-(void)step2;
-(void)step3;
-(void)step6;
-(void)step8;
-(void)err;
-(void)old;
-(void)ast;
 }
 
 /* A fixed-step integrator.  Work should be dimensioned 4*neq. */
@@ -1761,22 +1447,6 @@ void sdfinteg(void (*func)(double , double [], double [], double [], int*),
     *status = 0;
     func(ttime,st,dst,param,status);
     *time = ttime;
-(void)func;
-(void)time;
-(void)st;
-(void)dst;
-(void)param;
-(void)step;
-(void)neq;
-(void)work;
-(void)errest;
-(void)status;
-(void)i;
-(void)which;
-(void)nst;
-(void)errs;
-(void)morework;
-(void)ttime;
 }
 
 /* A variable-step integrator.  Work should be dimensioned 6*neq. */
@@ -1909,38 +1579,6 @@ void sdvinteg(void (*func)(double , double [], double [], double [], int*),
         }
     }
     *time = tfin;
-(void)func;
-(void)time;
-(void)st;
-(void)dst;
-(void)param;
-(void)dt;
-(void)step;
-(void)neqin;
-(void)tol;
-(void)work;
-(void)err;
-(void)which;
-(void)i;
-(void)wh;
-(void)wh2;
-(void)xst;
-(void)xst2;
-(void)xdst;
-(void)errs;
-(void)morework;
-(void)errf;
-(void)neq;
-(void)earlyret;
-(void)ttime;
-(void)ntime;
-(void)xtime;
-(void)tfin;
-(void)stp;
-(void)stp2;
-(void)nstp;
-(void)maxerr;
-(void)minstep;
 }
 
 void sddc2ang(double dircos[3][3],
@@ -1967,14 +1605,6 @@ void sddc2ang(double dircos[3][3],
     *a1 = th1;
     *a2 = th2;
     *a3 = th3;
-(void)dircos;
-(void)a1;
-(void)a2;
-(void)a3;
-(void)th1;
-(void)th2;
-(void)th3;
-(void)temp;
 }
 
 void sddc2quat(double dircos[3][3],
@@ -2018,17 +1648,6 @@ void sddc2quat(double dircos[3][3],
     *e2 = (tmp*tmp2);
     *e3 = (tmp*tmp3);
     *e4 = (tmp*tmp4);
-(void)dircos;
-(void)e1;
-(void)e2;
-(void)e3;
-(void)e4;
-(void)tmp;
-(void)tmp1;
-(void)tmp2;
-(void)tmp3;
-(void)tmp4;
-(void)temp;
 }
 
 void sdang2dc(double a1,
@@ -2053,16 +1672,6 @@ void sdang2dc(double a1,
     dircos[2][0] = ((sin1*sin3)-(cos1*(cos3*sin2)));
     dircos[2][1] = ((cos1*(sin2*sin3))+(cos3*sin1));
     dircos[2][2] = (cos1*cos2);
-(void)a1;
-(void)a2;
-(void)a3;
-(void)dircos;
-(void)cos1;
-(void)cos2;
-(void)cos3;
-(void)sin1;
-(void)sin2;
-(void)sin3;
 }
 
 void sdquat2dc(double ie1,
@@ -2101,20 +1710,6 @@ void sdquat2dc(double ie1,
     dircos[2][0] = 2.*(e1*e3-e2*e4);
     dircos[2][1] = 2.*(e2*e3+e1*e4);
     dircos[2][2] = 1.-(2.*(e11+e22));
-(void)ie1;
-(void)ie2;
-(void)ie3;
-(void)ie4;
-(void)dircos;
-(void)e1;
-(void)e2;
-(void)e3;
-(void)e4;
-(void)e11;
-(void)e22;
-(void)e33;
-(void)e44;
-(void)norm;
 }
 double
 sdvdot(double ivec1[3],
@@ -2126,9 +1721,6 @@ sdvdot(double ivec1[3],
 */
     dprod = ivec1[0]*ivec2[0]+ivec1[1]*ivec2[1]+ivec1[2]*ivec2[2];
     return dprod;
-(void)ivec1;
-(void)ivec2;
-(void)dprod;
 }
 double
 sdvnorm(double ivec[3])
@@ -2139,8 +1731,6 @@ sdvnorm(double ivec[3])
 */
     norm = sqrt(sdvdot(ivec,ivec));
     return norm;
-(void)ivec;
-(void)norm;
 }
 
 void sdvcopy(double ivec[3],
@@ -2152,8 +1742,6 @@ void sdvcopy(double ivec[3],
     ovec[0] = ivec[0];
     ovec[1] = ivec[1];
     ovec[2] = ivec[2];
-(void)ivec;
-(void)ovec;
 }
 
 void sdvset(double sclr1,
@@ -2167,10 +1755,6 @@ void sdvset(double sclr1,
     ovec[0] = sclr1;
     ovec[1] = sclr2;
     ovec[2] = sclr3;
-(void)sclr1;
-(void)sclr2;
-(void)sclr3;
-(void)ovec;
 }
 
 void sdvadd(double ivec1[3],
@@ -2183,9 +1767,6 @@ void sdvadd(double ivec1[3],
     ovec[0] = ivec1[0]+ivec2[0];
     ovec[1] = ivec1[1]+ivec2[1];
     ovec[2] = ivec1[2]+ivec2[2];
-(void)ivec1;
-(void)ivec2;
-(void)ovec;
 }
 
 void sdvsub(double ivec1[3],
@@ -2198,9 +1779,6 @@ void sdvsub(double ivec1[3],
     ovec[0] = ivec1[0]-ivec2[0];
     ovec[1] = ivec1[1]-ivec2[1];
     ovec[2] = ivec1[2]-ivec2[2];
-(void)ivec1;
-(void)ivec2;
-(void)ovec;
 }
 
 void sdvmul(double sclr,
@@ -2213,9 +1791,6 @@ void sdvmul(double sclr,
     ovec[0] = sclr*ivec[0];
     ovec[1] = sclr*ivec[1];
     ovec[2] = sclr*ivec[2];
-(void)sclr;
-(void)ivec;
-(void)ovec;
 }
 
 void sdvaxpy(double sclr,
@@ -2229,10 +1804,6 @@ void sdvaxpy(double sclr,
     ovec[0] = sclr*ivec1[0]+ivec2[0];
     ovec[1] = sclr*ivec1[1]+ivec2[1];
     ovec[2] = sclr*ivec1[2]+ivec2[2];
-(void)sclr;
-(void)ivec1;
-(void)ivec2;
-(void)ovec;
 }
 
 void sdvcross(double ivec1[3],
@@ -2249,10 +1820,6 @@ void sdvcross(double ivec1[3],
     ovec[0] = tempout[0];
     ovec[1] = tempout[1];
     ovec[2] = tempout[2];
-(void)ivec1;
-(void)ivec2;
-(void)ovec;
-(void)tempout;
 }
 
 void sdvrot(double ivec[3],
@@ -2284,24 +1851,10 @@ void sdvrot(double ivec[3],
     dotcos = idotu*(1.-ctheta);
     sdvaxpy(dotcos,uvec,icosvec,ovec);
     sdvadd(ovec,uxisin,ovec);
-(void)ivec;
-(void)rvec;
-(void)theta;
-(void)ovec;
-(void)norm;
-(void)idotu;
-(void)ctheta;
-(void)stheta;
-(void)dotcos;
-(void)uvec;
-(void)icosvec;
-(void)isinvec;
-(void)uxisin;
 }
 
 void sdserialno(int *serno)
 {
 
     *serno = 10001;
-(void)serno;
 }

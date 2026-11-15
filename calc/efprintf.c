@@ -231,15 +231,6 @@ do_eprintf(
                 lexlev++;
                 break;
             case '<':
-                /* "%<}\n" closes a function. A struct close is "%<} name;"
-                 * and must not receive the unused-name markers. */
-                if (fn_depth && Lang->unused_use && Lang->unused_use[0] &&
-                    lexlev <= 1 &&
-                    fmt[0] == '}' && (fmt[1] == '\n' || fmt[1] == '\0')) {
-                    fn_depth = 0;
-                    flush_unused(stream);
-                    linepos = 0;
-                }
                 lexlev--;
                 break;
             case '*': {

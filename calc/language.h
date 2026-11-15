@@ -112,7 +112,8 @@ struct language {
         char *func_atan2;
         char *single_ptr_cast; /* %* : cast a real to a pointer, or "" */
         char *double_ptr_cast; /* %* for double precision, or "" */
-        char *unused_use;      /* printf format for an unused name, or "" */
+        char *diag_preamble;   /* unused-name suppression at the top of a
+                                  generated source file, or "" */
         char *nest_b;          /* open a nested initializer aggregate, or "" */
         char *nest_e;          /* close one, or "" */
         int flags;
