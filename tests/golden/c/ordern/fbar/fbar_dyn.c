@@ -1,6 +1,6 @@
 /*
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 
 
 ROADMAP (fbar.sd)
@@ -20,6 +20,18 @@ Loop Joints                    Pseudo Coords lq
 */
 #include <math.h>
 #include <stdio.h>
+#include "fbar_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int ground_,nbod_,ndof_,ncons_,nloop_,nldof_,nloopc_,nball_,nlball_,npres_,
@@ -466,177 +478,289 @@ sdgtopo_t sdgtopo = {
     /* nlball */ 0,
     /* npres */ 0,
     /* nuser */ 0,
+    {
     /* jtype[0] */ 1,
     /* jtype[1] */ 1,
     /* jtype[2] */ 1,
     /* jtype[3] */ 1,
+    },
+    {
     /* inb[0] */ -1,
     /* inb[1] */ -1,
     /* inb[2] */ 1,
     /* inb[3] */ 0,
+    },
+    {
     /* outb[0] */ 0,
     /* outb[1] */ 1,
     /* outb[2] */ 2,
     /* outb[3] */ 2,
+    },
+    {
     /* njntdof[0] */ 1,
     /* njntdof[1] */ 1,
     /* njntdof[2] */ 1,
     /* njntdof[3] */ 1,
+    },
+    {
     /* njntc[0] */ 0,
     /* njntc[1] */ 0,
     /* njntc[2] */ 0,
     /* njntc[3] */ 5,
+    },
+    {
     /* njntp[0] */ 0,
     /* njntp[1] */ 0,
     /* njntp[2] */ 0,
     /* njntp[3] */ 0,
+    },
+    {
     /* firstq[0] */ 0,
     /* firstq[1] */ 1,
     /* firstq[2] */ 2,
     /* firstq[3] */ 0,
+    },
+    {
     /* ballq[0] */ -104,
     /* ballq[1] */ -104,
     /* ballq[2] */ -104,
     /* ballq[3] */ -104,
+    },
+    {
     /* firstm[0] */ -1,
     /* firstm[1] */ -1,
     /* firstm[2] */ -1,
     /* firstm[3] */ 0,
+    },
+    {
     /* firstp[0] */ -1,
     /* firstp[1] */ -1,
     /* firstp[2] */ -1,
     /* firstp[3] */ -1,
+    },
+    {
     /* trans[0] */ 0,
     /* trans[1] */ 0,
     /* trans[2] */ 0,
     /* trans[3] */ 0,
+    },
 };
 sdginput_t sdginput = {
 /* Model parameters from the input file */
 
 /* gravity */
+    {
     /* grav[0] */ 0.,
     /* grav[1] */ -9.8,
     /* grav[2] */ 0.,
+    },
 
 /* mass */
+    {
     /* mk[0] */ 1.,
     /* mk[1] */ 2.,
     /* mk[2] */ 3.,
+    },
 
 /* inertia */
+    {
+    {
+    {
     /* ik[0][0][0] */ 1.,
     /* ik[0][0][1] */ 0.,
     /* ik[0][0][2] */ 0.,
+    },
+    {
     /* ik[0][1][0] */ 0.,
     /* ik[0][1][1] */ 0.,
     /* ik[0][1][2] */ 0.,
+    },
+    {
     /* ik[0][2][0] */ 0.,
     /* ik[0][2][1] */ 0.,
     /* ik[0][2][2] */ 1.,
+    },
+    },
+    {
+    {
     /* ik[1][0][0] */ 2.,
     /* ik[1][0][1] */ 0.,
     /* ik[1][0][2] */ 0.,
+    },
+    {
     /* ik[1][1][0] */ 0.,
     /* ik[1][1][1] */ 0.,
     /* ik[1][1][2] */ 0.,
+    },
+    {
     /* ik[1][2][0] */ 0.,
     /* ik[1][2][1] */ 0.,
     /* ik[1][2][2] */ 2.,
+    },
+    },
+    {
+    {
     /* ik[2][0][0] */ 0.,
     /* ik[2][0][1] */ 0.,
     /* ik[2][0][2] */ 0.,
+    },
+    {
     /* ik[2][1][0] */ 0.,
     /* ik[2][1][1] */ 3.,
     /* ik[2][1][2] */ 0.,
+    },
+    {
     /* ik[2][2][0] */ 0.,
     /* ik[2][2][1] */ 0.,
     /* ik[2][2][2] */ 3.,
+    },
+    },
+    },
 
 /* tree hinge axis vectors */
+    {
+    {
     /* pin[0][0] */ 0.,
     /* pin[0][1] */ 0.,
     /* pin[0][2] */ 1.,
+    },
+    {
     /* pin[1][0] */ 0.,
     /* pin[1][1] */ 0.,
     /* pin[1][2] */ 1.,
+    },
+    {
     /* pin[2][0] */ 0.,
     /* pin[2][1] */ 0.,
     /* pin[2][2] */ 1.,
+    },
+    },
 
 /* tree bodytojoint vectors */
+    {
+    {
     /* rk[0][0] */ 0.,
     /* rk[0][1] */ -.5,
     /* rk[0][2] */ 0.,
+    },
+    {
     /* rk[1][0] */ 0.,
     /* rk[1][1] */ -1.,
     /* rk[1][2] */ 0.,
+    },
+    {
     /* rk[2][0] */ 1.5,
     /* rk[2][1] */ 0.,
     /* rk[2][2] */ 0.,
+    },
+    },
 
 /* tree inbtojoint vectors */
+    {
+    {
     /* ri[0][0] */ 0.,
     /* ri[0][1] */ 0.,
     /* ri[0][2] */ 0.,
+    },
+    {
     /* ri[1][0] */ 3.,
     /* ri[1][1] */ 0.,
     /* ri[1][2] */ 0.,
+    },
+    {
     /* ri[2][0] */ 0.,
     /* ri[2][1] */ 1.,
     /* ri[2][2] */ 0.,
+    },
+    },
 
 /* tree prescribed motion */
+    {
     /* pres[0] */ 0.,
     /* pres[1] */ 0.,
     /* pres[2] */ 0.,
+    },
 
 /* stabilization parameters */
     /* stabvel */ 0.,
     /* stabpos */ 0.,
 
 /* loop first inboard pin vectors */
+    {
+    {
     /* inbpin1[0][0] */ 0.,
     /* inbpin1[0][1] */ 0.,
     /* inbpin1[0][2] */ 1.,
+    },
+    },
 
 /* loop second inboard pin vectors */
+    {
+    {
     /* inbpin2[0][0] */ 0.,
     /* inbpin2[0][1] */ 0.,
     /* inbpin2[0][2] */ 0.,
+    },
+    },
 
 /* loop third inboard pin vectors */
+    {
+    {
     /* inbpin3[0][0] */ 0.,
     /* inbpin3[0][1] */ 0.,
     /* inbpin3[0][2] */ 0.,
+    },
+    },
 
 /* loop inboard reference vectors */
+    {
+    {
     /* inbref[0][0] */ 0.,
     /* inbref[0][1] */ 0.,
     /* inbref[0][2] */ 0.,
+    },
+    },
 
 /* loop body pin vectors */
+    {
+    {
     /* bodypin[0][0] */ 0.,
     /* bodypin[0][1] */ 0.,
     /* bodypin[0][2] */ 0.,
+    },
+    },
 
 /* loop body reference vectors */
+    {
+    {
     /* bodyref[0][0] */ 0.,
     /* bodyref[0][1] */ 0.,
     /* bodyref[0][2] */ 0.,
+    },
+    },
 
 /* loop bodytojoint vectors */
+    {
+    {
     /* lbtj[0][0] */ -1.5,
     /* lbtj[0][1] */ 0.,
     /* lbtj[0][2] */ 0.,
+    },
+    },
 
 /* loop inbtojoint vectors */
+    {
+    {
     /* litj[0][0] */ 0.,
     /* litj[0][1] */ .5,
     /* litj[0][2] */ 0.,
+    },
+    },
 
 /* loop prescribed motion */
+    {
     /* lpres[0] */ 0.,
+    },
 
 /* miscellaneous */
     /* mfrcflg */ 0,
@@ -648,101 +772,215 @@ sdginput_t sdginput = {
     /* wwflg */ 0,
     /* ltauflg */ 0,
     /* fs0flg */ 0,
+    {
     /* mmap[0] */ 0,
     /* mmap[1] */ 1,
     /* mmap[2] */ 2,
+    },
 
 /* Which parameters were "?" (1) or "<nominal>?" (3) */
+    {
     /* gravq[0] */ 0,
     /* gravq[1] */ 0,
     /* gravq[2] */ 0,
+    },
+    {
     /* mkq[0] */ 0,
     /* mkq[1] */ 0,
     /* mkq[2] */ 0,
+    },
+    {
+    {
+    {
     /* ikq[0][0][0] */ 0,
     /* ikq[0][0][1] */ 0,
     /* ikq[0][0][2] */ 0,
+    },
+    {
     /* ikq[0][1][0] */ 0,
     /* ikq[0][1][1] */ 0,
     /* ikq[0][1][2] */ 0,
+    },
+    {
     /* ikq[0][2][0] */ 0,
     /* ikq[0][2][1] */ 0,
     /* ikq[0][2][2] */ 0,
+    },
+    },
+    {
+    {
     /* ikq[1][0][0] */ 0,
     /* ikq[1][0][1] */ 0,
     /* ikq[1][0][2] */ 0,
+    },
+    {
     /* ikq[1][1][0] */ 0,
     /* ikq[1][1][1] */ 0,
     /* ikq[1][1][2] */ 0,
+    },
+    {
     /* ikq[1][2][0] */ 0,
     /* ikq[1][2][1] */ 0,
     /* ikq[1][2][2] */ 0,
+    },
+    },
+    {
+    {
     /* ikq[2][0][0] */ 0,
     /* ikq[2][0][1] */ 0,
     /* ikq[2][0][2] */ 0,
+    },
+    {
     /* ikq[2][1][0] */ 0,
     /* ikq[2][1][1] */ 0,
     /* ikq[2][1][2] */ 0,
+    },
+    {
     /* ikq[2][2][0] */ 0,
     /* ikq[2][2][1] */ 0,
     /* ikq[2][2][2] */ 0,
+    },
+    },
+    },
+    {
+    {
     /* pinq[0][0] */ 0,
     /* pinq[0][1] */ 0,
     /* pinq[0][2] */ 0,
+    },
+    {
     /* pinq[1][0] */ 0,
     /* pinq[1][1] */ 0,
     /* pinq[1][2] */ 0,
+    },
+    {
     /* pinq[2][0] */ 0,
     /* pinq[2][1] */ 0,
     /* pinq[2][2] */ 0,
+    },
+    },
+    {
+    {
     /* rkq[0][0] */ 0,
     /* rkq[0][1] */ 0,
     /* rkq[0][2] */ 0,
+    },
+    {
     /* rkq[1][0] */ 0,
     /* rkq[1][1] */ 0,
     /* rkq[1][2] */ 0,
+    },
+    {
     /* rkq[2][0] */ 0,
     /* rkq[2][1] */ 0,
     /* rkq[2][2] */ 0,
+    },
+    },
+    {
+    {
     /* riq[0][0] */ 0,
     /* riq[0][1] */ 0,
     /* riq[0][2] */ 0,
+    },
+    {
     /* riq[1][0] */ 0,
     /* riq[1][1] */ 0,
     /* riq[1][2] */ 0,
+    },
+    {
     /* riq[2][0] */ 0,
     /* riq[2][1] */ 0,
     /* riq[2][2] */ 0,
+    },
+    },
+    {
     /* presq[0] */ 0,
     /* presq[1] */ 0,
     /* presq[2] */ 0,
+    },
     /* stabvelq */ 3,
     /* stabposq */ 3,
+    {
+    {
     /* inbpin1q[0][0] */ 0,
     /* inbpin1q[0][1] */ 0,
     /* inbpin1q[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* inbpin2q[0][0] */ 0,
     /* inbpin2q[0][1] */ 0,
     /* inbpin2q[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* inbpin3q[0][0] */ 0,
     /* inbpin3q[0][1] */ 0,
     /* inbpin3q[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* inbrefq[0][0] */ 0,
     /* inbrefq[0][1] */ 0,
     /* inbrefq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* bodypinq[0][0] */ 0,
     /* bodypinq[0][1] */ 0,
     /* bodypinq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* bodyrefq[0][0] */ 0,
     /* bodyrefq[0][1] */ 0,
     /* bodyrefq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* lbtjq[0][0] */ 0,
     /* lbtjq[0][1] */ 0,
     /* lbtjq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* litjq[0][0] */ 0,
     /* litjq[0][1] */ 0,
     /* litjq[0][2] */ 0,
+    },
+    },
+    {
     /* lpresq[0] */ 0,
+    },
+    /* mtot */ 0.,
+    /* psmkg */ 0.,
+    /* rhead */ {{0}},
+    /* rcom */ {{0}},
+    /* mkrcomt */ {{{0}}},
+    /* psikg */ {{0}},
+    /* psrcomg */ {0},
+    /* psrkg */ {0},
+    /* psrig */ {0},
+    /* psmk */ {0},
+    /* psik */ {{{0}}},
+    /* psrcom */ {{0}},
+    /* psrk */ {{0}},
+    /* psri */ {{0}},
+    /* ipin */ {{0}},
+    /* ipin2 */ {{0}},
+    /* iref */ {{0}},
+    /* iperp */ {{0}},
+    /* opin */ {{0}},
+    /* oref */ {{0}},
+    /* operp */ {{0}},
+    /* ghand */ {0},
 
 /* End of values from input file */
 
@@ -913,7 +1151,7 @@ void sdstate(double timein,
 Compute kinematic information and store it in sdgstate.
 
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     int i,j,qchg,uchg;
     double e1,e2,e3,e4;
@@ -1767,7 +2005,7 @@ void sdrhs(void)
 {
 /*
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
 /*
@@ -2024,7 +2262,7 @@ Return acceleration constraint errors.
     errs[3] = aerr[3];
     errs[4] = 0.;
 }
-int 
+int
 sdchkbnum(int routine,
     int bnum)
 {
@@ -2035,7 +2273,7 @@ sdchkbnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjnum(int routine,
     int jnum)
 {
@@ -2046,18 +2284,15 @@ sdchkjnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkucnum(int routine,
     int ucnum)
 {
 
-    if ((ucnum < 0) || (ucnum > -1)) {
-        sdseterr(routine,21);
-        return 1;
-    }
-    return 0;
+    sdseterr(routine,21);
+    return 1;
 }
-int 
+int
 sdchkjaxis(int routine,
     int jnum,
     int axnum)
@@ -2081,7 +2316,7 @@ sdchkjaxis(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjpin(int routine,
     int jnum,
     int pinno)
@@ -2129,7 +2364,7 @@ sdchkjpin(int routine,
     }
     return 0;
 }
-int 
+int
 sdindx(int joint,
     int axis)
 {
@@ -2390,7 +2625,7 @@ Produce constraint coefficient matrix WW
 /*
 Form QR decomposition of WW
 */
-        sdqrdcomp(5,5,2,2,wmap,wmap,ww,qraux,jpvt);
+        sdqrdcomp(5,5,2,2,wmap,wmap,(double*)ww,qraux,jpvt);
         wwflg = 1;
     }
 /*
@@ -2585,7 +2820,8 @@ Numerically solve for constraint multipliers
     for (i = 0; i <= 4; i++) {
         mult[i] = 0.;
     }
-    sdqrbslv(5,5,2,2,wmap,wmap,1e-13,workr,iwork,ww,qraux,jpvt,bb,mult,&wrank);
+    sdqrbslv(5,5,2,2,wmap,wmap,1e-13,workr,iwork,(double*)ww,qraux,jpvt,bb,mult,
+      &wrank);
     for (i = 0; i <= 1; i++) {
         multmap[i] = 0;
     }
@@ -2698,7 +2934,7 @@ void sdreac(double force[4][3],
 {
 /*
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
     if (roustate != 3) {
@@ -2795,7 +3031,7 @@ void sdmom(double lm[3],
 Compute system linear and angular momentum, and kinetic energy.
 
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double lk[3][3],hnk[3][3];
 
@@ -2835,7 +3071,7 @@ Compute system total mass, and instantaneous center of mass and
 inertia matrix.
 
 Generated TIMESTAMP by SD/FAST, Order(N) formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double ikcnkt[3][3][3];
 

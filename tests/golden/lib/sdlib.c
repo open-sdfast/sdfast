@@ -1,9 +1,20 @@
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 #include <math.h>
 #include <stdio.h>
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int lasterr_,lastrou_;
@@ -965,7 +976,7 @@ void sdcalcerrs(double fval[],
     }
 }
 
-void sdadjvars(int (*func)(double [], double [], double []),
+void sdadjvars(void (*func)(double [], double [], double []),
     double vars[],
     double param[],
     int nfunc,
@@ -1045,7 +1056,7 @@ void sdadjvars(int (*func)(double [], double [], double []),
     }
 }
 
-void sdcalcjac(int (*func)(double [], double [], double []),
+void sdcalcjac(void (*func)(double [], double [], double []),
     double vars[],
     double param[],
     int nfunc,
@@ -1143,7 +1154,7 @@ Work arrays should be dimensioned as follows:
 ====================================================================
 */
 
-void sdroot(int (*func)(double [], double [], double []),
+void sdroot(void (*func)(double [], double [], double []),
     double vars[],
     double param[],
     int nfunc,
@@ -1345,7 +1356,7 @@ void sdroot(int (*func)(double [], double [], double []),
 /* Utility routine for use with sdfinteg and sdvinteg.  Work is 2*neq. */
 
 
-void sdrk4m(int (*func)(double , double [], double [], double [], int*),
+void sdrk4m(void (*func)(double , double [], double [], double [], int*),
     double time,
     double st[],
     double dst0[],
@@ -1405,7 +1416,7 @@ void sdrk4m(int (*func)(double , double [], double [], double [], int*),
 /* A fixed-step integrator.  Work should be dimensioned 4*neq. */
 
 
-void sdfinteg(int (*func)(double , double [], double [], double [], int*),
+void sdfinteg(void (*func)(double , double [], double [], double [], int*),
     double *time,
     double st[],
     double dst[],
@@ -1440,7 +1451,7 @@ void sdfinteg(int (*func)(double , double [], double [], double [], int*),
 
 /* A variable-step integrator.  Work should be dimensioned 6*neq. */
 
-void sdvinteg(int (*func)(double , double [], double [], double [], int*),
+void sdvinteg(void (*func)(double , double [], double [], double [], int*),
     double *time,
     double st[],
     double dst[],
@@ -1700,7 +1711,7 @@ void sdquat2dc(double ie1,
     dircos[2][1] = 2.*(e2*e3+e1*e4);
     dircos[2][2] = 1.-(2.*(e11+e22));
 }
-double 
+double
 sdvdot(double ivec1[3],
     double ivec2[3])
 {
@@ -1711,7 +1722,7 @@ sdvdot(double ivec1[3],
     dprod = ivec1[0]*ivec2[0]+ivec1[1]*ivec2[1]+ivec1[2]*ivec2[2];
     return dprod;
 }
-double 
+double
 sdvnorm(double ivec[3])
 {
     double norm;

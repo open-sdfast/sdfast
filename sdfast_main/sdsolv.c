@@ -197,6 +197,8 @@ the na interesting elements.\n");
       packvar(VT_DUP,                     "l"),
       packvar(VT_SARRAY,                  "d",   "n",        NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_1;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -247,6 +249,7 @@ the na interesting elements.\n");
     efprintf(F, Lang->stmt_for_e, "350");
     efprintf(F, Lang->stmt_for_e, "400");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_1: ;
 
     /* sdbsl
      */
@@ -258,6 +261,8 @@ the na interesting elements.\n");
       VT_SARRAY,  "b", "n", NULL,
       VT_DUP,  "x",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_2;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
@@ -283,6 +288,7 @@ the na interesting elements.\n");
     efprintf(F, "x%(mi%)%=sum%;\n");
     efprintf(F, Lang->stmt_for_e, "200");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_2: ;
 
     /* sdbsd
      */
@@ -294,6 +300,8 @@ the na interesting elements.\n");
       VT_DUP,  "b",
       VT_DUP,  "x",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_3;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
@@ -308,6 +316,7 @@ the na interesting elements.\n");
     efprintf(F, "x%(mi%)%=b%(mi%)*d%(mi%)%;\n");
     efprintf(F, Lang->stmt_for_e, "100");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_3: ;
 
     /* sdbsu
      */
@@ -319,6 +328,8 @@ the na interesting elements.\n");
       VT_SARRAY,  "b", "n", NULL,
       VT_DUP,  "x",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_4;
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
       VT_INTEGER, "i", 
@@ -347,6 +358,7 @@ sum%=b%(mi%)%;\n");
     efprintf(F, "x%(mi%)%=sum%;\ni%=i-1%;\n");
     efprintf(F, Lang->stmt_while_e, "100");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_4: ;
 
     /* sdldubslv
      */
@@ -360,6 +372,8 @@ sum%=b%(mi%)%;\n");
       packvar(VT_DUP,                          "b"),
       packvar(VT_DUP,                          "x"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_5;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
     efprintf(F, Lang->proc_sbegin);
@@ -369,6 +383,7 @@ sum%=b%(mi%)%;\n");
 %@P%Aldubsu(n,na,map,l,work,x)%;\n",
              Lang->proc_call);
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_5: ;
 
     /* sdlduslv
      */
@@ -385,6 +400,8 @@ sum%=b%(mi%)%;\n");
       packvar(VT_SARRAY,                  "d",     "n",        NULL),
       packvar(VT_DUP,                          "x"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLDUSLV_6;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
     efprintf(F, Lang->proc_sbegin);
@@ -393,6 +410,7 @@ sum%=b%(mi%)%;\n");
 %@P%Aldubslv(n,na,map,work2,l,d,b,x)%;\n",
              Lang->proc_call);
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLDUSLV_6: ;
 }
 
 /* PRINT_SDQRSLV 
@@ -460,6 +478,8 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "qraux", "nca",      NULL),
       packvar(VT_SARRAY|VT_INTEGER,         "jpvt",  "nca",      NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDQRSLV_1;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -587,6 +607,7 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
     efprintf(F, Lang->stmt_if2_e);
     efprintf(F, Lang->stmt_for_e, "200");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDQRSLV_1: ;
 
     /* sdqrsl
      */
@@ -604,6 +625,8 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "b",     "nr",       NULL),
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDQRSLV_2;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
@@ -683,6 +706,7 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
     efprintf(F, Lang->stmt_for_e, "160");
     efprintf(F, Lang->stmt_for_e, "170");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDQRSLV_2: ;
 
     /* sdqrbslv
      */
@@ -703,6 +727,8 @@ or missing equations are set to 0. (Not necessarily the LS solution.)\n");
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(VT_INTEGER|VT_BYREF,         "rank"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDQRSLV_3;
 
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
@@ -788,6 +814,7 @@ kk%=iwork%(j%)%;\n");
     efprintf(F, Lang->stmt_for_e, "50");
     efprintf(F, "%srank%=k%;\n",Lang->deref);
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDQRSLV_3: ;
 
     /* sdqrslv
      */
@@ -808,6 +835,8 @@ kk%=iwork%(j%)%;\n");
       packvar(VT_SARRAY,                  "x",     "nc",       NULL),
       packvar(VT_INTEGER|VT_BYREF,         "rank"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDQRSLV_4;
     efprintf(F, Lang->proc_dbegin);
     efprintf(F, Lang->proc_dend);
     efprintf(F, Lang->proc_sbegin);
@@ -817,6 +846,7 @@ kk%=iwork%(j%)%;\n");
 jpvt,b,x,rank)%;\n",
              Lang->proc_call);
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDQRSLV_4: ;
 }
 
 /* PRINT_SDLSSLV 
@@ -966,6 +996,8 @@ Work arrays should be dimensioned as follows:\n\
       packvar(VT_SARRAY,                  "b",    "nr",               NULL),
       packvar(VT_SARRAY,                  "x",    "nc",               NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDLSSLV_1;
     efprintf(F, Lang->proc_dbegin);
     declare_vars(F, 0, 
       VT_INTEGER, "i", 
@@ -1147,4 +1179,5 @@ tol,%Piw%(jpvt%),%Prw%(qraux%),%Prw%(work%),%Piw%(iwork%),%&\
         efprintf(F, Lang->stmt_for_e, "620");
     efprintf(F, Lang->stmt_if2_e);
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDLSSLV_1: ;
 }

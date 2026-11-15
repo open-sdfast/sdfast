@@ -1,6 +1,6 @@
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 
 
 ROADMAP (pend.sd)
@@ -14,6 +14,18 @@ No  Name      body Joint type  Coords q
 */
 #include <math.h>
 #include <stdio.h>
+#include "pend_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int ground_,nbod_,ndof_,ncons_,nloop_,nldof_,nloopc_,nball_,nlball_,npres_,
@@ -272,57 +284,107 @@ sdgtopo_t sdgtopo = {
     /* nlball */ 0,
     /* npres */ 0,
     /* nuser */ 0,
+    {
     /* jtype[0] */ 1,
+    },
+    {
     /* inb[0] */ -1,
+    },
+    {
     /* outb[0] */ 0,
+    },
+    {
     /* njntdof[0] */ 1,
+    },
+    {
     /* njntc[0] */ 0,
+    },
+    {
     /* njntp[0] */ 0,
+    },
+    {
     /* firstq[0] */ 0,
+    },
+    {
     /* ballq[0] */ -104,
+    },
+    {
     /* firstm[0] */ -1,
+    },
+    {
     /* firstp[0] */ -1,
+    },
+    {
     /* trans[0] */ 0,
+    },
 };
 sdginput_t sdginput = {
 /* Model parameters from the input file */
 
 /* gravity */
+    {
     /* grav[0] */ 0.,
     /* grav[1] */ -9.8,
     /* grav[2] */ 0.,
+    },
 
 /* mass */
+    {
     /* mk[0] */ 10.,
+    },
 
 /* inertia */
+    {
+    {
+    {
     /* ik[0][0][0] */ 5.,
     /* ik[0][0][1] */ 0.,
     /* ik[0][0][2] */ 0.,
+    },
+    {
     /* ik[0][1][0] */ 0.,
     /* ik[0][1][1] */ 1.,
     /* ik[0][1][2] */ 0.,
+    },
+    {
     /* ik[0][2][0] */ 0.,
     /* ik[0][2][1] */ 0.,
     /* ik[0][2][2] */ 5.,
+    },
+    },
+    },
 
 /* tree hinge axis vectors */
+    {
+    {
     /* pin[0][0] */ 0.,
     /* pin[0][1] */ 0.,
     /* pin[0][2] */ 1.,
+    },
+    },
 
 /* tree bodytojoint vectors */
+    {
+    {
     /* rk[0][0] */ 0.,
     /* rk[0][1] */ 1.5,
     /* rk[0][2] */ 0.,
+    },
+    },
 
 /* tree inbtojoint vectors */
+    {
+    {
     /* ri[0][0] */ 0.,
     /* ri[0][1] */ 0.,
     /* ri[0][2] */ 0.,
+    },
+    },
 
 /* tree prescribed motion */
+    {
     /* pres[0] */ 0.,
+    },
 
 /* stabilization parameters */
     /* stabvel */ 0.,
@@ -338,34 +400,78 @@ sdginput_t sdginput = {
     /* wwflg */ 0,
     /* ltauflg */ 0,
     /* fs0flg */ 0,
+    {
     /* mmap[0] */ 0,
+    },
 
 /* Which parameters were "?" (1) or "<nominal>?" (3) */
+    {
     /* gravq[0] */ 0,
     /* gravq[1] */ 0,
     /* gravq[2] */ 0,
+    },
+    {
     /* mkq[0] */ 3,
+    },
+    {
+    {
+    {
     /* ikq[0][0][0] */ 0,
     /* ikq[0][0][1] */ 0,
     /* ikq[0][0][2] */ 0,
+    },
+    {
     /* ikq[0][1][0] */ 0,
     /* ikq[0][1][1] */ 0,
     /* ikq[0][1][2] */ 0,
+    },
+    {
     /* ikq[0][2][0] */ 0,
     /* ikq[0][2][1] */ 0,
     /* ikq[0][2][2] */ 0,
+    },
+    },
+    },
+    {
+    {
     /* pinq[0][0] */ 0,
     /* pinq[0][1] */ 0,
     /* pinq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* rkq[0][0] */ 0,
     /* rkq[0][1] */ 0,
     /* rkq[0][2] */ 0,
+    },
+    },
+    {
+    {
     /* riq[0][0] */ 0,
     /* riq[0][1] */ 0,
     /* riq[0][2] */ 0,
+    },
+    },
+    {
     /* presq[0] */ 0,
+    },
     /* stabvelq */ 3,
     /* stabposq */ 3,
+    /* mtot */ 0.,
+    /* psmkg */ 0.,
+    /* rhead */ {{0}},
+    /* rcom */ {{0}},
+    /* mkrcomt */ {{{0}}},
+    /* psikg */ {{0}},
+    /* psrcomg */ {0},
+    /* psrkg */ {0},
+    /* psrig */ {0},
+    /* psmk */ {0},
+    /* psik */ {{{0}}},
+    /* psrcom */ {{0}},
+    /* psrk */ {{0}},
+    /* psri */ {{0}},
 
 /* End of values from input file */
 
@@ -506,7 +612,7 @@ void sdstate(double timein,
 Compute kinematic information and store it in sdgstate.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     int i,j,qchg,uchg;
 
@@ -863,7 +969,8 @@ void sddommldu(int routine)
 /*
 Numerically decompose the mass matrix
 */
-        sdldudcomp(1,1,mmap,1e-13,workss,works,mm,mlo,mdi);
+        sdldudcomp(1,1,mmap,1e-13,(double*)workss,works,(double*)
+          mm,(double*)mlo,mdi);
 /*
 Check for singular mass matrix
 */
@@ -1097,7 +1204,7 @@ void sdrhs(void)
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
 /*
@@ -1228,7 +1335,7 @@ void sdaerr(double errs[1])
 {
 
 }
-int 
+int
 sdchkbnum(int routine,
     int bnum)
 {
@@ -1239,7 +1346,7 @@ sdchkbnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjnum(int routine,
     int jnum)
 {
@@ -1250,18 +1357,15 @@ sdchkjnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkucnum(int routine,
     int ucnum)
 {
 
-    if ((ucnum < 0) || (ucnum > -1)) {
-        sdseterr(routine,21);
-        return 1;
-    }
-    return 0;
+    sdseterr(routine,21);
+    return 1;
 }
-int 
+int
 sdchkjaxis(int routine,
     int jnum,
     int axnum)
@@ -1285,7 +1389,7 @@ sdchkjaxis(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjpin(int routine,
     int jnum,
     int pinno)
@@ -1320,7 +1424,7 @@ sdchkjpin(int routine,
     }
     return 0;
 }
-int 
+int
 sdindx(int joint,
     int axis)
 {
@@ -1498,7 +1602,7 @@ Compute unconstrained equations
 Solve equations for udots
 */
     sdfs0();
-    sdldubslv(1,1,mmap,works,mlo,mdi,fs,udot);
+    sdldubslv(1,1,mmap,works,(double*)mlo,mdi,fs,udot);
     for (i = 0; i <= 0; i++) {
         oudot0[i] = udot[i];
     }
@@ -1675,7 +1779,7 @@ void sdreac(double force[1][3],
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
     if (roustate != 3) {
@@ -1718,7 +1822,7 @@ void sdmom(double lm[3],
 Compute system linear and angular momentum, and kinetic energy.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double lk[1][3],hnk[1][3];
 
@@ -1755,7 +1859,7 @@ Compute system total mass, and instantaneous center of mass and
 inertia matrix.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double ikcnkt[1][3][3];
 

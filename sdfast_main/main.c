@@ -26,6 +26,207 @@
  */
 static void adj_stats(opstats_t opstats[],  int which);
 static void forward_fprintf(FILE* fp, char* fmt, ...);
+static int open_defs_header(void);
+static void close_defs_header(int announce);
+static void include_defs(FILE* F);
+
+/* Leaf name of {basename}_defs.h, for #include in dyn/sar/aux. */
+static char defs_leaf[256];
+static char defs_guard[320];
+
+static void ident_upper(char* out, size_t n, const char* in)
+{
+    size_t i = 0;
+    int first = 1;
+
+    if (!in || !in[0])
+        in = "SD";
+    for (; *in && i + 1 < n; in++) {
+        unsigned char c = (unsigned char)*in;
+
+        if (c >= 'a' && c <= 'z')
+            c = (unsigned char)(c - 'a' + 'A');
+        else if (!((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')))
+            c = '_';
+        if (first && c >= '0' && c <= '9') {
+            if (i + 2 >= n)
+                break;
+            out[i++] = '_';
+        }
+        first = 0;
+        out[i++] = (char)c;
+    }
+    out[i] = '\0';
+}
+
+static const char* path_leaf(const char* path)
+{
+    const char* leaf = path;
+    const char* p;
+
+    for (p = path; *p; p++) {
+        if (*p == '/' || *p == '\\' || *p == ':')
+            leaf = p + 1;
+    }
+    return leaf[0] ? leaf : path;
+}
+
+static void emit_size_defines(FILE* hdr, const char* pfx)
+{
+    fprintf(hdr,
+        "\n/* Model sizes. These are integer constant expressions, so user\n"
+        " * code can use them as array bounds.\n"
+        " *\n"
+        " * The macro prefix is the uppercased -p prefix (SD_NQ, or XX_NQ\n"
+        " * with -p xx). Two models in one program need distinct prefixes.\n"
+        " *\n"
+        " * NU is the number of rate coordinates (the sdinfo \"nu\" line),\n"
+        " * not the number of user constraints (NUSERC, sdinfo \"nuserc\").\n"
+        " */\n");
+    fprintf(hdr, "#define %s_NBOD %d\n", pfx, SysI.n);
+    fprintf(hdr, "#define %s_NJNT %d\n", pfx, SysI.nj);
+    fprintf(hdr, "#define %s_NDOF %d\n", pfx, SysI.s);
+    fprintf(hdr, "#define %s_NLOOP %d\n", pfx, SysI.nl);
+    fprintf(hdr, "#define %s_NLDOF %d\n", pfx, SysI.sl);
+    fprintf(hdr, "#define %s_NBALL %d\n", pfx, SysI.nb);
+    fprintf(hdr, "#define %s_NLBALL %d\n", pfx, SysI.nlb);
+    fprintf(hdr, "#define %s_NQ %d\n", pfx, SysI.nq);
+    fprintf(hdr, "#define %s_NU %d\n", pfx, SysI.s);
+    fprintf(hdr, "#define %s_NLQ %d\n", pfx, SysI.nlq);
+    fprintf(hdr, "#define %s_NLU %d\n", pfx, SysI.sl);
+    fprintf(hdr, "#define %s_NC %d\n", pfx, SysI.nc);
+    fprintf(hdr, "#define %s_NLC %d\n", pfx, SysI.nlc);
+    fprintf(hdr, "#define %s_NXC %d\n", pfx, SysI.nxc);
+    fprintf(hdr, "#define %s_NPRESC %d\n", pfx, SysI.np);
+    fprintf(hdr, "#define %s_NUSERC %d\n", pfx, SysI.nu);
+}
+
+/* User routines this model calls. Types follow the calls
+ * (VT_REAL / %t), so -s uses float and the default stays double. */
+static void emit_user_prototypes(FILE* hdr)
+{
+    const char* unk = Lang->unknown_len;
+
+    declare_proc(hdr, DECL_FORWARD, "uforce",
+      VT_REAL, "t",
+      VT_SARRAY, "q", unk, NULL,
+      VT_SARRAY, "u", unk, NULL,
+      0);
+    if (SysI.np)
+        declare_proc(hdr, DECL_FORWARD, "umotion",
+          VT_REAL, "t",
+          VT_SARRAY, "q", unk, NULL,
+          VT_SARRAY, "u", unk, NULL,
+          0);
+    if (SysI.nu) {
+        declare_proc(hdr, DECL_FORWARD, "uperr",
+          VT_REAL, "t",
+          VT_SARRAY, "q", unk, NULL,
+          VT_SARRAY, "errs", unk, NULL,
+          0);
+        declare_proc(hdr, DECL_FORWARD, "uverr",
+          VT_REAL, "t",
+          VT_SARRAY, "q", unk, NULL,
+          VT_SARRAY, "u", unk, NULL,
+          VT_SARRAY, "errs", unk, NULL,
+          0);
+        declare_proc(hdr, DECL_FORWARD, "uconsfrc",
+          VT_REAL, "t",
+          VT_SARRAY, "q", unk, NULL,
+          VT_SARRAY, "u", unk, NULL,
+          VT_SARRAY, "mults", unk, NULL,
+          0);
+        declare_proc(hdr, DECL_FORWARD, "uaerr",
+          VT_REAL, "t",
+          VT_SARRAY, "q", unk, NULL,
+          VT_SARRAY, "u", unk, NULL,
+          VT_SARRAY, "udot", unk, NULL,
+          VT_SARRAY, "errs", unk, NULL,
+          0);
+    }
+}
+
+static int open_defs_header(void)
+{
+    FILE* hdr;
+    char pfx[64];
+    char base_id[64];
+    const char* prefix = sdfast_opt.prefix ? sdfast_opt.prefix : "sd";
+    const char* base = sdfast_opt.basename ? sdfast_opt.basename : "model";
+
+    if (openw(&hdr, sdfast_opt.hdrname))
+        return 1;
+    ident_upper(pfx, sizeof pfx, prefix);
+    ident_upper(base_id, sizeof base_id, base);
+    snprintf(defs_guard, sizeof defs_guard, "SDFAST_%s_%s_DEFS_H", pfx, base_id);
+    strncpy(defs_leaf, path_leaf(sdfast_opt.hdrname), sizeof defs_leaf - 1);
+    defs_leaf[sizeof defs_leaf - 1] = '\0';
+
+    fprintf(hdr, "#ifndef %s\n#define %s\n", defs_guard, defs_guard);
+    fprintf(hdr, "/*\n");
+    PRINT_SUBR_STAMP(hdr);
+    fprintf(hdr,
+        "Public declarations for this model. This is the header to include\n"
+        "from user code. Single-precision (-s) prototypes use float.\n"
+        "*/\n");
+    fprintf(hdr, "#include <stdio.h>\n");
+    fprintf(hdr, "#ifdef __cplusplus\nextern \"C\" {\n#endif\n");
+    emit_size_defines(hdr, pfx);
+
+    /* Library prototypes come from the same declare_proc lists as the
+     * definitions. Bodies are skipped so the calculator state is unchanged.
+     * Every public library routine is declared, whether or not this model
+     * calls it. The library file itself includes no header. */
+    efprintf_reset_state();
+    model_header = NULL;
+    proto_only = 1;
+    PRINT_SDPRERRMSG(hdr);
+    PRINT_ERRSTUFF(hdr);
+    PRINT_SDLDUSLV(hdr);
+    PRINT_SDQRSLV(hdr);
+    PRINT_SDLSSLV(hdr);
+    PRINT_SDROOT(hdr);
+    PRINT_SDINTEG(hdr);
+    PRINT_SDDC2ANG(hdr);
+    PRINT_SDDC2QUAT(hdr);
+    PRINT_SDANG2DC(hdr);
+    PRINT_SDQUAT2DC(hdr);
+    PRINT_VECSUBS(hdr);
+    PRINT_SDSERIALNO(hdr);
+    proto_only = 0;
+    efprintf_reset_state();
+    emit_user_prototypes(hdr);
+    efprintf_reset_state();
+    model_header = hdr;
+    return 0;
+}
+
+static void close_defs_header(int announce)
+{
+    proto_only = 0;
+    if (!model_header)
+        return;
+    fprintf(model_header, "#ifdef __cplusplus\n}\n#endif\n#endif /* %s */\n",
+            defs_guard);
+    CLOSE_FILE(model_header);
+    model_header = NULL;
+    efprintf_reset_state();
+    if (announce && sdfast_opt.verbose)
+        printf("Header File %s generated.\n", sdfast_opt.hdrname);
+}
+
+static void include_defs(FILE* F)
+{
+    if (defs_leaf[0])
+        fprintf(F, "#include \"%s\"\n", defs_leaf);
+}
+
+/* Lang->diag_preamble is empty except for languages that suppress
+ * unused-name warnings in generated sources. Not written to a header. */
+static void emit_diag_preamble(FILE* F)
+{
+    efprintf(F, "%s", Lang->diag_preamble);
+}
 
 /* Location of opcount stats for each routine. */
 #define SDSTATE      0
@@ -190,6 +391,15 @@ int main(int argc, char *argv[])
             printf("Information File %s generated.\n", sdfast_opt.infoname);
     }
 
+    /* {basename}_defs.h for languages that have one. Open it before
+     * dyn/sar so their definitions are mirrored into it. */
+    if ((Lang->flags & LANG_MODEL_HEADER) && sdfast_opt.genhdr) {
+        if (open_defs_header()) {
+            exitstat = EXIT_FILEERR;
+            goto error_return;
+        }
+    }
+
     /* The Dynamics File (SDINIT, SDSTATE, SDLHS, SDRHS, SDDERIV, ...) */
 
     if (!sdfast_opt.gendyn)
@@ -213,6 +423,8 @@ int main(int argc, char *argv[])
         efprintf(dynF,"#include <math.h>\n");
         efprintf(dynF,"#include <stdio.h>\n");
     }
+    include_defs(dynF);
+    emit_diag_preamble(dynF);
 
     DECLARE_GLOBALS(dynF, 1/*generate initializations*/);
 
@@ -455,6 +667,8 @@ Equation complexity:\n\
         efprintf(sarF, "%}");
         if (Lang->flags & LANG_C_FAMILY)
             efprintf(sarF,"#include <math.h>\n");
+        include_defs(sarF);
+        emit_diag_preamble(sarF);
 
         PRINT_SDPOSFUNC(sarF);
         PRINT_SDANAL(sarF);
@@ -463,6 +677,10 @@ Equation complexity:\n\
             printf("Simplified Analysis File %s generated.\n", 
                    sdfast_opt.sarname);
     }
+
+    /* Finish the model header before the library file. lib.c includes
+     * nothing: its prototypes already live in the model header. */
+    close_defs_header(1);
 
     /* The Library File (sdlduslv, sdroot, ...) */
     if (sdfast_opt.genlib) {
@@ -478,6 +696,7 @@ Equation complexity:\n\
             efprintf(libF,"#include <math.h>\n");
             efprintf(libF,"#include <stdio.h>\n");
         }
+        emit_diag_preamble(libF);
 
         DECLARE_LIB_GLOBALS(libF);
 
@@ -511,6 +730,7 @@ Equation complexity:\n\
      * freed.
      */
   error_return:
+    close_defs_header(0);
     FREE_SYSTEM(&SysI);
     exit(exitstat);
 }
@@ -589,6 +809,8 @@ openaux(FILE **dynbF,
         efprintf(*dynbF,"#include <math.h>\n");
         efprintf(*dynbF,"#include <stdio.h>\n");
     }
+    include_defs(*dynbF);
+    emit_diag_preamble(*dynbF);
 
     DECLARE_GLOBALS(*dynbF, 0/*no initializations*/);
 

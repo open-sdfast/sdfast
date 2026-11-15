@@ -41,6 +41,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_STMT_UPPER|LANG_COMMON_DECL
         |LANG_LINE_COMMENTS|LANG_SEPARATE_INIT|LANG_VARDIM|LANG_COLMAJOR
         |LANG_FUNCVAL_IN_NAME },
@@ -64,6 +65,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_COMMON_DECL|LANG_LINE_COMMENTS|LANG_SEPARATE_INIT
         |LANG_FUNCVAL_IN_NAME },
     ADSIM_language_decl = {
@@ -86,6 +88,7 @@ struct language FORTRAN_language = {
         "","","%.0s%s",
         "","","data ","/","/\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_COMMON_DECL|LANG_LINE_COMMENTS|LANG_SEPARATE_INIT
         |LANG_FUNCVAL_IN_NAME },
     KRC_language = {
@@ -109,6 +112,7 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_C_FAMILY },
     ANSIC_language = {
         &KRC_language,
@@ -117,7 +121,7 @@ struct language FORTRAN_language = {
         "/* ", -3, " */\n",
         "", " = ",
         " < "," <= "," == "," != "," >= "," > "," && "," || ","!",
-        "", "int ", "float ", "double ", "int ", "&", "*",
+        "", "int ", "float ", "double ", "void ", "&", "*",
         "\nvoid ", "\n", "{\n", ";\n", "%>", "%<\n", "%>", 
         "%<}\n", "%<}\n", "", "(void)", "()",
         "if (fabs(%s) > %s)\n%>%s\n%<",
@@ -131,7 +135,21 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
-        LANG_C_FAMILY|LANG_DECL_IN_ARGLIST },
+        "(float*)", "(double*)",
+        "/* The generator emits one set of parameters and temporaries for every\n"
+        " * model, so some are unused here. These warnings are suppressed in\n"
+        " * this generated file only.\n"
+        " */\n"
+        "#if defined(__GNUC__)\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-variable\"\n"
+        "#pragma GCC diagnostic ignored \"-Wunused-but-set-variable\"\n"
+        "#elif defined(_MSC_VER)\n"
+        "#pragma warning(disable: 4100 4101 4189)\n"
+        "#endif\n",
+        "{\n", "},\n",
+        LANG_C_FAMILY|LANG_DECL_IN_ARGLIST|LANG_MODEL_HEADER|
+        LANG_TRIM_FUNC_TYPE|LANG_ZERO_UNINIT|LANG_EMPTY_RANGE },
     Cpp_language = {
         &ANSIC_language,
         "C++", ".cpp", 0, 80, 4, 0,
@@ -153,6 +171,7 @@ struct language FORTRAN_language = {
         "\ntypedef struct {\n%>", "%<} %@A%s;\n", "%@A%s.%s_",
         " = {\n%>","%<};\n","/* "," */ ",",\n",
         "sin","cos","fabs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_C_FAMILY|LANG_DECL_IN_ARGLIST|LANG_LINE_COMMENTS },
     Pascal_language = {
         &Cpp_language,
@@ -177,6 +196,7 @@ struct language FORTRAN_language = {
         "\ntype %@A%s = record\n%>", "end;\n%<", "%@A%s.%s",
         " := \n%>",";%<\n","{ "," } ",",\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_DECL2|LANG_DECL_IN_ARGLIST|LANG_FUNCVAL_IN_NAME },
     Ada_language = {
         &Pascal_language,
@@ -198,6 +218,7 @@ struct language FORTRAN_language = {
         "\ntype %@A%s = record\n%>", "end;\n%<", "%@A%s.%s",
         " := \n%>",";%<\n","{ "," } ",",\n",
         "sin","cos","abs","asin","acos","sqrt","atan2",
+        "", "", "", "", "",
         LANG_DECL2|LANG_DECL_IN_ARGLIST|LANG_LINE_COMMENTS|LANG_VARDIM },
     Text_language = {        /* used for output to user */
         0,
@@ -218,5 +239,6 @@ struct language FORTRAN_language = {
         "", "", "",
         "", "", "", "", "",
         "", "", "", "", "", "", "",
+        "", "", "", "", "",
         0 },
     *Lang;

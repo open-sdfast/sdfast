@@ -26,6 +26,16 @@
 #define cVeryClose 1e-15        /* used to see if a constant is "equal" to
                                    a particular numerical value */
 
+/* Model header for languages that set LANG_MODEL_HEADER.
+ * declare_proc copies a prototype here when the file is open.
+ * proto_only makes declare_proc emit a forward declaration and tells
+ * library printers to skip the function body. */
+extern FILE* model_header;
+extern int proto_only;
+extern int lexlev;
+
+void efprintf_reset_state(void);
+
 #define cMaxDim 1000000
 #define cMaxNumIndices 4
 

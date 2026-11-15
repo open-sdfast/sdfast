@@ -105,6 +105,8 @@ void PRINT_SDERROR(FILE *F)
       VT_INTEGER|VT_BYREF, "routine",
       VT_DUP|VT_BYREF,           "errnum",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDERROR_1;
 
     efprintf(F, Lang->proc_dbegin);
     declare_sdgerror_vars(F, DECL_NODSYM);
@@ -115,6 +117,7 @@ void PRINT_SDERROR(FILE *F)
     SETREF("routine", "lastrou");
 
     efprintf(F, Lang->proc_end); 
+    ansi_proto_PRINT_SDERROR_1: ;
 }
 
 void PRINT_SDPRINTERR(FILE *F)
@@ -124,14 +127,20 @@ void PRINT_SDPRINTERR(FILE *F)
         declare_proc(F, 0, "printerr", 
           VT_TYPENAME|VT_BYREF, "FILE", "fnum",
           0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDPRINTERR_1;
     } else if (Lang == &FORTRAN_language) {
         declare_proc(F, 0, "printerr", 
           VT_INTEGER, "fnum",
           0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDPRINTERR_1;
     } else if (Lang == &Ada_language) {
         declare_proc(F, 0, "printerr", 
           VT_TYPENAME, "FILE_TYPE", "fnum",
           0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDPRINTERR_1;
     }
 
     efprintf(F, Lang->proc_dbegin);
@@ -141,6 +150,7 @@ void PRINT_SDPRINTERR(FILE *F)
 
     CALL("%@Aprerrmsg(fnum,lastrou,lasterr)");
     efprintf(F, Lang->proc_end); 
+    ansi_proto_PRINT_SDPRINTERR_1: ;
 }
 
 void PRINT_SDCLEARERR(FILE *F)
@@ -148,6 +158,8 @@ void PRINT_SDCLEARERR(FILE *F)
     /* Print the sdclearerr() routine. */
     declare_proc(F, 0, "clearerr", 
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDCLEARERR_1;
 
     efprintf(F, Lang->proc_dbegin);
     declare_sdgerror_vars(F, DECL_NODSYM);
@@ -158,6 +170,7 @@ void PRINT_SDCLEARERR(FILE *F)
     ISET("lastrou", 0);
 
     efprintf(F, Lang->proc_end); 
+    ansi_proto_PRINT_SDCLEARERR_1: ;
 }
 
 /* Print the sdseterr() routine (internal use only). 
@@ -171,6 +184,8 @@ void PRINT_SDSETERR(FILE *F)
       VT_INTEGER, "routine",
       VT_DUP,          "errnum",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDSETERR_1;
 
     efprintf(F, Lang->proc_dbegin);
     declare_sdgerror_vars(F, DECL_NODSYM);
@@ -184,6 +199,7 @@ void PRINT_SDSETERR(FILE *F)
     ENDIF;
 
     efprintf(F, Lang->proc_end); 
+    ansi_proto_PRINT_SDSETERR_1: ;
 }
 
 /* Print the sdchkbnum, sdchkjnum, etc. routines (internal use only). 
@@ -252,15 +268,24 @@ void PRINT_CHECKSTUFF(FILE *F)
     efprintf(F, Lang->proc_dend);
     efprintf(F, Lang->proc_sbegin);
 
-    IFCOND efprintf(F, "(ucnum%s%@d)%s(ucnum%s%@d)", 
-                    LT, 0, OR_OP, GT, SysI.nu-1);
-    THEN  
+    /* nu == 0 makes `ucnum > -1` true for every int, which clang rejects
+     * under -Wtautological-overlap-compare. The check still rejects every
+     * index: there is no valid user constraint. */
+    if ((Lang->flags & LANG_EMPTY_RANGE) && SysI.nu == 0) {
         esprintf(callstr, "%@Aseterr(routine,%d)", ERR_BadUserConstraintNum);
         CALL(callstr);
         FRETURN("%Achkucnum", "1");
-    ENDIF;
+    } else {
+        IFCOND efprintf(F, "(ucnum%s%@d)%s(ucnum%s%@d)",
+                        LT, 0, OR_OP, GT, SysI.nu-1);
+        THEN
+            esprintf(callstr, "%@Aseterr(routine,%d)", ERR_BadUserConstraintNum);
+            CALL(callstr);
+            FRETURN("%Achkucnum", "1");
+        ENDIF;
 
-    FRETURN("%Achkucnum", "0");
+        FRETURN("%Achkucnum", "0");
+    }
     efprintf(F, Lang->proc_end_noret); 
 
     /* sdchkjaxis -- checks both joint number and axis number */

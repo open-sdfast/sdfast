@@ -193,6 +193,8 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_DUP|VT_BYREF,  "maxrerr"),
       packvar(VT_DUP|VT_BYREF,  "derrnorm"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDROOT_1;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -229,6 +231,7 @@ void PRINT_SDROOT(FILE *F)
     ENDIF;
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDROOT_1: ;
 
 /* sdadjvars 
  *
@@ -261,6 +264,8 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_SARRAY,                   "newvars", "nvar", NULL),
       packvar(VT_SARRAY,                   "newerrs", "nfunc", NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDROOT_2;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -365,6 +370,7 @@ void PRINT_SDROOT(FILE *F)
     ENDIF;
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDROOT_2: ;
 
 /* sdcalcjac 
  *   
@@ -391,6 +397,8 @@ void PRINT_SDROOT(FILE *F)
       packvar(VT_INTEGER|VT_BYREF,        "fcnt"),
       packvar(VT_SARRAY,                  "scale", "nfunc",  NULL),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDROOT_3;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -464,6 +472,7 @@ void PRINT_SDROOT(FILE *F)
     ENDFOR("220");
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDROOT_3: ;
 
 /* sdroot
  */
@@ -532,6 +541,8 @@ Work arrays should be dimensioned as follows:\n\
       packvar(VT_INTEGER|VT_BYREF,         "fcnt"),
       packvar(VT_DUP|VT_BYREF,             "err"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDROOT_4;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -870,4 +881,5 @@ Work arrays should be dimensioned as follows:\n\
     ENDIF;
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDROOT_4: ;
 }

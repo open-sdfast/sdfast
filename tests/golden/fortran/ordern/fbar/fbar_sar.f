@@ -1,6 +1,6 @@
 C
 C Generated TIMESTAMP by SD/FAST, Order(N) formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
 C
 C These routines are passed to sdroot.

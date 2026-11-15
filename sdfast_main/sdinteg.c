@@ -157,6 +157,8 @@ void PRINT_SDINTEG(FILE *F)
       packvar(VT_REAL|VT_BYREF,                "maxerr"),
       packvar(VT_INTEGER|VT_BYREF,        "which"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDINTEG_1;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -234,6 +236,7 @@ void PRINT_SDINTEG(FILE *F)
       ENDIF;
     ENDFOR("140");
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDINTEG_1: ;
 
 /* sdfinteg */
 
@@ -252,6 +255,8 @@ A fixed-step integrator.  Work should be dimensioned 4*neq.%}\n");
       VT_REAL|VT_BYREF,        "errest", 
       VT_INTEGER|VT_BYREF, "status",
       0);
+    if (proto_only)
+        goto ansi_proto_PRINT_SDINTEG_2;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -288,6 +293,7 @@ A fixed-step integrator.  Work should be dimensioned 4*neq.%}\n");
     SETREF("time", "ttime");
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDINTEG_2: ;
 
 /* sdvinteg */
 
@@ -317,6 +323,8 @@ A variable-step integrator.  Work should be dimensioned 6*neq.%}");
       packvar(VT_INTEGER|VT_BYREF,        "err"),
       packvar(VT_DUP|VT_BYREF,             "which"),
       packvar(0));
+    if (proto_only)
+        goto ansi_proto_PRINT_SDINTEG_3;
     efprintf(F, Lang->proc_dbegin);
 
     declare_vars(F, 0, 
@@ -547,4 +555,5 @@ A variable-step integrator.  Work should be dimensioned 6*neq.%}");
     SETREF("time", "tfin");
 
     efprintf(F, Lang->proc_end);
+    ansi_proto_PRINT_SDINTEG_3: ;
 }

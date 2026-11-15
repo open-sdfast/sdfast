@@ -17,6 +17,9 @@
 #include "decl.h"
 #include "calcprot.h"
 
+FILE* model_header = NULL;
+int proto_only = 0;
+
 static char *
 skip_decl(unsigned    vtype,
           va_list     *argptr,
@@ -401,16 +404,50 @@ VT_PAUSE may not be used.  decl_flags may specify:
 The proc_name is output preceded by the external name prefix.
 */
 
+static void declare_proc_va(FILE* F, unsigned decl_flags, va_list* argptr);
+
 /*VARARGS*/
 void 
 declare_proc(FILE *F, unsigned decl_flags, ...)
 {
     va_list     argptr;
+
+    if (proto_only)
+        decl_flags |= DECL_FORWARD;
+
+    /* Languages that list types in the argument list share one formatter
+     * for the definition and, when a model header is open, its prototype.
+     * Type-2 languages (Pascal, Ada) and the others keep the original
+     * path, including the va_start restart below. */
+    if (!(Lang->flags & LANG_DECL_IN_ARGLIST) ||
+        (Lang->flags & LANG_DECL2)) {
+        va_start(argptr, decl_flags);
+        goto legacy;
+    }
+
+    va_start(argptr, decl_flags);
+    if ((Lang->flags & LANG_MODEL_HEADER) &&
+        model_header && model_header != F && !(decl_flags & DECL_FORWARD)) {
+        va_list copy;
+        int saved_lev = lexlev;
+
+        /* Header prototypes stay at column 0 even if the definition
+         * is emitted from inside an indented block. */
+        lexlev = 0;
+        va_copy(copy, argptr);
+        declare_proc_va(model_header, decl_flags | DECL_FORWARD, &copy);
+        va_end(copy);
+        lexlev = saved_lev;
+    }
+    declare_proc_va(F, decl_flags, &argptr);
+    va_end(argptr);
+    return;
+
+legacy:
+    {
     unsigned    vtype, ftype = 0;
     char        *pname;
     packedvar_t *pvar = NULL;
-
-    va_start(argptr, decl_flags);
     if (Lang == &ADSIM_language)
         Lang = &ADSIM_language_decl;  /* special mode for commented out decls */
 
@@ -521,6 +558,78 @@ declare_proc(FILE *F, unsigned decl_flags, ...)
     if (decl_flags & DECL_PACKED)
         free_packedvars();
     va_end(argptr);
+    }
+}
+
+/* ANSI C half of declare_proc. The signature text comes from
+ * do_declare_vars1, the same routine that writes the definition. */
+static void declare_proc_va(FILE* F, unsigned decl_flags, va_list* argptr)
+{
+    unsigned    vtype, ftype = 0;
+    char*       pname;
+    packedvar_t* pvar = NULL;
+
+    if (Lang == &ADSIM_language)
+        Lang = &ADSIM_language_decl;
+
+    if (decl_flags & DECL_FUNCTION) {
+        ftype = va_arg(*argptr, unsigned);
+        if (Lang->flags & LANG_C_FAMILY) {
+            const char* typedec;
+            if ((ftype & VT_BASETYPE) == VT_INTEGER)
+                typedec = Lang->int_decl;
+            else if ((ftype & VT_BASETYPE) == VT_REAL)
+                typedec = gSinglePrecision ? Lang->single_decl
+                                           : Lang->double_decl;
+            else {
+                fprintf(stderr, "declare_proc: bad function type %#x\n", ftype);
+                abort();
+            }
+            if (Lang->flags & LANG_TRIM_FUNC_TYPE) {
+                char buf[64];
+                size_t n = strlen(typedec);
+                while (n > 0 && typedec[n - 1] == ' ')
+                    n--;
+                if (n >= sizeof buf)
+                    n = sizeof buf - 1;
+                memcpy(buf, typedec, n);
+                buf[n] = '\0';
+                efprintf(F, "%s", buf);
+            } else
+                efprintf(F, "%s", typedec);
+        }
+    }
+    pname = va_arg(*argptr, char*);
+    efprintf(F, "%s%@A%s%>",
+      decl_flags & DECL_FUNCTION ? Lang->func_decl : Lang->proc_decl,
+      pname);
+
+    vtype = GETPVAR(argptr, decl_flags, &pvar);
+    if (vtype) {
+        efprintf(F, "(");
+        if (Lang->flags & LANG_DECL2)
+            do_declare_vars2(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+        else
+            do_declare_vars1(F, vtype, pvar, argptr, decl_flags|DECL_PROC, 0);
+        efprintf(F, ")\n");
+    } else {
+        efprintf(F, "%s", Lang->proc_noargs_decl);
+        if (!(Lang->flags & LANG_DECL2))
+            efprintf(F, "\n");
+    }
+
+    if (decl_flags & DECL_FUNCTION && Lang->flags & LANG_DECL2)
+        efprintf(F, ": ");
+    if (decl_flags & DECL_FORWARD)
+        efprintf(F, "%<%s", Lang->proc_decl_fwd);
+    else {
+        efprintf(F, "%<%s", Lang->proc_decl_end);
+    }
+
+    if (Lang == &ADSIM_language_decl)
+        Lang = &ADSIM_language;
+    if (decl_flags & DECL_PACKED)
+        free_packedvars();
 }
 
 /* declare_type(F, decl_flags, {user_type, type_declaration} ... , NULL)

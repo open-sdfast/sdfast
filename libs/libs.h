@@ -730,11 +730,13 @@ typedef struct {
     int              geninfo;     /* generate Information File? */
     int              gensar;      /* generate Simplified Analysis File? */
     int              genlib;      /* generate Library File? */
+    int              genhdr;      /* generate {basename}_defs.h? (default) */
     char*            dynname;     /* special name for Dynamics File */
     char*            infoname;    /* special name for Info File */
     char*            sarname;     /* special name for Simplified Analysis File */
     char*            libname;     /* special name for Library File */
     char*            progname;    /* e.g. `sdfast' */
+    char*            hdrname;     /* ANSI C {basename}_defs.h, or -fh */
 } options_t;
 
 extern options_t sdfast_opt;

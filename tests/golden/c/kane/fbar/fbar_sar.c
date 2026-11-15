@@ -1,8 +1,20 @@
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 #include <math.h>
+#include "fbar_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 /* These routines are passed to sdroot. */
 

@@ -244,7 +244,7 @@ void PRINT_SDDOWW(FILE      *mainF,
                     for (k = 0; k < SysI.s; k++)
                         if (IS_CONST(INDX(dfsx,k)))
                             PRINT_ASSN1(F, PRINTNAME(dfs), k, INDX(dfsx, k));
-                    efprintf(F, "%s%Aldubsl(%d,%d,mmap,mlo,%s,row)%;\n", 
+                    efprintf(F, "%s%Aldubsl(%d,%d,mmap,%*mlo,%s,row)%;\n",
                              Lang->proc_call, SysI.s, SysI.s, PRINTNAME(dfs));
                     opcnt->nldubsl++;
                 }
@@ -265,8 +265,8 @@ void PRINT_SDDOWW(FILE      *mainF,
                 redundant = 0; /* we can't know at generate time ... */
                 CALL0("%Afsmult");
                 opcnt->nfsmult++;
-                efprintf(F, "%s%Aldubsl(%d,%d,mmap,mlo,%s,row)%;\n", 
-                            Lang->proc_call, SysI.s, SysI.s, PRINTNAME(fs));
+                efprintf(F, "%s%Aldubsl(%d,%d,mmap,%*mlo,%s,row)%;\n",
+                         Lang->proc_call, SysI.s, SysI.s, PRINTNAME(fs));
                 opcnt->nldubsl++;
             }
 
@@ -372,7 +372,7 @@ void PRINT_SDDOWW(FILE      *mainF,
 
         efprintf(F, "%{\nForm QR decomposition of WW\n%}");
 
-        efprintf(F, "%s%Aqrdcomp(%d,%d,%d,%d,wmap,wmap,ww,qraux,jpvt)%;\n",
+        efprintf(F, "%s%Aqrdcomp(%d,%d,%d,%d,wmap,wmap,%*ww,qraux,jpvt)%;\n",
               Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc);
         opcnt->nqrdcomp++;
     } else 
@@ -619,7 +619,7 @@ void PRINT_SDUDOT0(FILE *F, opstats_t *opcnt)
         CALL0("%Afs0");
         opcnt->nfs0++;
 
-        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,mlo,mdi,fs,udot)%;\n", 
+        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%*mlo,mdi,fs,udot)%;\n",
                     Lang->proc_call,SysI.s,SysI.s);
         opcnt->nldubsl += 2;
         opcnt->nldubsd++;
@@ -808,7 +808,7 @@ void PRINT_SDUDOTM(FILE *F, opstats_t *opcnt)
     if (sdfast_opt.formulation != OPT_ORDERN) {
         CALL0("%Afsmult");                        /* SDFSMULT()   */
         opcnt->nfsmult++;
-        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,mlo,mdi,fs,udot)%;\n", 
+        efprintf(F, "%s%Aldubslv(%d,%d,mmap,works,%*mlo,mdi,fs,udot)%;\n",
                     Lang->proc_call,SysI.s,SysI.s);
         opcnt->nldubsl += 2;
         opcnt->nldubsd++;
@@ -1150,8 +1150,8 @@ void PRINT_SDDERIV(FILE *F,
 
     if (nindepc > 0) {
         efprintf(F, "%s%Aqrbslv(%d,%d,%d,%d,wmap,wmap,%r,workr,iwork,\
-%&ww,qraux,jpvt,bb,mult,%swrank)%;\n", 
-              Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc, 
+%&%*ww,qraux,jpvt,bb,mult,%swrank)%;\n",
+              Lang->proc_call, SysI.nc, SysI.nc, nindepc, nindepc,
               cEquationNegligible, Lang->ref);
         opcnt->nqrbslv++;
         FOR("80", "i", str_0, str_nindepc1);

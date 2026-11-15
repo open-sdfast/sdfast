@@ -495,7 +495,8 @@ void PRINT_SDDOMMLDU(FILE *F,
         THEN
           CALL("%Adomm(routine)");        /* Compute new mass matrix if needed. */
           efprintf(F, "%{\nNumerically decompose the mass matrix\n%}");
-          CALL3("%Aldudcomp(%d,%d,mmap,%r,workss,works,%&mm,mlo,mdi)", 
+          /* %* casts a rank-2 real to a pointer for languages that need it. */
+          CALL3("%Aldudcomp(%d,%d,mmap,%r,%*workss,works,%*%&mm,%*mlo,mdi)",
               SysI.s, SysI.s, cEquationNegligible);
           efprintf(F, "%{\nCheck for singular mass matrix\n%}");
           FORCNT("100", "i", str_s);

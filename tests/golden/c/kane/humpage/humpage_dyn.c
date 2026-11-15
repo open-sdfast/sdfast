@@ -1,6 +1,6 @@
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 
 
 ROADMAP (humpage.sd)
@@ -23,6 +23,18 @@ User Constraints
 */
 #include <math.h>
 #include <stdio.h>
+#include "humpage_defs.h"
+/* The generator emits one set of parameters and temporaries for every
+ * model, so some are unused here. These warnings are suppressed in
+ * this generated file only.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#elif defined(_MSC_VER)
+#pragma warning(disable: 4100 4101 4189)
+#endif
 
 typedef struct {
     int ground_,nbod_,ndof_,ncons_,nloop_,nldof_,nloopc_,nball_,nlball_,npres_,
@@ -288,153 +300,247 @@ sdgtopo_t sdgtopo = {
     /* nlball */ 0,
     /* npres */ 0,
     /* nuser */ 3,
+    {
     /* jtype[0] */ 1,
     /* jtype[1] */ 1,
     /* jtype[2] */ 1,
     /* jtype[3] */ 1,
+    },
+    {
     /* inb[0] */ -1,
     /* inb[1] */ -1,
     /* inb[2] */ -1,
     /* inb[3] */ 2,
+    },
+    {
     /* outb[0] */ 0,
     /* outb[1] */ 1,
     /* outb[2] */ 2,
     /* outb[3] */ 3,
+    },
+    {
     /* njntdof[0] */ 1,
     /* njntdof[1] */ 1,
     /* njntdof[2] */ 1,
     /* njntdof[3] */ 1,
+    },
+    {
     /* njntc[0] */ 0,
     /* njntc[1] */ 0,
     /* njntc[2] */ 0,
     /* njntc[3] */ 0,
+    },
+    {
     /* njntp[0] */ 0,
     /* njntp[1] */ 0,
     /* njntp[2] */ 0,
     /* njntp[3] */ 0,
+    },
+    {
     /* firstq[0] */ 0,
     /* firstq[1] */ 1,
     /* firstq[2] */ 2,
     /* firstq[3] */ 3,
+    },
+    {
     /* ballq[0] */ -104,
     /* ballq[1] */ -104,
     /* ballq[2] */ -104,
     /* ballq[3] */ -104,
+    },
+    {
     /* firstm[0] */ -1,
     /* firstm[1] */ -1,
     /* firstm[2] */ -1,
     /* firstm[3] */ -1,
+    },
+    {
     /* firstp[0] */ -1,
     /* firstp[1] */ -1,
     /* firstp[2] */ -1,
     /* firstp[3] */ -1,
+    },
+    {
     /* trans[0] */ 0,
     /* trans[1] */ 0,
     /* trans[2] */ 0,
     /* trans[3] */ 0,
+    },
+    {
     /* firstu[0] */ 0,
     /* firstu[1] */ 1,
     /* firstu[2] */ 2,
+    },
 };
 sdginput_t sdginput = {
 /* Model parameters from the input file */
 
 /* gravity */
+    {
     /* grav[0] */ 0.,
     /* grav[1] */ 0.,
     /* grav[2] */ 0.,
+    },
 
 /* mass */
+    {
     /* mk[0] */ 1.,
     /* mk[1] */ 1.,
     /* mk[2] */ 1.,
     /* mk[3] */ 1.,
+    },
 
 /* inertia */
+    {
+    {
+    {
     /* ik[0][0][0] */ 1.,
     /* ik[0][0][1] */ 0.,
     /* ik[0][0][2] */ 0.,
+    },
+    {
     /* ik[0][1][0] */ 0.,
     /* ik[0][1][1] */ 1.,
     /* ik[0][1][2] */ 0.,
+    },
+    {
     /* ik[0][2][0] */ 0.,
     /* ik[0][2][1] */ 0.,
     /* ik[0][2][2] */ 1.,
+    },
+    },
+    {
+    {
     /* ik[1][0][0] */ 1.,
     /* ik[1][0][1] */ 0.,
     /* ik[1][0][2] */ 0.,
+    },
+    {
     /* ik[1][1][0] */ 0.,
     /* ik[1][1][1] */ 1.,
     /* ik[1][1][2] */ 0.,
+    },
+    {
     /* ik[1][2][0] */ 0.,
     /* ik[1][2][1] */ 0.,
     /* ik[1][2][2] */ 1.,
+    },
+    },
+    {
+    {
     /* ik[2][0][0] */ 1.,
     /* ik[2][0][1] */ 0.,
     /* ik[2][0][2] */ 0.,
+    },
+    {
     /* ik[2][1][0] */ 0.,
     /* ik[2][1][1] */ 1.,
     /* ik[2][1][2] */ 0.,
+    },
+    {
     /* ik[2][2][0] */ 0.,
     /* ik[2][2][1] */ 0.,
     /* ik[2][2][2] */ 1.,
+    },
+    },
+    {
+    {
     /* ik[3][0][0] */ 1.,
     /* ik[3][0][1] */ 0.,
     /* ik[3][0][2] */ 0.,
+    },
+    {
     /* ik[3][1][0] */ 0.,
     /* ik[3][1][1] */ 1.,
     /* ik[3][1][2] */ 0.,
+    },
+    {
     /* ik[3][2][0] */ 0.,
     /* ik[3][2][1] */ 0.,
     /* ik[3][2][2] */ 1.,
+    },
+    },
+    },
 
 /* tree hinge axis vectors */
+    {
+    {
     /* pin[0][0] */ 1.,
     /* pin[0][1] */ 0.,
     /* pin[0][2] */ 0.,
+    },
+    {
     /* pin[1][0] */ 1.,
     /* pin[1][1] */ 0.,
     /* pin[1][2] */ 0.,
+    },
+    {
     /* pin[2][0] */ 1.,
     /* pin[2][1] */ 0.,
     /* pin[2][2] */ 0.,
+    },
+    {
     /* pin[3][0] */ .32786885245902,
     /* pin[3][1] */ .94472324814583,
     /* pin[3][2] */ 0.,
+    },
+    },
 
 /* tree bodytojoint vectors */
+    {
+    {
     /* rk[0][0] */ 0.,
     /* rk[0][1] */ 0.,
     /* rk[0][2] */ 0.,
+    },
+    {
     /* rk[1][0] */ 0.,
     /* rk[1][1] */ 0.,
     /* rk[1][2] */ 0.,
+    },
+    {
     /* rk[2][0] */ 0.,
     /* rk[2][1] */ 0.,
     /* rk[2][2] */ 0.,
+    },
+    {
     /* rk[3][0] */ 0.,
     /* rk[3][1] */ 0.,
     /* rk[3][2] */ 0.,
+    },
+    },
 
 /* tree inbtojoint vectors */
+    {
+    {
     /* ri[0][0] */ 22.402258,
     /* ri[0][1] */ 0.,
     /* ri[0][2] */ 0.,
+    },
+    {
     /* ri[1][0] */ 115.256236,
     /* ri[1][1] */ 0.,
     /* ri[1][2] */ 0.,
+    },
+    {
     /* ri[2][0] */ 43.746005,
     /* ri[2][1] */ 0.,
     /* ri[2][2] */ 0.,
+    },
+    {
     /* ri[3][0] */ 13.882112,
     /* ri[3][1] */ 40.,
     /* ri[3][2] */ 0.,
+    },
+    },
 
 /* tree prescribed motion */
+    {
     /* pres[0] */ 0.,
     /* pres[1] */ 0.,
     /* pres[2] */ 0.,
     /* pres[3] */ 0.,
+    },
 
 /* stabilization parameters */
     /* stabvel */ 0.,
@@ -450,97 +556,183 @@ sdginput_t sdginput = {
     /* wwflg */ 0,
     /* ltauflg */ 0,
     /* fs0flg */ 0,
+    {
     /* mmap[0] */ 0,
     /* mmap[1] */ 1,
     /* mmap[2] */ 2,
     /* mmap[3] */ 3,
+    },
 
 /* Which parameters were "?" (1) or "<nominal>?" (3) */
+    {
     /* gravq[0] */ 0,
     /* gravq[1] */ 0,
     /* gravq[2] */ 0,
+    },
+    {
     /* mkq[0] */ 0,
     /* mkq[1] */ 0,
     /* mkq[2] */ 0,
     /* mkq[3] */ 0,
+    },
+    {
+    {
+    {
     /* ikq[0][0][0] */ 0,
     /* ikq[0][0][1] */ 0,
     /* ikq[0][0][2] */ 0,
+    },
+    {
     /* ikq[0][1][0] */ 0,
     /* ikq[0][1][1] */ 0,
     /* ikq[0][1][2] */ 0,
+    },
+    {
     /* ikq[0][2][0] */ 0,
     /* ikq[0][2][1] */ 0,
     /* ikq[0][2][2] */ 0,
+    },
+    },
+    {
+    {
     /* ikq[1][0][0] */ 0,
     /* ikq[1][0][1] */ 0,
     /* ikq[1][0][2] */ 0,
+    },
+    {
     /* ikq[1][1][0] */ 0,
     /* ikq[1][1][1] */ 0,
     /* ikq[1][1][2] */ 0,
+    },
+    {
     /* ikq[1][2][0] */ 0,
     /* ikq[1][2][1] */ 0,
     /* ikq[1][2][2] */ 0,
+    },
+    },
+    {
+    {
     /* ikq[2][0][0] */ 0,
     /* ikq[2][0][1] */ 0,
     /* ikq[2][0][2] */ 0,
+    },
+    {
     /* ikq[2][1][0] */ 0,
     /* ikq[2][1][1] */ 0,
     /* ikq[2][1][2] */ 0,
+    },
+    {
     /* ikq[2][2][0] */ 0,
     /* ikq[2][2][1] */ 0,
     /* ikq[2][2][2] */ 0,
+    },
+    },
+    {
+    {
     /* ikq[3][0][0] */ 0,
     /* ikq[3][0][1] */ 0,
     /* ikq[3][0][2] */ 0,
+    },
+    {
     /* ikq[3][1][0] */ 0,
     /* ikq[3][1][1] */ 0,
     /* ikq[3][1][2] */ 0,
+    },
+    {
     /* ikq[3][2][0] */ 0,
     /* ikq[3][2][1] */ 0,
     /* ikq[3][2][2] */ 0,
+    },
+    },
+    },
+    {
+    {
     /* pinq[0][0] */ 0,
     /* pinq[0][1] */ 0,
     /* pinq[0][2] */ 0,
+    },
+    {
     /* pinq[1][0] */ 0,
     /* pinq[1][1] */ 0,
     /* pinq[1][2] */ 0,
+    },
+    {
     /* pinq[2][0] */ 0,
     /* pinq[2][1] */ 0,
     /* pinq[2][2] */ 0,
+    },
+    {
     /* pinq[3][0] */ 0,
     /* pinq[3][1] */ 0,
     /* pinq[3][2] */ 0,
+    },
+    },
+    {
+    {
     /* rkq[0][0] */ 0,
     /* rkq[0][1] */ 0,
     /* rkq[0][2] */ 0,
+    },
+    {
     /* rkq[1][0] */ 0,
     /* rkq[1][1] */ 0,
     /* rkq[1][2] */ 0,
+    },
+    {
     /* rkq[2][0] */ 0,
     /* rkq[2][1] */ 0,
     /* rkq[2][2] */ 0,
+    },
+    {
     /* rkq[3][0] */ 0,
     /* rkq[3][1] */ 0,
     /* rkq[3][2] */ 0,
+    },
+    },
+    {
+    {
     /* riq[0][0] */ 0,
     /* riq[0][1] */ 0,
     /* riq[0][2] */ 0,
+    },
+    {
     /* riq[1][0] */ 0,
     /* riq[1][1] */ 0,
     /* riq[1][2] */ 0,
+    },
+    {
     /* riq[2][0] */ 0,
     /* riq[2][1] */ 0,
     /* riq[2][2] */ 0,
+    },
+    {
     /* riq[3][0] */ 0,
     /* riq[3][1] */ 0,
     /* riq[3][2] */ 0,
+    },
+    },
+    {
     /* presq[0] */ 0,
     /* presq[1] */ 0,
     /* presq[2] */ 0,
     /* presq[3] */ 0,
+    },
     /* stabvelq */ 3,
     /* stabposq */ 3,
+    /* mtot */ 0.,
+    /* psmkg */ 0.,
+    /* rhead */ {{0}},
+    /* rcom */ {{0}},
+    /* mkrcomt */ {{{0}}},
+    /* psikg */ {{0}},
+    /* psrcomg */ {0},
+    /* psrkg */ {0},
+    /* psrig */ {0},
+    /* psmk */ {0},
+    /* psik */ {{{0}}},
+    /* psrcom */ {{0}},
+    /* psrk */ {{0}},
+    /* psri */ {{0}},
 
 /* End of values from input file */
 
@@ -688,7 +880,7 @@ void sdstate(double timein,
 Compute kinematic information and store it in sdgstate.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     int i,j,qchg,uchg;
 
@@ -1180,7 +1372,8 @@ void sddommldu(int routine)
 /*
 Numerically decompose the mass matrix
 */
-        sdldudcomp(4,4,mmap,1e-13,workss,works,mm,mlo,mdi);
+        sdldudcomp(4,4,mmap,1e-13,(double*)workss,works,(double*)
+          mm,(double*)mlo,mdi);
 /*
 Check for singular mass matrix
 */
@@ -1515,7 +1708,7 @@ void sdrhs(void)
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
 /*
@@ -1747,7 +1940,7 @@ Return acceleration constraint errors.
     errs[1] = aerr[1];
     errs[2] = aerr[2];
 }
-int 
+int
 sdchkbnum(int routine,
     int bnum)
 {
@@ -1758,7 +1951,7 @@ sdchkbnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjnum(int routine,
     int jnum)
 {
@@ -1769,7 +1962,7 @@ sdchkjnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkucnum(int routine,
     int ucnum)
 {
@@ -1780,7 +1973,7 @@ sdchkucnum(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjaxis(int routine,
     int jnum,
     int axnum)
@@ -1804,7 +1997,7 @@ sdchkjaxis(int routine,
     }
     return 0;
 }
-int 
+int
 sdchkjpin(int routine,
     int jnum,
     int pinno)
@@ -1839,7 +2032,7 @@ sdchkjpin(int routine,
     }
     return 0;
 }
-int 
+int
 sdindx(int joint,
     int axis)
 {
@@ -2031,7 +2224,7 @@ Compute user-generated multiplier forces
         sduconsfrc(curtim,q,u,umult);
         mfrcflg = 0;
         sdfsmult();
-        sdldubsl(4,4,mmap,mlo,fs,row);
+        sdldubsl(4,4,mmap,(double*)mlo,fs,row);
         sdldubsd(4,4,mmap,mdi,row,dinvrow);
         for (i = 0; i <= 3; i++) {
             pp[0][i] = row[i];
@@ -2063,7 +2256,7 @@ Compute user-generated multiplier forces
         sduconsfrc(curtim,q,u,umult);
         mfrcflg = 0;
         sdfsmult();
-        sdldubsl(4,4,mmap,mlo,fs,row);
+        sdldubsl(4,4,mmap,(double*)mlo,fs,row);
         sdldubsd(4,4,mmap,mdi,row,dinvrow);
         for (i = 0; i <= 3; i++) {
             pp[1][i] = row[i];
@@ -2095,7 +2288,7 @@ Compute user-generated multiplier forces
         sduconsfrc(curtim,q,u,umult);
         mfrcflg = 0;
         sdfsmult();
-        sdldubsl(4,4,mmap,mlo,fs,row);
+        sdldubsl(4,4,mmap,(double*)mlo,fs,row);
         sdldubsd(4,4,mmap,mdi,row,dinvrow);
         for (i = 0; i <= 3; i++) {
             pp[2][i] = row[i];
@@ -2118,7 +2311,7 @@ Produce constraint coefficient matrix WW
 /*
 Form QR decomposition of WW
 */
-        sdqrdcomp(3,3,3,3,wmap,wmap,ww,qraux,jpvt);
+        sdqrdcomp(3,3,3,3,wmap,wmap,(double*)ww,qraux,jpvt);
         wwflg = 1;
     }
 /*
@@ -2144,7 +2337,7 @@ Compute unconstrained equations
 Solve equations ignoring constraints
 */
     sdfs0();
-    sdldubslv(4,4,mmap,works,mlo,mdi,fs,udot);
+    sdldubslv(4,4,mmap,works,(double*)mlo,mdi,fs,udot);
     for (i = 0; i <= 3; i++) {
         oudot0[i] = udot[i];
     }
@@ -2197,7 +2390,7 @@ Compute udots due only to multipliers
     sdlhs(routine);
     sdmfrc(imult);
     sdfsmult();
-    sdldubslv(4,4,mmap,works,mlo,mdi,fs,udot);
+    sdldubslv(4,4,mmap,works,(double*)mlo,mdi,fs,udot);
     for (i = 0; i <= 3; i++) {
         oudotm[i] = udot[i];
     }
@@ -2281,7 +2474,8 @@ Compute and decompose constraint matrix WW
 /*
 Numerically solve for constraint multipliers
 */
-    sdqrbslv(3,3,3,3,wmap,wmap,1e-13,workr,iwork,ww,qraux,jpvt,bb,mult,&wrank);
+    sdqrbslv(3,3,3,3,wmap,wmap,1e-13,workr,iwork,(double*)ww,qraux,jpvt,bb,mult,
+      &wrank);
     for (i = 0; i <= 2; i++) {
         multmap[i] = 0;
     }
@@ -2394,7 +2588,7 @@ void sdreac(double force[4][3],
 {
 /*
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
 
     if (roustate != 3) {
@@ -2513,7 +2707,7 @@ void sdmom(double lm[3],
 Compute system linear and angular momentum, and kinetic energy.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double lk[4][3],hnk[4][3];
 
@@ -2553,7 +2747,7 @@ Compute system total mass, and instantaneous center of mass and
 inertia matrix.
 
 Generated TIMESTAMP by SD/FAST, Kane's formulation
-(sdfast 2.0 #10001)
+(sdfast 2.1 #10001)
 */
     double ikcnkt[4][3][3];
 

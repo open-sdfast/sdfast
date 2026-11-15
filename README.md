@@ -20,6 +20,14 @@ updates.
 
 CMake 3.21 or newer and a C17 compiler. See `tests/README.md` for the configure, build, and test commands. If you do not pass `-DCMAKE_BUILD_TYPE`, single-config generators use `RelWithDebInfo`. A local build treats generator and test-harness warnings as errors (`SDFAST_WARNINGS_AS_ERRORS` defaults on). Pass `-DSDFAST_WARNINGS_AS_ERRORS=OFF` to disable that. Generated sources are not under that flag.
 
+### Generated C
+
+`-lc` writes ANSI C. The default generation set is `dish`: dynamics, information, analysis, and one user header, `{basename}_defs.h`, on every platform (there is no short Windows name). The header is emitted only for ANSI C. The dynamics file, the analysis file, and any `-b` auxiliary files include it. `{prefix}lib.c` does not include a header, and no `{prefix}lib.h` is written.
+
+`{basename}_defs.h` declares the public dynamics and analysis routines, the user routines this model calls, and every public library routine (integrator, root finder, LU/QR helpers, and the rest), with the `-p` prefix and the selected precision. It also `#define`s the model sizes as integer constant expressions (`SD_NQ`, `SD_NU`, `SD_NBOD`, `SD_NC`, `SD_NUSERC`, `SD_NPRESC`, and the other counts reported by the information file and `sdgtopo`). The macro prefix is the uppercased `-p` prefix, so `-p xx` produces `XX_NQ`. Two models in one program need distinct `-p` prefixes.
+
+`SD_NU` is the number of rate coordinates (the information file's `nu` line). User constraints are `SD_NUSERC` (the `nuserc` line). `-s` prototypes use `float`; the default precision uses `double`.
+
 ### Note from Sherm 20260412
 
 Thanks to @esba1ley for adding Mac support and @DonyDominic for a first crack at CI.

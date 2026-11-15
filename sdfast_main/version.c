@@ -12,4 +12,4 @@
  * limitations under the License.
  */
 
-char VersionNumber[] = "2.0";
+char VersionNumber[] = "2.1";

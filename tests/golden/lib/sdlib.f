@@ -1,6 +1,6 @@
 C
 C Generated TIMESTAMP by SD/FAST, Kane's formulation
-C (sdfast 2.0 #10001)
+C (sdfast 2.1 #10001)
 C
       BLOCK DATA SDLIBDATA
       INTEGER LASTERR,LASTROU
